@@ -52,15 +52,31 @@ export const VEHICLE_PRESETS = {
   },
 
   // TESLA MODEL Y (JUNIPER - YENİ KASA)
-  'tesla-my-juniper-rwd': {
+  'tesla-my-juniper-standard': {
     brand: 'Tesla',
-    name: 'Tesla Model Y RWD - Juniper (60 kWh LFP - 480 km WLTP)',
-    shortName: 'Model Y Juniper RWD',
-    capacity: 60.0,
-    wltp: 480,
+    name: 'Tesla Model Y Standard RWD - Juniper (64 kWh LFP - 534 km WLTP)',
+    shortName: 'Model Y Juniper Standard',
+    capacity: 64.0,
+    usableCapacity: 60.5,
+    wltp: 534,
     drivetrain: 'rwd',
     batteryType: 'LFP',
-    consumption: 125,
+    consumption: 13.1,
+    realConsumption: 13.1,
+    recommendedDailySoc: 100,
+    note: 'LFP bataryayı güvenle %100 doldurabilirsiniz.'
+  },
+  'tesla-my-juniper-rwd': {
+    brand: 'Tesla',
+    name: 'Tesla Model Y Standard RWD - Juniper (64 kWh LFP - 534 km WLTP)',
+    shortName: 'Model Y Juniper Standard',
+    capacity: 64.0,
+    usableCapacity: 60.5,
+    wltp: 534,
+    drivetrain: 'rwd',
+    batteryType: 'LFP',
+    consumption: 13.1,
+    realConsumption: 13.1,
     recommendedDailySoc: 100,
     note: 'LFP bataryayı güvenle %100 doldurabilirsiniz.'
   },
@@ -592,7 +608,7 @@ export const VEHICLE_PRESETS = {
   }
 };
 
-const STORAGE_KEY = 'ev_charging_calculator_v9';
+const STORAGE_KEY = 'ev_charging_calculator_v10';
 
 export const DEFAULT_STATE = {
   currentSoc: 30,             // Mevcut batarya %
@@ -601,17 +617,17 @@ export const DEFAULT_STATE = {
   chargingPhases: 1,          // 1 (Monofaze) veya 3 (Trifaze)
   amperage: 13,              // 13A (varsayılan başlama akımı)
   departureTime: '07:30',    // Sabah çıkış saati
-  calcMode: 'departure',     // 'departure' (çıkış saatine göre) veya 'now' (şimdi şarja tak)
-  vehicleModel: 'tesla-my-legacy-rwd', // KULLANICININ ARABASI: Tesla Model Y RWD - Eski Kasa
-  batteryCapacity: 60.0,     // Brüt Batarya (kWh)
-  usableCapacity: 60.0,      // Kullanılabilir Net Batarya (kWh)
-  customCapacity: 60.0,      // Batarya kapasitesi (kWh)
-  vehicleWltp: 455,          // Katalog WLTP Menzili (km)
-  catalogConsumption: 13.2,  // Katalog Tüketimi (kWh/100km)
-  realConsumption: 13.2,     // Gerçek Yol Tüketimi (kWh/100km)
+  calcMode: 'now',           // 'now' (Şimdi şarja tak) varsayılan
+  vehicleModel: 'tesla-my-juniper-standard', // KULLANICININ ARABASI: Tesla Model Y Standard Juniper
+  batteryCapacity: 64.0,     // Brüt Batarya (kWh)
+  usableCapacity: 60.5,      // Kullanılabilir Net Batarya (kWh)
+  customCapacity: 64.0,      // Batarya kapasitesi (kWh)
+  vehicleWltp: 534,          // Katalog WLTP Menzili (km)
+  catalogConsumption: 13.1,  // Katalog Tüketimi (kWh/100km)
+  realConsumption: 13.1,     // Gerçek Yol Tüketimi (kWh/100km)
   batteryType: 'LFP',
   drivetrain: 'rwd',
-  voltage: 220,              // 220V
+  voltage: 215,              // 215V varsayılan
   efficiency: 88,            // 10-13A ev şarjında ortalama %88 verim
 
   // Gece Güvenlik Akımı Planı (Uyurken 10A Düşürme)
@@ -630,68 +646,14 @@ export function loadSettings() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
-      const oldKeys = ['ev_charging_calculator_v8', 'ev_charging_calculator_v7', 'ev_charging_calculator_v6', 'ev_charging_calculator_v5', 'ev_charging_calculator_v4', 'ev_charging_calculator_v3', 'ev_charging_calculator_v2', 'tesla_charging_calculator_v1'];
-      for (const k of oldKeys) {
-        const oldRaw = localStorage.getItem(k);
-        if (oldRaw) {
-          const oldParsed = JSON.parse(oldRaw);
-          if (oldParsed.vehicleModel === 'tesla-my-rwd' || !oldParsed.vehicleModel) {
-            oldParsed.vehicleModel = 'tesla-my-legacy-rwd';
-          }
-          if (!oldParsed.realConsumption || oldParsed.realConsumption === 20.0) {
-            oldParsed.realConsumption = 13.2;
-          }
-          if (!oldParsed.catalogConsumption || oldParsed.catalogConsumption === 15.7) {
-            oldParsed.catalogConsumption = 13.2;
-          }
-          if (!oldParsed.usableCapacity) {
-            oldParsed.usableCapacity = oldParsed.customCapacity || 60.0;
-          }
-          if (!oldParsed.batteryCapacity) {
-            oldParsed.batteryCapacity = oldParsed.customCapacity || 60.0;
-          }
-          if (!oldParsed.vehicleWltp) {
-            oldParsed.vehicleWltp = VEHICLE_PRESETS[oldParsed.vehicleModel]?.wltp || 455;
-          }
-          if (oldParsed.billTotalAmount === 1520.30 || oldParsed.billTotalKwh === 395.68 || oldParsed.billTotalKwh === 250) {
-            oldParsed.billTotalAmount = 1000.00;
-            oldParsed.billTotalKwh = 260.00;
-            oldParsed.standardRate = 3.85;
-          }
-          return { ...DEFAULT_STATE, ...oldParsed };
-        }
-      }
       return { ...DEFAULT_STATE };
     }
     const parsed = JSON.parse(raw);
-    if (parsed.vehicleModel === 'tesla-my-rwd' || !parsed.vehicleModel) {
-      parsed.vehicleModel = 'tesla-my-legacy-rwd';
-    }
     if (parsed.chargingPhases === undefined) {
       parsed.chargingPhases = 1;
     }
     if (!parsed.chargingPowerPreset) {
-      parsed.chargingPowerPreset = (parsed.amperage === 10 ? '10a' : (parsed.amperage === 16 ? '16a' : (parsed.amperage === 13 ? '13a' : 'custom')));
-    }
-    if (!parsed.realConsumption || parsed.realConsumption === 20.0) {
-      parsed.realConsumption = 13.2;
-    }
-    if (!parsed.catalogConsumption || parsed.catalogConsumption === 15.7) {
-      parsed.catalogConsumption = 13.2;
-    }
-    if (!parsed.usableCapacity) {
-      parsed.usableCapacity = parsed.customCapacity || 60.0;
-    }
-    if (!parsed.batteryCapacity) {
-      parsed.batteryCapacity = parsed.customCapacity || 60.0;
-    }
-    if (!parsed.vehicleWltp && parsed.vehicleWltp !== 0) {
-      parsed.vehicleWltp = VEHICLE_PRESETS[parsed.vehicleModel]?.wltp || 455;
-    }
-    if (parsed.billTotalAmount === 1520.30 || parsed.billTotalKwh === 395.68) {
-      parsed.billTotalAmount = 1000.00;
-      parsed.billTotalKwh = 260.00;
-      parsed.standardRate = 3.85;
+      parsed.chargingPowerPreset = (parsed.amperage === 10 ? '10a' : (parsed.amperage === 16 ? (parsed.chargingPhases === 3 ? '11kw' : '16a') : (parsed.amperage === 32 ? (parsed.chargingPhases === 3 ? '22kw' : '7.4kw') : (parsed.amperage === 13 ? '13a' : 'custom'))));
     }
     return { ...DEFAULT_STATE, ...parsed };
   } catch (e) {

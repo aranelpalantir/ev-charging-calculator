@@ -33,7 +33,7 @@
         <div class="brand-info">
           <h1>EV ŞARJ</h1>
           <button id="btn-header-vehicle" class="vehicle-picker-pill" title="Aracı Değiştir">
-            <span id="selected-model-tag">Tesla Model Y Standart</span>
+            <span id="selected-model-tag">Model Y Juniper Standard</span>
             <span class="chevron">▾</span>
           </button>
         </div>
@@ -54,7 +54,7 @@
       <section class="card result-card" id="result-card">
         <div class="result-badge-row">
           <span class="status-indicator live-pulse"></span>
-          <span class="result-label" id="result-mode-label">ŞARJA BAŞLAMA SAATİ</span>
+          <span class="result-label" id="result-mode-label">ŞARJIN BİTİŞ SAATİ</span>
           <span class="day-badge" id="result-day-badge">Bugün</span>
         </div>
 
@@ -123,18 +123,18 @@
           </div>
 
           <div class="segmented-control mode-segmented">
-            <button class="segment-btn active-segment" id="mode-departure-btn" data-mode="departure">
+            <button class="segment-btn" id="mode-departure-btn" data-mode="departure">
               <span class="segment-title">⏰ Çıkış Saatine Göre</span>
               <span class="segment-desc">Sabah saatine hazırla</span>
             </button>
-            <button class="segment-btn" id="mode-now-btn" data-mode="now">
+            <button class="segment-btn active-segment" id="mode-now-btn" data-mode="now">
               <span class="segment-title">⚡ Şimdi Şarja Tak</span>
               <span class="segment-desc">Bitiş saatini hesapla</span>
             </button>
           </div>
 
           <!-- Çıkış Saati Seçimi -->
-          <div class="departure-time-wrapper" id="departure-picker-container">
+          <div class="departure-time-wrapper" id="departure-picker-container" style="display: none;">
             <div class="time-input-row">
               <label for="input-departure-time" class="time-input-label">Sabah Çıkış Saati:</label>
               <input type="time" id="input-departure-time" value="07:30" class="time-native-input">
@@ -224,12 +224,12 @@
           <div class="voltage-selection-row">
             <div class="voltage-row-header">
               <span class="sub-label">Şebeke Voltajı:</span>
-              <strong class="voltage-val-highlight" id="main-voltage-readout">220 V</strong>
+              <strong class="voltage-val-highlight" id="main-voltage-readout">215 V</strong>
             </div>
             <div class="chip-row voltage-chips">
               <button class="chip voltage-chip" data-voltage="210">210V</button>
-              <button class="chip voltage-chip" data-voltage="215">215V</button>
-              <button class="chip voltage-chip active-chip" data-voltage="220">220V</button>
+              <button class="chip voltage-chip active-chip" data-voltage="215">215V</button>
+              <button class="chip voltage-chip" data-voltage="220">220V</button>
               <button class="chip voltage-chip" data-voltage="225">225V</button>
               <button class="chip voltage-chip" data-voltage="230">230V</button>
             </div>
@@ -437,8 +437,7 @@
                         data-drivetrain="rwd"
                         data-battery-type="LFP"
                         data-generation="legacy"
-                        data-year="2020-2024"
-                        selected>
+                        data-year="2020-2024">
                   Tesla Model Y RWD - Eski Kasa
                 </option>
 
@@ -506,7 +505,8 @@
                         data-drivetrain="rwd"
                         data-battery-type="LFP"
                         data-generation="juniper"
-                        data-year="2026">
+                        data-year="2026"
+                        selected>
                   Tesla Model Y Standard RWD - Juniper (64 kWh LFP - 534 km WLTP)
                 </option>
 
@@ -2138,9 +2138,9 @@
           <div class="setting-item" id="real-consumption-group">
             <div class="setting-label-row">
               <label for="input-real-consumption">Gerçek Tüketim Ayarı (kWh / 100 km)</label>
-              <span class="setting-hint" id="real-consumption-display">13.2 kWh</span>
+              <span class="setting-hint" id="real-consumption-display">13.1 kWh</span>
             </div>
-            <input type="number" id="input-real-consumption" class="custom-input" min="5" max="45" step="0.1" value="13.2">
+            <input type="number" id="input-real-consumption" class="custom-input" min="5" max="45" step="0.1" value="13.1">
             <span class="sub-hint">Menzil ve km maliyeti bu tüketim üzerinden hesaplanır. Varsayılan olarak seçilen aracın katalog tüketimi yüklenir, dilediğiniz gibi güncelleyebilirsiniz.</span>
           </div>
 
@@ -2148,9 +2148,9 @@
           <div class="setting-item" id="wltp-range-group">
             <div class="setting-label-row">
               <label for="input-vehicle-wltp">Katalog WLTP Menzili (km)</label>
-              <span class="setting-hint" id="wltp-display">455 km</span>
+              <span class="setting-hint" id="wltp-display">534 km</span>
             </div>
-            <input type="number" id="input-vehicle-wltp" class="custom-input" min="0" max="1200" step="1" value="455">
+            <input type="number" id="input-vehicle-wltp" class="custom-input" min="0" max="1200" step="1" value="534">
             <span class="sub-hint">Araç resmi katalog test verisidir.</span>
           </div>
 
@@ -2158,9 +2158,9 @@
           <div class="setting-item" id="usable-battery-group">
             <div class="setting-label-row">
               <label for="input-usable-battery">Kullanılabilir Batarya (kWh)</label>
-              <span class="setting-hint" id="usable-battery-display">60.0 kWh</span>
+              <span class="setting-hint" id="usable-battery-display">60.5 kWh</span>
             </div>
-            <input type="number" id="input-usable-battery" class="custom-input" min="10" max="160" step="0.1" value="60.0">
+            <input type="number" id="input-usable-battery" class="custom-input" min="10" max="160" step="0.1" value="60.5">
             <span class="sub-hint">Şarj edilen gerçek net batarya kapasitesidir.</span>
           </div>
 

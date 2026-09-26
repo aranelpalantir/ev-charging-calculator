@@ -27,7 +27,8 @@ Sabah belirlediğiniz saatte (örneğin **07:30**) aracınızdan prizi çektiği
 ## 🌐 Canlı Demo (Web / PWA)
 
 Uygulamaya tarayıcınızdan veya telefonunuzdan doğrudan erişebilirsiniz:
-👉 **[https://aranelpalantir.github.io/ev-charging-calculator/](https://aranelpalantir.github.io/ev-charging-calculator/)**
+- 🚀 **Cloudflare Pages (Birincil):** **[https://ev-sarj.pages.dev/](https://ev-sarj.pages.dev/)**
+- 🐙 **GitHub Pages (Yedek):** **[https://aranelpalantir.github.io/ev-charging-calculator/](https://aranelpalantir.github.io/ev-charging-calculator/)**
 
 *(iPhone Safari veya Android Chrome'da "Ana Ekrana Ekle" diyerek tam ekran ve internetsiz mobil uygulama olarak kullanabilirsiniz.)*
 
