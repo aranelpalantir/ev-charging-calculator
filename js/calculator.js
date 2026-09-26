@@ -25,7 +25,7 @@ export function calculateCharging(state, referenceNow = new Date()) {
   const wltpRange = Number(state.vehicleWltp) || 0;
 
   // Gerçek Yol Tüketimi (kWh / 100 km)
-  const realConsumption = Math.max(5, Number(state.realConsumption) || 20.0);
+  const realConsumption = Math.max(5, Number(state.realConsumption) || Number(state.catalogConsumption) || 13.2);
 
   // Katalog Tüketimi (kWh / 100 km)
   const catalogConsumption = Number(state.catalogConsumption) || (wltpRange > 0 ? (capacity * 100) / wltpRange : 0);

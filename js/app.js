@@ -138,8 +138,9 @@ function extractVehicleDataFromOption(opt) {
   const battery = parseFloat(opt.dataset.battery) || 0;
   const usable = parseFloat(opt.dataset.usableBattery) || (battery > 0 ? battery : 60);
   const wltp = parseFloat(opt.dataset.wltp) || 0;
-  const consumption = parseFloat(opt.dataset.consumption) || 0;
-  const realConsumption = parseFloat(opt.dataset.realConsumption) || 20;
+  const consumption = parseFloat(opt.dataset.consumption) || (parseFloat(opt.dataset.realConsumption) || 0);
+  // Kullanıcı tercihi: Tüketim başlangıç değeri olarak katalog tüketimi (data-consumption) kullanılır
+  const realConsumption = consumption > 0 ? consumption : (parseFloat(opt.dataset.realConsumption) || 15.0);
   const dcMax = parseFloat(opt.dataset.dcMax) || 0;
   const dc1080 = parseFloat(opt.dataset.dc1080) || 0;
   const drivetrain = opt.dataset.drivetrain || 'rwd';
@@ -152,7 +153,7 @@ function extractVehicleDataFromOption(opt) {
     battery,
     usable,
     wltp,
-    consumption,
+    consumption: consumption > 0 ? consumption : realConsumption,
     realConsumption,
     dcMax,
     dc1080,
@@ -211,10 +212,10 @@ function syncInputsWithState() {
   els.customCapacityGroup.style.display = state.vehicleModel === 'custom' ? 'flex' : 'none';
 
   if (els.inputRealConsumption) {
-    els.inputRealConsumption.value = state.realConsumption || 20.0;
+    els.inputRealConsumption.value = state.realConsumption || 13.2;
   }
   if (els.realConsumptionDisplay) {
-    els.realConsumptionDisplay.textContent = `${Number(state.realConsumption || 20.0).toFixed(1)} kWh`;
+    els.realConsumptionDisplay.textContent = `${Number(state.realConsumption || 13.2).toFixed(1)} kWh`;
   }
 
   if (els.inputVehicleWltp) {
@@ -721,7 +722,8 @@ function bindEventListeners() {
         state.customCapacity = vData.usable;
         state.vehicleWltp = vData.wltp;
         state.catalogConsumption = vData.consumption;
-        state.realConsumption = vData.realConsumption;
+        const activeConsumption = vData.consumption > 0 ? vData.consumption : vData.realConsumption;
+        state.realConsumption = activeConsumption;
         state.batteryType = vData.batteryType;
         state.drivetrain = vData.drivetrain;
 
@@ -730,8 +732,8 @@ function bindEventListeners() {
         if (els.usableBatteryDisplay) els.usableBatteryDisplay.textContent = `${vData.usable.toFixed(1)} kWh`;
         if (els.inputVehicleWltp) els.inputVehicleWltp.value = vData.wltp;
         if (els.wltpDisplay) els.wltpDisplay.textContent = `${vData.wltp} km`;
-        if (els.inputRealConsumption) els.inputRealConsumption.value = vData.realConsumption;
-        if (els.realConsumptionDisplay) els.realConsumptionDisplay.textContent = `${vData.realConsumption.toFixed(1)} kWh`;
+        if (els.inputRealConsumption) els.inputRealConsumption.value = activeConsumption;
+        if (els.realConsumptionDisplay) els.realConsumptionDisplay.textContent = `${activeConsumption.toFixed(1)} kWh`;
       }
     }
 
