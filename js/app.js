@@ -120,15 +120,22 @@ const els = {
   guideTargetTime: document.getElementById('guide-target-time'),
   guideTargetAmp: document.getElementById('guide-target-amp'),
 
-  // PWA & Toast & iOS Kurulum
+  // PWA & Toast & Kurulum Rehberi (iOS & Android)
   installCard: document.getElementById('install-card'),
   installTitle: document.getElementById('install-title'),
   installDesc: document.getElementById('install-desc'),
   btnInstallPwa: document.getElementById('btn-install-pwa'),
   btnDismissInstall: document.getElementById('btn-dismiss-install'),
-  iosGuideModal: document.getElementById('ios-guide-modal'),
-  btnCloseIosGuide: document.getElementById('btn-close-ios-guide'),
-  btnDismissIosGuide: document.getElementById('btn-dismiss-ios-guide'),
+  btnOpenInstallGuide: document.getElementById('btn-open-install-guide'),
+  btnFooterInstallGuide: document.getElementById('btn-footer-install-guide'),
+  pwaGuideModal: document.getElementById('pwa-guide-modal'),
+  btnClosePwaGuide: document.getElementById('btn-close-pwa-guide'),
+  btnDismissPwaGuide: document.getElementById('btn-dismiss-pwa-guide'),
+  tabPwaIos: document.getElementById('tab-pwa-ios'),
+  tabPwaAndroid: document.getElementById('tab-pwa-android'),
+  panelPwaIos: document.getElementById('panel-pwa-ios'),
+  panelPwaAndroid: document.getElementById('panel-pwa-android'),
+  btnAndroidDirectInstall: document.getElementById('btn-android-direct-install'),
   toastMsg: document.getElementById('toast-msg')
 };
 
@@ -896,57 +903,131 @@ function showToast(message) {
 
 // PWA Kurulum Yönetimi
 function handlePwaInstallPrompt() {
-  // Cihaz ve ortam tespiti
   const ua = (navigator.userAgent || '').toLowerCase();
   const isIos = /iphone|ipad|ipod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
-  const isDismissed = sessionStorage.getItem('dismissed_install_card') === '1';
+  let isDismissed = sessionStorage.getItem('dismissed_install_card') === '1';
 
-  // Kartı kapatma butonu
+  // Rehber Modalı Sekme Geçişi
+  function setPwaGuideTab(os) {
+    if (os === 'ios') {
+      if (els.tabPwaIos) els.tabPwaIos.classList.add('active-segment');
+      if (els.tabPwaAndroid) els.tabPwaAndroid.classList.remove('active-segment');
+      if (els.panelPwaIos) els.panelPwaIos.style.display = 'block';
+      if (els.panelPwaAndroid) els.panelPwaAndroid.style.display = 'none';
+    } else {
+      if (els.tabPwaIos) els.tabPwaIos.classList.remove('active-segment');
+      if (els.tabPwaAndroid) els.tabPwaAndroid.classList.add('active-segment');
+      if (els.panelPwaIos) els.panelPwaIos.style.display = 'none';
+      if (els.panelPwaAndroid) els.panelPwaAndroid.style.display = 'block';
+      if (els.btnAndroidDirectInstall) {
+        els.btnAndroidDirectInstall.style.display = deferredInstallPrompt ? 'block' : 'none';
+      }
+    }
+  }
+
+  // Rehber Modalını Aç (İstenen işletim sistemine odaklanarak)
+  function openPwaGuideModal(preferredOs = null) {
+    const targetOs = preferredOs || (isIos ? 'ios' : 'android');
+    setPwaGuideTab(targetOs);
+    if (els.pwaGuideModal) els.pwaGuideModal.style.display = 'flex';
+  }
+
+  // Sekme Tıklama Olayları
+  if (els.tabPwaIos) {
+    els.tabPwaIos.addEventListener('click', () => setPwaGuideTab('ios'));
+  }
+  if (els.tabPwaAndroid) {
+    els.tabPwaAndroid.addEventListener('click', () => setPwaGuideTab('android'));
+  }
+
+  // Ayarlar modalındaki ve Footer'daki kalıcı açma butonları
+  if (els.btnOpenInstallGuide) {
+    els.btnOpenInstallGuide.addEventListener('click', () => {
+      openPwaGuideModal();
+    });
+  }
+  if (els.btnFooterInstallGuide) {
+    els.btnFooterInstallGuide.addEventListener('click', () => {
+      openPwaGuideModal();
+    });
+  }
+
+  // Kartı kapatma (çarpı) butonu
   if (els.btnDismissInstall) {
     els.btnDismissInstall.addEventListener('click', () => {
       if (els.installCard) els.installCard.style.display = 'none';
       sessionStorage.setItem('dismissed_install_card', '1');
+      isDismissed = true;
     });
   }
 
-  // iOS Rehber Modalı Kapatma Olayları
-  if (els.btnCloseIosGuide) {
-    els.btnCloseIosGuide.addEventListener('click', () => {
-      if (els.iosGuideModal) els.iosGuideModal.style.display = 'none';
+  // PWA Rehber Modalı Kapatma Olayları
+  if (els.btnClosePwaGuide) {
+    els.btnClosePwaGuide.addEventListener('click', () => {
+      if (els.pwaGuideModal) els.pwaGuideModal.style.display = 'none';
     });
   }
-  if (els.btnDismissIosGuide) {
-    els.btnDismissIosGuide.addEventListener('click', () => {
-      if (els.iosGuideModal) els.iosGuideModal.style.display = 'none';
+  if (els.btnDismissPwaGuide) {
+    els.btnDismissPwaGuide.addEventListener('click', () => {
+      if (els.pwaGuideModal) els.pwaGuideModal.style.display = 'none';
     });
   }
-  if (els.iosGuideModal) {
-    els.iosGuideModal.addEventListener('click', (e) => {
-      if (e.target === els.iosGuideModal) {
-        els.iosGuideModal.style.display = 'none';
+  if (els.pwaGuideModal) {
+    els.pwaGuideModal.addEventListener('click', (e) => {
+      if (e.target === els.pwaGuideModal) {
+        els.pwaGuideModal.style.display = 'none';
       }
     });
   }
 
-  // iOS Safari için özel kurulum kartı
-  if (isIos && !isStandalone && !isDismissed && els.installCard) {
-    if (els.installTitle) els.installTitle.textContent = "iPhone'a Yükleyin";
-    if (els.installDesc) els.installDesc.textContent = "Safari'den Ana Ekrana Ekleyerek uygulama gibi tam ekran kullanın.";
-    if (els.btnInstallPwa) els.btnInstallPwa.textContent = "Nasıl Yapılır? 📲";
-
-    els.installCard.style.display = 'flex';
-
-    els.btnInstallPwa.addEventListener('click', () => {
-      if (els.iosGuideModal) els.iosGuideModal.style.display = 'flex';
+  // Android Tek Tıkla Yükleme Butonu (Rehber modalı içi)
+  if (els.btnAndroidDirectInstall) {
+    els.btnAndroidDirectInstall.addEventListener('click', async () => {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      const { outcome } = await deferredInstallPrompt.userChoice;
+      if (outcome === 'accepted') {
+        showToast('Uygulama başarıyla kuruldu! 🎉');
+        if (els.pwaGuideModal) els.pwaGuideModal.style.display = 'none';
+        if (els.installCard) els.installCard.style.display = 'none';
+      }
+      deferredInstallPrompt = null;
+      if (els.btnAndroidDirectInstall) els.btnAndroidDirectInstall.style.display = 'none';
     });
+  }
+
+  // Eğer zaten ana ekrandan açılmışsa (Standalone PWA)
+  if (isStandalone) {
+    if (els.installCard) els.installCard.style.display = 'none';
+    if (els.btnFooterInstallGuide) els.btnFooterInstallGuide.style.display = 'none';
     return;
   }
 
-  // Chromium / Android standart beforeinstallprompt desteği
+  // iOS Safari için ana ekran kartı
+  if (isIos) {
+    if (!isDismissed && els.installCard) {
+      if (els.installTitle) els.installTitle.textContent = "iPhone'a Yükleyin";
+      if (els.installDesc) els.installDesc.textContent = "Safari'den Ana Ekrana Ekleyerek uygulama gibi tam ekran kullanın.";
+      if (els.btnInstallPwa) els.btnInstallPwa.textContent = "Nasıl Yapılır? 📲";
+      els.installCard.style.display = 'flex';
+    }
+
+    if (els.btnInstallPwa) {
+      els.btnInstallPwa.addEventListener('click', () => {
+        openPwaGuideModal('ios');
+      });
+    }
+    return;
+  }
+
+  // Android / Chromium standart beforeinstallprompt desteği
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredInstallPrompt = e;
+    if (els.btnAndroidDirectInstall) {
+      els.btnAndroidDirectInstall.style.display = 'block';
+    }
     if (!isDismissed && els.installCard) {
       if (els.installTitle) els.installTitle.textContent = "Uygulama Olarak Ekleyin";
       if (els.installDesc) els.installDesc.textContent = "Ana ekrana ekleyerek internet olmadan da hızlıca açabilirsiniz.";
@@ -955,20 +1036,26 @@ function handlePwaInstallPrompt() {
     }
   });
 
-  els.btnInstallPwa.addEventListener('click', async () => {
-    if (!deferredInstallPrompt) return;
-    deferredInstallPrompt.prompt();
-    const { outcome } = await deferredInstallPrompt.userChoice;
-    if (outcome === 'accepted') {
-      showToast('Uygulama başarıyla kuruldu! 🎉');
-    }
-    deferredInstallPrompt = null;
-    if (els.installCard) els.installCard.style.display = 'none';
-  });
+  if (els.btnInstallPwa) {
+    els.btnInstallPwa.addEventListener('click', async () => {
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        const { outcome } = await deferredInstallPrompt.userChoice;
+        if (outcome === 'accepted') {
+          showToast('Uygulama başarıyla kuruldu! 🎉');
+        }
+        deferredInstallPrompt = null;
+        if (els.installCard) els.installCard.style.display = 'none';
+      } else {
+        openPwaGuideModal('android');
+      }
+    });
+  }
 
   window.addEventListener('appinstalled', () => {
     deferredInstallPrompt = null;
     if (els.installCard) els.installCard.style.display = 'none';
+    if (els.pwaGuideModal) els.pwaGuideModal.style.display = 'none';
   });
 }
 

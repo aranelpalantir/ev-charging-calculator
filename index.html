@@ -2178,6 +2178,17 @@
             </div>
           </div>
 
+          <!-- Mobil Kurulum & Ana Ekrana Ekleme -->
+          <div class="setting-item pwa-setting-item">
+            <div class="setting-label-row">
+              <label>📲 Mobil Cihaza Yükle</label>
+            </div>
+            <button type="button" id="btn-open-install-guide" class="btn btn-outline btn-full" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+              <span>📲 Ana Ekrana Ekleme Rehberi (iOS & Android)</span>
+            </button>
+            <span class="sub-hint">Uygulamayı telefonunuzun ana ekranına ekleyip internetsiz ve tam ekran kullanma adımları.</span>
+          </div>
+
           <button id="btn-reset-defaults" class="btn btn-outline btn-full">Varsayılan Ayarlara Dön</button>
         </div>
       </div>
@@ -2222,51 +2233,96 @@
       </div>
     </div>
 
-    <!-- iOS SAFARI ANA EKRANA EKLE REHBERİ MODALI -->
-    <div class="modal-overlay" id="ios-guide-modal" style="display: none;">
+    <!-- MOBİL UYGULAMA (PWA) ANA EKRANA EKLEME REHBERİ MODALI (iOS & Android) -->
+    <div class="modal-overlay" id="pwa-guide-modal" style="display: none;">
       <div class="modal-card">
         <div class="modal-header">
-          <h2>iPhone'da Ana Ekrana Ekleme</h2>
-          <button class="modal-close" id="btn-close-ios-guide" aria-label="Kapat">&times;</button>
+          <h2>Ana Ekrana Ekleme Rehberi</h2>
+          <button class="modal-close" id="btn-close-pwa-guide" aria-label="Kapat">&times;</button>
         </div>
         <div class="modal-body guide-steps">
-          <div class="step-card">
-            <span class="step-num">1</span>
-            <div class="step-text">
-              <strong>Safari Tarayıcısında Açın</strong>
-              <p>Bu sayfayı Apple Safari tarayıcısında görüntülediğinizden emin olun.</p>
+          
+          <!-- Cihaz / İşletim Sistemi Seçici -->
+          <div class="segmented-control mode-segmented pwa-os-toggle" style="margin-bottom: 14px;">
+            <button type="button" class="segment-btn active-segment" id="tab-pwa-ios">
+              <span class="segment-title">🍏 iPhone (iOS)</span>
+            </button>
+            <button type="button" class="segment-btn" id="tab-pwa-android">
+              <span class="segment-title">🤖 Android / Chrome</span>
+            </button>
+          </div>
+
+          <!-- iOS Safari Adımları -->
+          <div id="panel-pwa-ios" class="pwa-guide-panel">
+            <div class="step-card">
+              <span class="step-num">1</span>
+              <div class="step-text">
+                <strong>Safari Tarayıcısında Açın</strong>
+                <p>Bu sayfayı Apple Safari tarayıcısında görüntülediğinizden emin olun.</p>
+              </div>
+            </div>
+
+            <div class="step-card highlight-step">
+              <span class="step-num">2</span>
+              <div class="step-text">
+                <strong>Paylaş Simgesine Dokunun</strong>
+                <p>Safari'nin alt çubuğundaki <strong>Paylaş</strong> simgesine dokunun: <span class="share-icon-badge"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></span> (Kare içinde yukarı ok).</p>
+              </div>
+            </div>
+
+            <div class="step-card">
+              <span class="step-num">3</span>
+              <div class="step-text">
+                <strong>"Ana Ekrana Ekle" Seçeneğini Seçin</strong>
+                <p>Açılan menüyü hafifçe yukarı kaydırıp <strong>"Ana Ekrana Ekle"</strong> (+ simgesi) satırına tıklayın.</p>
+              </div>
+            </div>
+
+            <div class="step-card">
+              <span class="step-num">4</span>
+              <div class="step-text">
+                <strong>"Ekle" Butonuna Basın</strong>
+                <p>Sağ üst köşedeki mavi <strong>"Ekle"</strong> düğmesine basın. Artık ana ekranınızda bağımsız bir uygulama olarak yer alacaktır.</p>
+              </div>
             </div>
           </div>
 
-          <div class="step-card highlight-step">
-            <span class="step-num">2</span>
-            <div class="step-text">
-              <strong>Paylaş Simgesine Dokunun</strong>
-              <p>Ekranın en altındaki çubukta bulunan <strong>Paylaş</strong> simgesine dokunun: <span class="share-icon-badge"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></span> (Kare içinde yukarı ok).</p>
-            </div>
-          </div>
+          <!-- Android Chrome Adımları -->
+          <div id="panel-pwa-android" class="pwa-guide-panel" style="display: none;">
+            <button type="button" id="btn-android-direct-install" class="btn btn-primary btn-full" style="margin-bottom: 10px; display: none;">
+              ⚡ Tek Tıkla Uygulamayı Yükle
+            </button>
 
-          <div class="step-card">
-            <span class="step-num">3</span>
-            <div class="step-text">
-              <strong>"Ana Ekrana Ekle" Seçeneğini Seçin</strong>
-              <p>Açılan menüyü hafifçe aşağı kaydırıp <strong>"Ana Ekrana Ekle"</strong> (+ simgesi) satırına tıklayın.</p>
+            <div class="step-card">
+              <span class="step-num">1</span>
+              <div class="step-text">
+                <strong>Chrome Menüsünü Açın</strong>
+                <p>Tarayıcının sağ üst köşesindeki <strong>üç nokta (⋮)</strong> menü simgesine dokunun.</p>
+              </div>
             </div>
-          </div>
 
-          <div class="step-card">
-            <span class="step-num">4</span>
-            <div class="step-text">
-              <strong>"Ekle" Butonuna Basın</strong>
-              <p>Sağ üst köşedeki mavi <strong>"Ekle"</strong> düğmesine basın. Artık ana ekranınızda bağımsız bir uygulama olarak yer alacaktır.</p>
+            <div class="step-card highlight-step">
+              <span class="step-num">2</span>
+              <div class="step-text">
+                <strong>"Uygulamayı Yükle"yi Seçin</strong>
+                <p>Menü seçenekleri arasından <strong>"Uygulamayı Yükle"</strong> (veya <strong>"Ana Ekrana Ekle"</strong>) satırına dokunun.</p>
+              </div>
+            </div>
+
+            <div class="step-card">
+              <span class="step-num">3</span>
+              <div class="step-text">
+                <strong>Onaylayıp Yükleyin</strong>
+                <p>Açılan onay penceresinde <strong>"Yükle"</strong> düğmesine basın. Uygulama telefonunuzun ana ekranına eklenecektir.</p>
+              </div>
             </div>
           </div>
 
           <div class="step-tip">
-            ✨ <strong>Fayda:</strong> Ana ekrandan başlattığınızda tarayıcı çubukları gizlenir, tam ekran deneyimi sunar ve internetiniz olmasa bile anında açılır!
+            ✨ <strong>Fayda:</strong> Ana ekrandan başlattığınızda tarayıcı çubukları gizlenir, tam ekran yerel uygulama deneyimi sunar ve internetiniz olmasa bile anında açılır!
           </div>
 
-          <button id="btn-dismiss-ios-guide" class="btn btn-primary btn-full" style="margin-top: 8px;">Anladım, Harika!</button>
+          <button id="btn-dismiss-pwa-guide" class="btn btn-primary btn-full" style="margin-top: 8px;">Anladım, Harika!</button>
         </div>
       </div>
     </div>
@@ -2276,6 +2332,9 @@
 
     <footer class="app-footer">
       <span>EV Şarj Zamanlayıcı • Akıllı Ev Tipi Şarj PWA</span>
+      <button type="button" id="btn-footer-install-guide" class="footer-pwa-btn">
+        📲 Ana Ekrana Nasıl Eklenir?
+      </button>
     </footer>
   </div>
 

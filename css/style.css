@@ -1426,7 +1426,45 @@ body {
 
 .app-footer {
   text-align: center;
-  padding: 10px 0;
+  padding: 14px 0 24px;
   font-size: 0.72rem;
   color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.footer-pwa-btn {
+  background: rgba(0, 210, 255, 0.08);
+  border: 1px solid rgba(0, 210, 255, 0.22);
+  color: var(--electric-cyan);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+}
+
+.footer-pwa-btn:hover {
+  background: rgba(0, 210, 255, 0.18);
+  border-color: var(--electric-cyan);
+  color: #ffffff;
+}
+
+.pwa-setting-item {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 16px;
+  margin-top: 16px;
+}
+
+.pwa-guide-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
