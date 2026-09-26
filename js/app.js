@@ -1161,6 +1161,8 @@ function registerServiceWorker() {
       navigator.serviceWorker.register('./sw.js')
         .then(reg => {
           console.log('EV Şarj PWA Service Worker aktif:', reg.scope);
+          // Yeni sürüm kontrolü yap ve hemen güncelle
+          reg.update();
         })
         .catch(err => {
           console.warn('Service Worker kaydı yapılamadı:', err);

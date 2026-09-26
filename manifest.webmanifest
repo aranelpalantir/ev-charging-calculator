@@ -2,7 +2,7 @@
   "name": "EV Şarj Zamanlayıcı",
   "short_name": "EV Şarj",
   "description": "Ev prizinden (10A-13A) Tesla, Togg, BYD ve tüm elektrikli araçlar için parametrik şarj başlama saati, gece akımı düşürme planı ve fatura maliyeti hesaplayıcı.",
-  "start_url": "./index.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
