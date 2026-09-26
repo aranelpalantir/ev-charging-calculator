@@ -132,6 +132,12 @@ body {
   color: var(--electric-cyan);
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .icon-btn {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -145,6 +151,7 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
   flex-shrink: 0;
+  text-decoration: none;
 }
 
 .icon-btn:hover, .icon-btn:active {
@@ -1570,7 +1577,38 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 10px;
+}
+
+.footer-btn-group {
+  display: flex;
+  align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.footer-github-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  font-family: inherit;
+}
+
+.footer-github-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--text-muted);
+  color: var(--text-primary);
 }
 
 .footer-pwa-btn {
