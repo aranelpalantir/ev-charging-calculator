@@ -59,7 +59,7 @@
         </div>
 
         <div class="primary-time-display">
-          <span class="big-time" id="start-time-val">22:45</span>
+          <span class="big-time" id="start-time-val">--:--</span>
           <span class="time-suffix" id="start-time-suffix"></span>
         </div>
 
@@ -68,12 +68,12 @@
           <div class="alert-icon">⚠️</div>
           <div class="alert-content">
             <strong id="overdue-title">Hedef saate yetişmiyor!</strong>
-            <p id="overdue-detail">Şu an başlarsanız araç en erken 09:15'te hazır olur.</p>
+            <p id="overdue-detail">Şu an başlarsanız araç en erken hazır olur.</p>
           </div>
         </div>
 
         <div class="result-summary-text" id="result-summary-text">
-          Sabah <strong>07:30</strong>'da aracınızın <strong>%100</strong> hazır olması için şarj <strong>8 saat 30 dakika</strong> sürecek.
+          Şimdi şarja takarsanız araç <strong>%100</strong> seviyesine ulaşacaktır.
         </div>
 
         <!-- Gece Düşürme Notu -->
@@ -85,19 +85,19 @@
         <div class="quick-stats-grid">
           <div class="stat-item">
             <span class="stat-name">Süre</span>
-            <span class="stat-value" id="stat-duration">8 sa 30 dk</span>
+            <span class="stat-value" id="stat-duration">17 sa 13 dk</span>
           </div>
           <div class="stat-item">
             <span class="stat-name">Güç</span>
-            <span class="stat-value" id="stat-power">2.9 kW</span>
+            <span class="stat-value" id="stat-power">2.8 kW</span>
           </div>
           <div class="stat-item">
             <span class="stat-name">Eklenecek</span>
-            <span class="stat-value" id="stat-energy">+42.0 kWh</span>
+            <span class="stat-value" id="stat-energy">+42.4 kWh</span>
           </div>
           <div class="stat-item highlight-stat">
             <span class="stat-name">Maliyet</span>
-            <span class="stat-value" id="stat-cost">~161 TL</span>
+            <span class="stat-value" id="stat-cost">~185 TL</span>
           </div>
         </div>
 
@@ -155,7 +155,7 @@
         <div class="control-group">
           <div class="control-header">
             <label class="control-label">2. Şarj Gücü & Cihazı</label>
-            <span class="helper-info" id="amp-power-label">13A • ~2.9 kW (1 Faz)</span>
+            <span class="helper-info" id="amp-power-label">🔌 13A • ~2.8 kW (Standart Ev Prizi)</span>
           </div>
 
           <div class="power-presets-container">
@@ -340,16 +340,16 @@
         <div class="battery-km-row" id="battery-km-row">
           <div class="km-stat">
             <span class="km-stat-label">Mevcut Menzil</span>
-            <span class="km-stat-val" id="val-current-km">137 km WLTP</span>
+            <span class="km-stat-val" id="val-current-km">160 km WLTP</span>
           </div>
           <div class="km-stat-arrow">➔</div>
           <div class="km-stat">
             <span class="km-stat-label">Hedef Menzil</span>
-            <span class="km-stat-val" id="val-target-km">455 km WLTP</span>
+            <span class="km-stat-val" id="val-target-km">534 km WLTP</span>
           </div>
           <div class="km-stat highlight-km">
             <span class="km-stat-label">Eklenecek</span>
-            <span class="km-stat-val" id="val-added-km">+319 km</span>
+            <span class="km-stat-val" id="val-added-km">+374 km</span>
           </div>
         </div>
       </section>
@@ -361,7 +361,7 @@
             <span class="icon-tariff">⚡</span>
             <div class="tariff-title-group">
               <h3>Elektrik Faturası Maliyeti</h3>
-              <span class="tariff-sub-text" id="tariff-summary-sub">Birim Fiyat: 3.84 TL / kWh</span>
+              <span class="tariff-sub-text" id="tariff-summary-sub">Birim Fiyat: 3.85 TL / kWh</span>
             </div>
           </div>
           <span class="toggle-arrow">▼</span>
@@ -371,19 +371,19 @@
           <div class="tariff-breakdown-grid">
             <div class="tariff-item">
               <span class="t-label">Şebekeden Çekilen</span>
-              <span class="t-val" id="val-std-grid-kwh">47.7 kWh</span>
+              <span class="t-val" id="val-std-grid-kwh">48.1 kWh</span>
             </div>
             <div class="tariff-item">
               <span class="t-label">Uygulanan Fiyat</span>
-              <span class="t-val" id="val-std-rate">3.84 TL / kWh</span>
+              <span class="t-val" id="val-std-rate">3.85 TL / kWh</span>
             </div>
             <div class="tariff-item">
               <span class="t-label">Menzil Maliyeti</span>
-              <span class="t-val" id="val-std-km-costs">0.68 TL/km <small>(68 TL/100km)</small></span>
+              <span class="t-val" id="val-std-km-costs">0.49 TL/km <small>(49 TL/100km)</small></span>
             </div>
             <div class="tariff-item highlight-cost">
               <span class="t-label">Bu Şarjın Tutarı</span>
-              <span class="t-val" id="val-std-total">~183 TL</span>
+              <span class="t-val" id="val-std-total">~185 TL</span>
             </div>
           </div>
         </div>
@@ -420,74 +420,6 @@
             <label for="select-vehicle-model">Elektrikli Araç Modeli</label>
 
             <select id="select-vehicle-model" class="custom-select">
-
-              <!-- =========================================================
-                   TESLA MODEL Y - ESKİ KASA
-                   ========================================================= -->
-              <optgroup label="Tesla Model Y - Eski Kasa">
-
-                <option value="tesla-my-legacy-rwd"
-                        data-battery="60"
-                        data-usable-battery=""
-                        data-wltp="455"
-                        data-consumption="13.2"
-                        data-real-consumption="13.2"
-                        data-dc-max="170"
-                        data-dc-10-80=""
-                        data-drivetrain="rwd"
-                        data-battery-type="LFP"
-                        data-generation="legacy"
-                        data-year="2020-2024">
-                  Tesla Model Y RWD - Eski Kasa
-                </option>
-
-                <option value="tesla-my-legacy-lr-rwd"
-                        data-battery="79"
-                        data-usable-battery=""
-                        data-wltp="533"
-                        data-consumption="15.5"
-                        data-real-consumption="15.5"
-                        data-dc-max="250"
-                        data-dc-10-80=""
-                        data-drivetrain="rwd"
-                        data-battery-type="NMC"
-                        data-generation="legacy"
-                        data-year="2020-2024">
-                  Tesla Model Y Long Range RWD - Eski Kasa
-                </option>
-
-                <option value="tesla-my-legacy-lr-awd"
-                        data-battery="78.1"
-                        data-usable-battery=""
-                        data-wltp="533"
-                        data-consumption="16.9"
-                        data-real-consumption="16.9"
-                        data-dc-max="250"
-                        data-dc-10-80=""
-                        data-drivetrain="awd"
-                        data-battery-type="NMC"
-                        data-generation="legacy"
-                        data-year="2020-2024">
-                  Tesla Model Y Long Range AWD - Eski Kasa
-                </option>
-
-                <option value="tesla-my-legacy-performance"
-                        data-battery="78.1"
-                        data-usable-battery=""
-                        data-wltp="514"
-                        data-consumption="17.3"
-                        data-real-consumption="17.3"
-                        data-dc-max="250"
-                        data-dc-10-80=""
-                        data-drivetrain="awd"
-                        data-battery-type="NMC"
-                        data-generation="legacy"
-                        data-year="2020-2024">
-                  Tesla Model Y Performance - Eski Kasa
-                </option>
-
-              </optgroup>
-
 
               <!-- =========================================================
                    TESLA MODEL Y - JUNIPER
@@ -568,6 +500,74 @@
                         data-generation="juniper"
                         data-year="2026">
                   Tesla Model Y Performance - Juniper
+                </option>
+
+              </optgroup>
+
+
+              <!-- =========================================================
+                   TESLA MODEL Y - ESKİ KASA
+                   ========================================================= -->
+              <optgroup label="Tesla Model Y - Eski Kasa">
+
+                <option value="tesla-my-legacy-rwd"
+                        data-battery="60"
+                        data-usable-battery=""
+                        data-wltp="455"
+                        data-consumption="13.2"
+                        data-real-consumption="13.2"
+                        data-dc-max="170"
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="LFP"
+                        data-generation="legacy"
+                        data-year="2020-2024">
+                  Tesla Model Y RWD - Eski Kasa
+                </option>
+
+                <option value="tesla-my-legacy-lr-rwd"
+                        data-battery="79"
+                        data-usable-battery=""
+                        data-wltp="533"
+                        data-consumption="15.5"
+                        data-real-consumption="15.5"
+                        data-dc-max="250"
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="legacy"
+                        data-year="2020-2024">
+                  Tesla Model Y Long Range RWD - Eski Kasa
+                </option>
+
+                <option value="tesla-my-legacy-lr-awd"
+                        data-battery="78.1"
+                        data-usable-battery=""
+                        data-wltp="533"
+                        data-consumption="16.9"
+                        data-real-consumption="16.9"
+                        data-dc-max="250"
+                        data-dc-10-80=""
+                        data-drivetrain="awd"
+                        data-battery-type="NMC"
+                        data-generation="legacy"
+                        data-year="2020-2024">
+                  Tesla Model Y Long Range AWD - Eski Kasa
+                </option>
+
+                <option value="tesla-my-legacy-performance"
+                        data-battery="78.1"
+                        data-usable-battery=""
+                        data-wltp="514"
+                        data-consumption="17.3"
+                        data-real-consumption="17.3"
+                        data-dc-max="250"
+                        data-dc-10-80=""
+                        data-drivetrain="awd"
+                        data-battery-type="NMC"
+                        data-generation="legacy"
+                        data-year="2020-2024">
+                  Tesla Model Y Performance - Eski Kasa
                 </option>
 
               </optgroup>

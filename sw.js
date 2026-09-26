@@ -1,5 +1,5 @@
 // Tesla Şarj Zamanlayıcı - Service Worker
-const CACHE_NAME = 'tesla-charge-v1';
+const CACHE_NAME = 'tesla-charge-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

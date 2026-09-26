@@ -217,29 +217,29 @@ function syncInputsWithState() {
   updateTargetButtons();
 
   // Ayarlar Modal Elemanları
-  els.selectVehicleModel.value = state.vehicleModel || 'tesla-my-legacy-rwd';
-  els.inputCustomCapacity.value = state.customCapacity || 60;
+  els.selectVehicleModel.value = state.vehicleModel || 'tesla-my-juniper-standard';
+  els.inputCustomCapacity.value = state.customCapacity || 64;
   els.customCapacityGroup.style.display = state.vehicleModel === 'custom' ? 'flex' : 'none';
 
   if (els.inputRealConsumption) {
-    els.inputRealConsumption.value = state.realConsumption || 13.2;
+    els.inputRealConsumption.value = state.realConsumption || 13.1;
   }
   if (els.realConsumptionDisplay) {
-    els.realConsumptionDisplay.textContent = `${Number(state.realConsumption || 13.2).toFixed(1)} kWh`;
+    els.realConsumptionDisplay.textContent = `${Number(state.realConsumption || 13.1).toFixed(1)} kWh`;
   }
 
   if (els.inputVehicleWltp) {
-    els.inputVehicleWltp.value = state.vehicleWltp ?? 455;
+    els.inputVehicleWltp.value = state.vehicleWltp ?? 534;
   }
   if (els.wltpDisplay) {
-    els.wltpDisplay.textContent = `${state.vehicleWltp ?? 455} km`;
+    els.wltpDisplay.textContent = `${state.vehicleWltp ?? 534} km`;
   }
 
   if (els.inputUsableBattery) {
-    els.inputUsableBattery.value = state.usableCapacity || 60.0;
+    els.inputUsableBattery.value = state.usableCapacity || 60.5;
   }
   if (els.usableBatteryDisplay) {
-    els.usableBatteryDisplay.textContent = `${Number(state.usableCapacity || 60.0).toFixed(1)} kWh`;
+    els.usableBatteryDisplay.textContent = `${Number(state.usableCapacity || 60.5).toFixed(1)} kWh`;
   }
 
   els.inputEfficiency.value = state.efficiency || 88;
@@ -377,27 +377,38 @@ function recalculateAndRender() {
   const result = calculateCharging(state, new Date());
 
   // Üst Başlık Araba Modeli ve Uygulama Adı
-  let modelShort = 'Model Y RWD';
-  let appName = 'Araç Mobil Uygulamasını Açın';
+  let modelShort = 'Model Y Juniper Standard';
+  let appName = 'Tesla Mobil Uygulamasını Açın';
   const selOpt = els.selectVehicleModel.options[els.selectVehicleModel.selectedIndex];
   
   if (state.vehicleModel === 'custom') {
     modelShort = `Özel (${result.capacity} kWh)`;
     appName = 'Araç Mobil Uygulamasını Açın';
-  } else if (selOpt) {
-    modelShort = selOpt.text.split('(')[0].trim();
-    const optGroupLabel = selOpt.closest('optgroup')?.label || '';
-    if (optGroupLabel.includes('Tesla')) appName = 'Tesla Mobil Uygulamasını Açın';
-    else if (optGroupLabel.includes('Togg')) appName = 'Trumore Uygulamasını Açın';
-    else if (optGroupLabel.includes('BYD')) appName = 'BYD Uygulamasını veya Araç Ekranını Açın';
-    else if (optGroupLabel.includes('Renault')) appName = 'My Renault Uygulamasını Açın';
-    else if (optGroupLabel.includes('Hyundai')) appName = 'Bluelink Uygulamasını Açın';
-    else if (optGroupLabel.includes('Kia')) appName = 'Kia Connect Uygulamasını Açın';
-    else if (optGroupLabel.includes('BMW')) appName = 'My BMW Uygulamasını Açın';
-    else if (optGroupLabel.includes('Mercedes')) appName = 'Mercedes me Uygulamasını Açın';
-    else appName = `${optGroupLabel.split('-')[0].trim()} Uygulamasını Açın`;
+  } else {
+    const preset = VEHICLE_PRESETS[state.vehicleModel];
+    modelShort = preset?.shortName || (selOpt ? selOpt.text.split('(')[0].trim() : 'Model Y Juniper Standard');
+    const optGroupLabel = selOpt?.closest('optgroup')?.label || '';
+    if (optGroupLabel.includes('Tesla') || (state.vehicleModel && state.vehicleModel.startsWith('tesla'))) {
+      appName = 'Tesla Mobil Uygulamasını Açın';
+    } else if (optGroupLabel.includes('Togg')) {
+      appName = 'Trumore Uygulamasını Açın';
+    } else if (optGroupLabel.includes('BYD')) {
+      appName = 'BYD Uygulamasını veya Araç Ekranını Açın';
+    } else if (optGroupLabel.includes('Renault')) {
+      appName = 'My Renault Uygulamasını Açın';
+    } else if (optGroupLabel.includes('Hyundai')) {
+      appName = 'Bluelink Uygulamasını Açın';
+    } else if (optGroupLabel.includes('Kia')) {
+      appName = 'Kia Connect Uygulamasını Açın';
+    } else if (optGroupLabel.includes('BMW')) {
+      appName = 'My BMW Uygulamasını Açın';
+    } else if (optGroupLabel.includes('Mercedes')) {
+      appName = 'Mercedes me Uygulamasını Açın';
+    } else {
+      appName = `${(optGroupLabel || 'Araç').split('-')[0].trim()} Uygulamasını Açın`;
+    }
 
-    const bType = selOpt.dataset.batteryType || state.batteryType;
+    const bType = selOpt?.dataset?.batteryType || state.batteryType;
     if (bType === 'LFP') {
       els.target100Sub.textContent = 'LFP / %100 Önerilir';
     } else {
@@ -1158,5 +1169,9 @@ function registerServiceWorker() {
   }
 }
 
-// Başlat
-document.addEventListener('DOMContentLoaded', initApp);
+// Başlat (DOM hazır olduğunda veya hazırsa beklemeden anında çalıştır, pırpır etmeyi önler)
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}
