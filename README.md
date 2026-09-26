@@ -1,4 +1,4 @@
-# ⚡ EV Şarj Zamanlayıcı (PWA)
+# ⚡ EV Şarj Zamanlayıcı
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PWA: Offline Ready](https://img.shields.io/badge/PWA-Offline%20Ready-00d2ff.svg?logo=pwa&logoColor=white)](#)
@@ -9,13 +9,13 @@
 
 > *"Sabah 07:30'da yola çıkacağım, batarya %80 olsun. Peki şarjı akşam tam saat kaçta başlatmalıyım?"*
 
-**EV Şarj Zamanlayıcı**, ev prizinden (10A - 13A Schuko) veya Wallbox üzerinden elektrikli araç şarj edenler için geliştirilmiş parametrik şarj başlama saati, gece akımı planlayıcı ve elektrik faturası maliyet hesaplama web uygulamasıdır (PWA).
+**EV Şarj Zamanlayıcı**, ev prizinden (10A - 13A Schuko) veya Wallbox üzerinden elektrikli araç şarj edenler için geliştirilmiş parametrik şarj başlama saati, gece akımı planlayıcı ve elektrik faturası maliyet hesaplama web uygulamasıdır.
 
 Ev prizindeki şebeke voltaj düşüşünü (**215V - 220V**), şarj dönüştürme kayıplarını ve uykudayken priz güvenliği için akım düşürme adımlarını hesaba katarak sabah belirlediğiniz saatte aracınızın tam zamanında hazır olması için şarja saat kaçta başlamanız gerektiğini geriye doğru hesaplar.
 
 ---
 
-## 🌐 Canlı Demo (Web / PWA)
+## 🌐 Canlı Kullanım (Web & Mobil)
 
 Uygulamaya tarayıcınızdan veya telefonunuzdan doğrudan erişebilirsiniz:
 - 🚀 **Cloudflare Pages (Birincil):** **[https://ev-sarj.pages.dev/](https://ev-sarj.pages.dev/)**
@@ -41,8 +41,8 @@ Uygulamaya tarayıcınızdan veya telefonunuzdan doğrudan erişebilirsiniz:
   - **BYD, Renault, MG, Hyundai, Kia, Volvo, BMW, Mercedes** ve özel batarya giriş desteği.
 - 💾 **Değerleri Otomatik Hatırlama (`localStorage`):**
   - Aracınız, priz akımınız, sabah çıkış saatiniz ve şebeke voltajınız cihazınızda otomatik olarak saklanır; her girişte yeniden girmek zorunda kalmazsınız.
-- 📲 **Tam PWA (Progressive Web App):**
-  - WebKit ve Service Worker optimizasyonları sayesinde kapalı otoparkta veya internetsiz (çevrimdışı) ortamda sıfır gecikmeyle açılır.
+- 📲 **Mobil Kurulum & Çevrimdışı Çalışma:**
+  - Ana ekrana eklenebilir; kapalı otoparkta veya internetsiz (çevrimdışı) ortamda bile yerel bir uygulama gibi anında açılır.
 
 ---
 
