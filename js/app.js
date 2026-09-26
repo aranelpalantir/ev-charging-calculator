@@ -38,12 +38,13 @@ const els = {
   inputDepartureTime: document.getElementById('input-departure-time'),
   timeChips: document.querySelectorAll('.chip[data-time]'),
 
-  // 2. Sıra: Amper ve Voltaj Göstergesi
+  // 2. Sıra: Şarj Gücü & Cihaz Seçimi
   ampPowerLabel: document.getElementById('amp-power-label'),
-  amp13Btn: document.getElementById('amp-13-btn'),
-  amp10Btn: document.getElementById('amp-10-btn'),
-  ampOtherBtn: document.getElementById('amp-other-btn'),
+  powerPresetButtons: document.querySelectorAll('.segment-btn[data-pwr-preset]'),
+  btnToggleCustomAmp: document.getElementById('btn-toggle-custom-amp'),
   customAmpBox: document.getElementById('custom-amp-box'),
+  btnPhase1: document.getElementById('btn-phase-1'),
+  btnPhase3: document.getElementById('btn-phase-3'),
   rangeCustomAmp: document.getElementById('range-custom-amp'),
   customAmpVal: document.getElementById('custom-amp-val'),
 
@@ -193,7 +194,9 @@ function syncInputsWithState() {
   els.inputDepartureTime.value = state.departureTime || '07:30';
   updateTimeChips();
 
-  // 2. Amper & Voltaj & Gece Düşürme Planı
+  // 2. Güç & Faz & Voltaj & Gece Düşürme Planı
+  state.chargingPhases = Number(state.chargingPhases) || 1;
+  state.chargingPowerPreset = state.chargingPowerPreset || '13a';
   const v = Math.min(235, Math.max(205, Number(state.voltage) || 220));
   state.voltage = v;
   updateVoltageChips();
@@ -277,19 +280,38 @@ function updateTariffModeUI() {
 // Amper ve Güç Göstergesi
 function updateAmperageUI() {
   const amp = Number(state.amperage) || 13;
-  const kw = ((state.voltage * amp) / 1000).toFixed(1);
-  els.ampPowerLabel.textContent = `${amp}A (~${kw} kW)`;
+  const phases = Number(state.chargingPhases) || 1;
+  const voltage = Number(state.voltage) || 220;
+  const kw = ((phases * voltage * amp) / 1000).toFixed(1);
 
-  els.amp13Btn.classList.toggle('active-segment', amp === 13);
-  els.amp10Btn.classList.toggle('active-segment', amp === 10);
-  els.ampOtherBtn.classList.toggle('active-segment', amp !== 13 && amp !== 10);
-
-  if (amp !== 13 && amp !== 10) {
-    els.customAmpBox.style.display = 'flex';
-    els.rangeCustomAmp.value = amp;
-    els.customAmpVal.textContent = `${amp}A`;
+  // Başlık etiketi güncellemesi
+  if (phases === 3) {
+    els.ampPowerLabel.textContent = `⚡ ${kw} kW • 3x${amp}A (Trifaze)`;
+  } else if (amp === 32) {
+    els.ampPowerLabel.textContent = `⚡ ${kw} kW • 32A (Monofaze)`;
   } else {
-    els.customAmpBox.style.display = 'none';
+    els.ampPowerLabel.textContent = `🔌 ${amp}A • ~${kw} kW (1 Faz)`;
+  }
+
+  // Preset butonlarının aktiflik durumunu güncelle
+  const currentPreset = state.chargingPowerPreset || 'custom';
+  els.powerPresetButtons.forEach(btn => {
+    const p = btn.getAttribute('data-preset');
+    btn.classList.toggle('active-segment', p === currentPreset);
+  });
+
+  // Özel kutu durumunu güncelle
+  if (els.rangeCustomAmp) {
+    els.rangeCustomAmp.value = amp;
+  }
+  if (els.customAmpVal) {
+    els.customAmpVal.textContent = `${amp}A`;
+  }
+  if (els.btnPhase1) {
+    els.btnPhase1.classList.toggle('active', phases === 1);
+  }
+  if (els.btnPhase3) {
+    els.btnPhase3.classList.toggle('active', phases === 3);
   }
 }
 
@@ -478,7 +500,15 @@ function recalculateAndRender() {
 
   // Rehber Modal Değerleri
   els.guideTargetTime.textContent = friendly.time;
-  els.guideTargetAmp.textContent = `${result.amperage}A`;
+  if (els.guideTargetAmp) {
+    if (result.phases === 3) {
+      els.guideTargetAmp.textContent = `${result.amperage}A (3 Faz / ~${result.gridPowerKw.toFixed(0)} kW)`;
+    } else if (result.amperage === 32) {
+      els.guideTargetAmp.textContent = `32A (~7.4 kW Wallbox)`;
+    } else {
+      els.guideTargetAmp.textContent = `${result.amperage}A`;
+    }
+  }
 
   // Zamanlama ayarı rehber butonu:
   // Sadece çıkış saatine göre modundaysa, hedef saate YETİŞİYORSA (!result.isOverdue)
@@ -545,32 +575,70 @@ function bindEventListeners() {
     });
   });
 
-  // 2. AMPER BUTONLARI (13A & 10A & Diğer)
-  els.amp13Btn.addEventListener('click', () => {
-    state.amperage = 13;
-    updateAmperageUI();
-    recalculateAndRender();
+  // 2. ŞARJ GÜCÜ & CİHAZ PRESETLERİ (10A, 13A, 16A, 7.4 kW, 11 kW, 22 kW)
+  const POWER_PRESET_MAP = {
+    '10a': { amps: 10, phases: 1 },
+    '13a': { amps: 13, phases: 1 },
+    '16a': { amps: 16, phases: 1 },
+    '7.4kw': { amps: 32, phases: 1 },
+    '11kw': { amps: 16, phases: 3 },
+    '22kw': { amps: 32, phases: 3 }
+  };
+
+  els.powerPresetButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const preset = btn.getAttribute('data-preset');
+      if (POWER_PRESET_MAP[preset]) {
+        state.chargingPowerPreset = preset;
+        state.amperage = POWER_PRESET_MAP[preset].amps;
+        state.chargingPhases = POWER_PRESET_MAP[preset].phases;
+        if (els.customAmpBox) els.customAmpBox.style.display = 'none';
+        updateAmperageUI();
+        recalculateAndRender();
+      }
+    });
   });
 
-  els.amp10Btn.addEventListener('click', () => {
-    state.amperage = 10;
-    updateAmperageUI();
-    recalculateAndRender();
-  });
+  // Özel Amper & Faz Ayarı Aç / Kapat
+  if (els.btnToggleCustomAmp) {
+    els.btnToggleCustomAmp.addEventListener('click', () => {
+      const isHidden = els.customAmpBox.style.display === 'none';
+      els.customAmpBox.style.display = isHidden ? 'block' : 'none';
+      if (isHidden) {
+        state.chargingPowerPreset = 'custom';
+        updateAmperageUI();
+      }
+    });
+  }
 
-  els.ampOtherBtn.addEventListener('click', () => {
-    els.customAmpBox.style.display = 'flex';
-    els.amp13Btn.classList.remove('active-segment');
-    els.amp10Btn.classList.remove('active-segment');
-    els.ampOtherBtn.classList.add('active-segment');
-  });
+  // Faz Seçici Butonları
+  if (els.btnPhase1) {
+    els.btnPhase1.addEventListener('click', () => {
+      state.chargingPhases = 1;
+      state.chargingPowerPreset = 'custom';
+      updateAmperageUI();
+      recalculateAndRender();
+    });
+  }
+  if (els.btnPhase3) {
+    els.btnPhase3.addEventListener('click', () => {
+      state.chargingPhases = 3;
+      state.chargingPowerPreset = 'custom';
+      updateAmperageUI();
+      recalculateAndRender();
+    });
+  }
 
-  els.rangeCustomAmp.addEventListener('input', (e) => {
-    state.amperage = Number(e.target.value);
-    els.customAmpVal.textContent = `${state.amperage}A`;
-    updateAmperageUI();
-    recalculateAndRender();
-  });
+  // Özel Amper Slider
+  if (els.rangeCustomAmp) {
+    els.rangeCustomAmp.addEventListener('input', (e) => {
+      state.amperage = Number(e.target.value);
+      state.chargingPowerPreset = 'custom';
+      if (els.customAmpVal) els.customAmpVal.textContent = `${state.amperage}A`;
+      updateAmperageUI();
+      recalculateAndRender();
+    });
+  }
 
   // Gece Güvenlik Akımı Planı Kontrolleri
   els.checkEnableNightDrop.addEventListener('change', (e) => {

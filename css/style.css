@@ -808,13 +808,100 @@ body {
   color: var(--electric-cyan);
 }
 
-/* Amper Slider */
+/* Şarj Gücü & Cihaz Seçimi Grupları */
+.power-presets-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.power-group-block {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.power-group-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.power-segmented {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.custom-pwr-toggle-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.btn-text-link {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.btn-text-link:hover {
+  color: var(--electric-cyan);
+  background: rgba(0, 210, 255, 0.08);
+}
+
+/* Amper & Faz Özel Slider Alanı */
 .custom-amp-container {
   background: var(--bg-card-subtle);
   border: 1px solid var(--border-color);
   padding: 10px 14px;
   border-radius: var(--radius-md);
   margin-top: 6px;
+}
+
+.phase-selector-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.phase-toggle-group {
+  display: inline-flex;
+  background: var(--bg-input);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+  gap: 2px;
+  border: 1px solid var(--border-color);
+}
+
+.phase-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.phase-btn.active {
+  background: var(--bg-card);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .custom-amp-val {

@@ -597,6 +597,8 @@ const STORAGE_KEY = 'ev_charging_calculator_v9';
 export const DEFAULT_STATE = {
   currentSoc: 30,             // Mevcut batarya %
   targetSoc: 100,            // Hedef batarya %
+  chargingPowerPreset: '13a', // '10a' | '13a' | '16a' | '7.4kw' | '11kw' | '22kw' | 'custom'
+  chargingPhases: 1,          // 1 (Monofaze) veya 3 (Trifaze)
   amperage: 13,              // 13A (varsayılan başlama akımı)
   departureTime: '07:30',    // Sabah çıkış saati
   calcMode: 'departure',     // 'departure' (çıkış saatine göre) veya 'now' (şimdi şarja tak)
@@ -664,6 +666,12 @@ export function loadSettings() {
     const parsed = JSON.parse(raw);
     if (parsed.vehicleModel === 'tesla-my-rwd' || !parsed.vehicleModel) {
       parsed.vehicleModel = 'tesla-my-legacy-rwd';
+    }
+    if (parsed.chargingPhases === undefined) {
+      parsed.chargingPhases = 1;
+    }
+    if (!parsed.chargingPowerPreset) {
+      parsed.chargingPowerPreset = (parsed.amperage === 10 ? '10a' : (parsed.amperage === 16 ? '16a' : (parsed.amperage === 13 ? '13a' : 'custom')));
     }
     if (!parsed.realConsumption || parsed.realConsumption === 20.0) {
       parsed.realConsumption = 13.2;

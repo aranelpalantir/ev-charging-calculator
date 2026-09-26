@@ -7,6 +7,7 @@ import { VEHICLE_PRESETS } from './storage.js';
 export function calculateCharging(state, referenceNow = new Date()) {
   const currentSoc = Math.min(100, Math.max(0, Number(state.currentSoc) || 0));
   const targetSoc = Math.min(100, Math.max(0, Number(state.targetSoc) || 100));
+  const phases = Number(state.chargingPhases) || 1; // 1 (Monofaze) veya 3 (Trifaze)
   const initialAmps = Math.max(1, Number(state.amperage) || 13);
   const voltage = Math.max(180, Number(state.voltage) || 220);
   const efficiency = Math.min(100, Math.max(50, Number(state.efficiency) || 88)) / 100;
@@ -36,13 +37,15 @@ export function calculateCharging(state, referenceNow = new Date()) {
   const totalGridKwh = neededBatteryKwh > 0 ? (neededBatteryKwh / efficiency) : 0;
 
   // Güçler (kW)
-  const initialGridKw = (voltage * initialAmps) / 1000;
+  // Monofaze: 1 x V x I / 1000  (örn: 1 x 220 x 13 = 2.86 kW, 1 x 230 x 32 = 7.36 kW)
+  // Trifaze:  3 x V x I / 1000  (örn: 3 x 230 x 16 = 11.04 kW, 3 x 230 x 32 = 22.08 kW)
+  const initialGridKw = (phases * voltage * initialAmps) / 1000;
   const initialBatKw = initialGridKw * efficiency;
 
   // Gece Güvenlik Akımı Planı kontrolü (10A düşürme)
   const enableNightDrop = Boolean(state.enableNightDrop && state.nightDropTime && state.nightDropAmps);
   const nightDropAmps = Math.max(1, Number(state.nightDropAmps) || 10);
-  const nightGridKw = (voltage * nightDropAmps) / 1000;
+  const nightGridKw = (1 * voltage * nightDropAmps) / 1000;
   const nightBatKw = nightGridKw * efficiency;
 
   let totalMinutes = 0;
@@ -185,6 +188,7 @@ export function calculateCharging(state, referenceNow = new Date()) {
     realConsumption,
     catalogConsumption,
     amperage: initialAmps,
+    phases,
     voltage,
     efficiency: efficiency * 100,
     gridPowerKw: initialGridKw,
