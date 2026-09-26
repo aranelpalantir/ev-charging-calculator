@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#141721" />
+      <stop offset="50%" stop-color="#0a0c10" />
+      <stop offset="100%" stop-color="#050608" />
+    </linearGradient>
+    <linearGradient id="boltGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff3b30" />
+      <stop offset="40%" stop-color="#e82127" />
+      <stop offset="100%" stop-color="#ff7b00" />
+    </linearGradient>
+    <linearGradient id="batteryGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00f2fe" />
+      <stop offset="100%" stop-color="#4facfe" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="14" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background rounded rect -->
+  <rect width="512" height="512" rx="120" fill="url(#bgGrad)" />
+  <rect width="504" height="504" x="4" y="4" rx="116" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="4" />
+
+  <!-- Outer ambient ring -->
+  <circle cx="256" cy="256" r="180" fill="none" stroke="rgba(232,33,39,0.12)" stroke-width="12" />
+  <circle cx="256" cy="256" r="180" fill="none" stroke="url(#boltGrad)" stroke-width="12" stroke-linecap="round" stroke-dasharray="800" stroke-dashoffset="250" />
+
+  <!-- Battery Shell -->
+  <rect x="186" y="112" width="140" height="24" rx="8" fill="#4facfe" opacity="0.85" />
+  <rect x="146" y="136" width="220" height="270" rx="32" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="14" />
+
+  <!-- Battery Level Fill -->
+  <rect x="162" y="240" width="188" height="150" rx="20" fill="url(#batteryGrad)" opacity="0.3" />
+
+  <!-- Glowing Lightning Bolt -->
+  <path d="M280 160 L195 275 L255 275 L225 365 L325 245 L265 245 Z" 
+        fill="url(#boltGrad)" 
+        filter="url(#glow)" />
+  <path d="M280 160 L195 275 L255 275 L225 365 L325 245 L265 245 Z" 
+        fill="#ffffff" 
+        opacity="0.35" />
+
+  <!-- Text / Badge subline -->
+  <text x="256" y="450" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="700" fill="#a0aec0" letter-spacing="4">TESLA CHARGE</text>
+</svg>

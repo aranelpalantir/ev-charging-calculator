@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Tesla Şarj Zamanlayıcı</title>
+  
+  <!-- PWA & Mobile App Meta Tags -->
+  <meta name="theme-color" content="#0a0c10">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Ev prizinden (10A-13A) Tesla araçları için sabah çıkış saatine göre şarj başlama saati ve süre hesaplayıcı.">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Tesla Şarj">
+  
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Üst Başlık Barı -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="#e82127" stroke="#e82127"/>
+          </svg>
+        </div>
+        <div class="brand-info">
+          <h1>TESLA ŞARJ</h1>
+          <span class="sub-brand" id="selected-model-tag">Model Y RWD (60 kWh)</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="btn-open-settings" class="icon-btn" aria-label="Ayarlar" title="Parametre ve Ayarlar">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Ana Sonuç Kartı (Hero Result) -->
+    <main class="main-content">
+      <section class="card result-card" id="result-card">
+        <div class="result-badge-row">
+          <span class="status-indicator live-pulse"></span>
+          <span class="result-label" id="result-mode-label">ŞARJA BAŞLAMA SAATİ</span>
+          <span class="day-badge" id="result-day-badge">Bugün</span>
+        </div>
+
+        <div class="primary-time-display">
+          <span class="big-time" id="start-time-val">22:45</span>
+          <span class="time-suffix" id="start-time-suffix"></span>
+        </div>
+
+        <!-- Yetişmeme Durumunda Canlı Uyarı -->
+        <div class="alert-box warning-alert" id="overdue-warning" style="display: none;">
+          <div class="alert-icon">⚠️</div>
+          <div class="alert-content">
+            <strong id="overdue-title">Seçilen akımla hedef saate yetişmiyor!</strong>
+            <p id="overdue-detail">Şu an başlarsanız araç en erken 09:15'te %100 olur (1 sa 45 dk gecikme).</p>
+          </div>
+        </div>
+
+        <div class="result-summary-text" id="result-summary-text">
+          Sabah <strong>07:30</strong>'da aracınızın <strong>%100</strong> hazır olması için şarj <strong>8 saat 30 dakika</strong> sürecek.
+        </div>
+
+        <!-- Hızlı İstatistik Matrisi -->
+        <div class="quick-stats-grid">
+          <div class="stat-item">
+            <span class="stat-name">Süre</span>
+            <span class="stat-value" id="stat-duration">8 sa 30 dk</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-name">Priz Gücü</span>
+            <span class="stat-value" id="stat-power">3.0 kW</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-name">Gereken Enerji</span>
+            <span class="stat-value" id="stat-energy">+42.0 kWh</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-name">Şarj Hızı</span>
+            <span class="stat-value" id="stat-speed">~16 km/sa</span>
+          </div>
+        </div>
+
+        <!-- Aksiyon Butonları -->
+        <div class="result-actions">
+          <button id="btn-tesla-guide" class="btn btn-outline">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="5" y="2" width="14" height="20" rx="3"></rect>
+              <line x1="12" y1="18" x2="12" y2="18.01"></line>
+            </svg>
+            Tesla Uygulaması Ayarı
+          </button>
+          <button id="btn-copy-result" class="btn btn-outline" title="Zamanı Kopyala">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            Kopyala
+          </button>
+        </div>
+      </section>
+
+      <!-- Batarya Görsel Çubuğu -->
+      <section class="card battery-visual-card">
+        <div class="battery-label-row">
+          <span class="section-title">Şarj Hedefi</span>
+          <span class="battery-percent-range" id="battery-range-text">30% ➔ 100% (+70%)</span>
+        </div>
+        <div class="tesla-battery-wrapper">
+          <div class="battery-cap"></div>
+          <div class="battery-bar-outer">
+            <div class="battery-bar-current" id="bar-current" style="width: 30%;">
+              <span class="bar-tag current-tag">%30</span>
+            </div>
+            <div class="battery-bar-target" id="bar-target" style="width: 70%;">
+              <span class="bar-tag target-tag">%100</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Parametre Kontrolleri -->
+      <section class="card controls-card">
+        
+        <!-- 1. MEVCUT ŞARJ GİRİŞİ -->
+        <div class="control-group">
+          <div class="control-header">
+            <label for="input-current-soc" class="control-label">Mevcut Şarjınız</label>
+            <div class="stepper-value-badge">
+              <input type="number" id="input-current-soc" min="0" max="100" step="1" value="30" inputmode="numeric">
+              <span class="unit">%</span>
+            </div>
+          </div>
+          
+          <div class="slider-row">
+            <button class="step-btn" id="btn-current-dec" aria-label="5% Azalt">-5%</button>
+            <input type="range" id="range-current-soc" min="0" max="100" step="1" value="30" class="custom-range" aria-label="Mevcut Şarj Yüzdesi">
+            <button class="step-btn" id="btn-current-inc" aria-label="5% Artır">+5%</button>
+          </div>
+
+          <div class="chip-row">
+            <button class="chip" data-current="15">15%</button>
+            <button class="chip active-chip" data-current="30">30%</button>
+            <button class="chip" data-current="50">50%</button>
+            <button class="chip" data-current="70">70%</button>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- 2. HEDEF ŞARJ SEÇİMİ -->
+        <div class="control-group">
+          <div class="control-header">
+            <label for="input-target-soc" class="control-label">Hedef Şarj</label>
+            <div class="stepper-value-badge">
+              <input type="number" id="input-target-soc" min="1" max="100" step="1" value="100" inputmode="numeric">
+              <span class="unit">%</span>
+            </div>
+          </div>
+          
+          <div class="chip-row preset-targets">
+            <button class="chip-target active-target" id="target-100-btn" data-target="100">
+              <span class="target-pct">%100</span>
+              <span class="target-sub">LFP / Tam Dolu</span>
+            </button>
+            <button class="chip-target" id="target-90-btn" data-target="90">
+              <span class="target-pct">%90</span>
+              <span class="target-sub">Dengeli</span>
+            </button>
+            <button class="chip-target" id="target-80-btn" data-target="80">
+              <span class="target-pct">%80</span>
+              <span class="target-sub">NMC Günlük</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- 3. ŞARJ AKIMI (AMPER) - 13A & 10A ÖZEL BUTONLARI -->
+        <div class="control-group">
+          <div class="control-header">
+            <label class="control-label">Şarj Akımı (Amper)</label>
+            <span class="helper-info" id="amp-power-label">13A (~3.0 kW)</span>
+          </div>
+
+          <div class="segmented-control amps-segmented">
+            <button class="segment-btn active-segment" id="amp-13-btn" data-amp="13">
+              <span class="segment-title">13A</span>
+              <span class="segment-desc">Varsayılan (~3.0 kW)</span>
+            </button>
+            <button class="segment-btn" id="amp-10-btn" data-amp="10">
+              <span class="segment-title">10A</span>
+              <span class="segment-desc">Gece Güvenlik (~2.3 kW)</span>
+            </button>
+            <button class="segment-btn" id="amp-other-btn" data-amp="other">
+              <span class="segment-title">Diğer</span>
+              <span class="segment-desc">6A - 32A</span>
+            </button>
+          </div>
+
+          <!-- Diğer Amper Seçilirse Açılan Hassas Slider -->
+          <div class="slider-row custom-amp-container" id="custom-amp-box" style="display: none;">
+            <input type="range" id="range-custom-amp" min="6" max="32" step="1" value="13" class="custom-range" aria-label="Özel Amper Ayarı">
+            <span class="custom-amp-val" id="custom-amp-val">13A</span>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- 4. HESAPLAMA MODU & ZAMAN -->
+        <div class="control-group">
+          <div class="control-header">
+            <label class="control-label">Hesaplama Yöntemi</label>
+          </div>
+
+          <div class="segmented-control mode-segmented">
+            <button class="segment-btn active-segment" id="mode-departure-btn" data-mode="departure">
+              <span class="segment-title">⏰ Çıkış Saatine Göre</span>
+              <span class="segment-desc">Sabah saatine hazırla</span>
+            </button>
+            <button class="segment-btn" id="mode-now-btn" data-mode="now">
+              <span class="segment-title">⚡ Şimdi Şarja Tak</span>
+              <span class="segment-desc">Bitiş saatini hesapla</span>
+            </button>
+          </div>
+
+          <!-- Çıkış Saati Seçimi (Sadece departure modunda görünür) -->
+          <div class="departure-time-wrapper" id="departure-picker-container">
+            <div class="time-input-row">
+              <label for="input-departure-time" class="time-input-label">Sabah Çıkış Saati:</label>
+              <input type="time" id="input-departure-time" value="07:30" class="time-native-input">
+            </div>
+            
+            <div class="chip-row time-presets">
+              <button class="chip" data-time="07:00">07:00</button>
+              <button class="chip active-chip" data-time="07:30">07:30</button>
+              <button class="chip" data-time="08:00">08:00</button>
+              <button class="chip" data-time="08:30">08:30</button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Gece Tarifesi ve Maliyet Özeti Kartı -->
+      <section class="card tariff-card" id="tariff-card">
+        <div class="card-header-collapsible" id="btn-toggle-tariff">
+          <div class="card-header-title">
+            <span class="icon-tariff">🌙</span>
+            <div class="tariff-title-group">
+              <h3>Gece Tarifesi ve Maliyet</h3>
+              <span class="tariff-sub-text" id="tariff-summary-sub">22:00 - 06:00 İndirimli Saat Analizi</span>
+            </div>
+          </div>
+          <span class="toggle-arrow">▼</span>
+        </div>
+
+        <div class="tariff-body" id="tariff-content">
+          <div class="tariff-meter">
+            <div class="meter-bar-label">
+              <span>Gece Tarifesine Denk Gelen Enerji:</span>
+              <strong id="tariff-night-pct">85%</strong>
+            </div>
+            <div class="meter-track">
+              <div class="meter-fill" id="tariff-meter-fill" style="width: 85%;"></div>
+            </div>
+          </div>
+
+          <div class="tariff-breakdown-grid">
+            <div class="tariff-item">
+              <span class="t-label">Gece (22:00-06:00)</span>
+              <span class="t-val" id="val-tariff-night">35.7 kWh</span>
+            </div>
+            <div class="tariff-item">
+              <span class="t-label">Gündüz (06:00-17:00)</span>
+              <span class="t-val" id="val-tariff-day">6.3 kWh</span>
+            </div>
+            <div class="tariff-item">
+              <span class="t-label">Puant (17:00-22:00)</span>
+              <span class="t-val" id="val-tariff-peak">0.0 kWh</span>
+            </div>
+            <div class="tariff-item highlight-cost">
+              <span class="t-label">Tahmini Toplam Tutar</span>
+              <span class="t-val" id="val-tariff-total">~69.40 TL</span>
+            </div>
+          </div>
+          
+          <div class="savings-note" id="tariff-savings-note">
+            💡 Gece saatlerinde şarj ederek tahmini <strong>~45 TL</strong> tasarruf ediyorsunuz.
+          </div>
+        </div>
+      </section>
+
+      <!-- PWA Kurulum / Ana Ekrana Ekleme Kartı (Mobil için) -->
+      <section class="card install-card" id="install-card" style="display: none;">
+        <div class="install-info">
+          <span class="install-icon">📲</span>
+          <div>
+            <strong>Uygulama Olarak Kullanın</strong>
+            <p>Ana ekrana ekleyerek internet olmadan da hızlıca açabilirsiniz.</p>
+          </div>
+        </div>
+        <button id="btn-install-pwa" class="btn btn-primary btn-sm">Ana Ekrana Ekle</button>
+      </section>
+
+    </main>
+
+    <!-- Ayarlar Modalı -->
+    <div class="modal-overlay" id="settings-modal" style="display: none;">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h2>Ayarlar & Parametreler</h2>
+          <button class="modal-close" id="btn-close-settings" aria-label="Kapat">&times;</button>
+        </div>
+
+        <div class="modal-body">
+          <!-- Araç Modeli -->
+          <div class="setting-item">
+            <label for="select-vehicle-model">Tesla Modeli & Batarya</label>
+            <select id="select-vehicle-model" class="custom-select">
+              <option value="model-y-rwd">Model Y RWD (Standart - 60 kWh LFP)</option>
+              <option value="model-y-lr">Model Y Long Range (78.1 kWh NMC)</option>
+              <option value="model-y-perf">Model Y Performance (78.1 kWh NMC)</option>
+              <option value="model-3-rwd">Model 3 RWD (Standart - 60 kWh LFP)</option>
+              <option value="model-3-lr">Model 3 Long Range (78.1 kWh NMC)</option>
+              <option value="model-s-x">Model S / Model X (100 kWh)</option>
+              <option value="custom">Özel Kapasite (Manuel kWh)</option>
+            </select>
+          </div>
+
+          <!-- Manuel Kapasite (varsa) -->
+          <div class="setting-item" id="custom-capacity-group" style="display: none;">
+            <label for="input-custom-capacity">Özel Batarya Kapasitesi (kWh)</label>
+            <input type="number" id="input-custom-capacity" class="custom-input" min="10" max="150" step="0.5" value="60">
+          </div>
+
+          <!-- Voltaj -->
+          <div class="setting-item">
+            <div class="setting-label-row">
+              <label for="input-voltage">Priz Şebeke Voltajı (V)</label>
+              <span class="setting-hint" id="voltage-display">230 V</span>
+            </div>
+            <input type="range" id="input-voltage" min="200" max="250" step="1" value="230" class="custom-range">
+            <span class="sub-hint">Türkiye ve Avrupa ev prizi standardı genellikle 220V - 230V arasındadır.</span>
+          </div>
+
+          <!-- Şarj Verimliliği -->
+          <div class="setting-item">
+            <div class="setting-label-row">
+              <label for="input-efficiency">AC Ev Şarjı Verimliliği (%)</label>
+              <span class="setting-hint" id="efficiency-display">%88</span>
+            </div>
+            <input type="range" id="input-efficiency" min="75" max="98" step="1" value="88" class="custom-range">
+            <span class="sub-hint">10A-13A tek faz şarjda araç bilgisayarı (MCU) ve BMS yaklaşık 250W sabit güç çektiğinden verim %85-90 aralığındadır.</span>
+          </div>
+
+          <!-- Elektrik Tarifesi Birim Fiyatları -->
+          <div class="setting-item">
+            <label>Elektrik Tarifesi Fiyatları (TL / kWh)</label>
+            <div class="tariff-inputs-grid">
+              <div>
+                <span class="sub-label">Gece (22:00-06:00)</span>
+                <input type="number" id="input-rate-night" class="custom-input" step="0.05" value="1.45">
+              </div>
+              <div>
+                <span class="sub-label">Gündüz (06:00-17:00)</span>
+                <input type="number" id="input-rate-day" class="custom-input" step="0.05" value="2.80">
+              </div>
+              <div>
+                <span class="sub-label">Puant (17:00-22:00)</span>
+                <input type="number" id="input-rate-peak" class="custom-input" step="0.05" value="4.30">
+              </div>
+            </div>
+          </div>
+
+          <button id="btn-reset-defaults" class="btn btn-outline btn-full">Varsayılan Ayarlara Dön</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tesla Uygulama Ayarı İpucu Modalı -->
+    <div class="modal-overlay" id="guide-modal" style="display: none;">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h2>Tesla Uygulamasında Ayarlama</h2>
+          <button class="modal-close" id="btn-close-guide" aria-label="Kapat">&times;</button>
+        </div>
+        <div class="modal-body guide-steps">
+          <div class="step-card">
+            <span class="step-num">1</span>
+            <div class="step-text">
+              <strong>Tesla Mobil Uygulamasını Açın</strong>
+              <p>Ana ekranda <strong>"Şarj"</strong> menüsüne girin.</p>
+            </div>
+          </div>
+
+          <div class="step-card highlight-step">
+            <span class="step-num">2</span>
+            <div class="step-text">
+              <strong>"Zamanla" (Schedule) Bölümüne Dokunun</strong>
+              <p><strong>"Şarjı Başlat"</strong> seçeneğini aktif edip saati <strong id="guide-target-time" class="red-text">22:45</strong> olarak ayarlayın.</p>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <span class="step-num">3</span>
+            <div class="step-text">
+              <strong>Amperi Kontrol Edin</strong>
+              <p>Şarj akımının <strong id="guide-target-amp">13A</strong> olarak ayarlandığından emin olun.</p>
+            </div>
+          </div>
+
+          <div class="step-tip">
+            💡 <strong>İpucu:</strong> Arabayı prize taktıktan sonra araç hemen şarj etmeye başlamaz, belirlediğiniz başlama saatini bekler ve sabah 07:30'da hazır olur!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Bildirimi -->
+    <div class="toast-notification" id="toast-msg"></div>
+
+    <footer class="app-footer">
+      <span>Tesla Home Charger Calculator • PWA</span>
+    </footer>
+  </div>
+
+  <!-- JavaScript Modülleri -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

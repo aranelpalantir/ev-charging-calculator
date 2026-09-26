@@ -1,0 +1,1102 @@
+/* css/style.css - Tesla Şarj PWA Teması ve Responsive Tasarım */
+
+:root {
+  --bg-main: #0a0c10;
+  --bg-card: #131620;
+  --bg-card-subtle: #191c28;
+  --bg-input: #1f2333;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-active: rgba(255, 255, 255, 0.2);
+  
+  --tesla-red: #e82127;
+  --tesla-red-glow: rgba(232, 33, 39, 0.25);
+  --electric-blue: #00d2ff;
+  --electric-cyan: #06b6d4;
+  --success-green: #10b981;
+  --warning-amber: #f59e0b;
+  --warning-bg: rgba(245, 158, 11, 0.12);
+
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  line-height: 1.5;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  display: flex;
+  justify-content: center;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  overflow-x: hidden;
+}
+
+/* Sayfa Çerçevesi (Mobil Odaklı Maksimum Genişlik) */
+.app-container {
+  width: 100%;
+  max-width: 480px;
+  min-height: 100vh;
+  padding: calc(env(safe-area-inset-top, 0px) + 16px) 16px calc(env(safe-area-inset-bottom, 0px) + 24px) 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Üst Başlık */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px 8px 8px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-logo {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  background: rgba(232, 33, 39, 0.12);
+  border: 1px solid rgba(232, 33, 39, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-info h1 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: var(--text-primary);
+}
+
+.sub-brand {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.icon-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.icon-btn:hover, .icon-btn:active {
+  color: var(--text-primary);
+  background: var(--bg-card-subtle);
+  border-color: var(--border-active);
+}
+
+/* Kart Yapısı */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hero Sonuç Kartı */
+.result-card {
+  background: linear-gradient(145deg, #161a29 0%, #0e111a 100%);
+  border: 1px solid rgba(232, 33, 39, 0.2);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.result-badge-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.live-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--success-green);
+  box-shadow: 0 0 10px var(--success-green);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { transform: scale(1.05); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.result-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.day-badge {
+  font-size: 0.7rem;
+  background: rgba(232, 33, 39, 0.15);
+  color: #ff6b6e;
+  border: 1px solid rgba(232, 33, 39, 0.3);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+}
+
+.primary-time-display {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px;
+  margin: 6px 0;
+}
+
+.big-time {
+  font-size: 4rem;
+  font-weight: 800;
+  letter-spacing: -2px;
+  color: #ffffff;
+  line-height: 1;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+}
+
+.result-summary-text {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 10px 0 16px 0;
+  line-height: 1.4;
+}
+
+.result-summary-text strong {
+  color: var(--text-primary);
+}
+
+/* Yetişmeme Uyarısı */
+.alert-box {
+  background: var(--warning-bg);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin: 12px 0;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.alert-icon {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.alert-content strong {
+  color: #fbbf24;
+  font-size: 0.88rem;
+  display: block;
+}
+
+.alert-content p {
+  color: #fde68a;
+  font-size: 0.8rem;
+  margin-top: 3px;
+  line-height: 1.35;
+}
+
+/* Hızlı İstatistik Matrisi */
+.quick-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 12px 8px;
+  border-radius: var(--radius-md);
+  margin-bottom: 16px;
+  border: 1px solid var(--border-color);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat-name {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+/* Aksiyon Butonları */
+.result-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  flex: 1;
+  min-height: 46px;
+  border-radius: var(--radius-md);
+  font-size: 0.88rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn-primary {
+  background: var(--tesla-red);
+  color: #ffffff;
+  box-shadow: 0 4px 16px var(--tesla-red-glow);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+  background: #d3181d;
+}
+
+.btn-outline {
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.btn-outline:hover, .btn-outline:active {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--border-active);
+}
+
+.btn-full {
+  width: 100%;
+}
+
+.btn-sm {
+  min-height: 38px;
+  padding: 0 16px;
+  font-size: 0.82rem;
+}
+
+/* Batarya Görsel Çubuğu */
+.battery-visual-card {
+  padding: 16px 20px;
+}
+
+.battery-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+  font-weight: 700;
+}
+
+.battery-percent-range {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--electric-blue);
+}
+
+.tesla-battery-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.battery-bar-outer {
+  flex: 1;
+  height: 28px;
+  background: var(--bg-input);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-sm);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+}
+
+.battery-cap {
+  width: 6px;
+  height: 14px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 0 3px 3px 0;
+}
+
+.battery-bar-current {
+  background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: width 0.3s ease;
+}
+
+.battery-bar-target {
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(0, 210, 255, 0.2),
+    rgba(0, 210, 255, 0.2) 6px,
+    rgba(0, 210, 255, 0.35) 6px,
+    rgba(0, 210, 255, 0.35) 12px
+  );
+  height: 100%;
+  border-left: 2px dashed #00d2ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: width 0.3s ease;
+}
+
+.bar-tag {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #ffffff;
+  padding: 0 4px;
+  white-space: nowrap;
+}
+
+/* Parametre Kontrolleri Kartı */
+.controls-card {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.control-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.control-label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.helper-info {
+  font-size: 0.8rem;
+  color: var(--electric-cyan);
+  font-weight: 600;
+}
+
+.stepper-value-badge {
+  display: inline-flex;
+  align-items: baseline;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 4px 10px;
+}
+
+.stepper-value-badge input {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  font-weight: 800;
+  width: 44px;
+  text-align: right;
+  outline: none;
+  font-family: inherit;
+}
+
+.stepper-value-badge .unit {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 700;
+  margin-left: 2px;
+}
+
+/* Slider Row */
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.step-btn {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  min-width: 46px;
+  height: 42px;
+  border-radius: var(--radius-md);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.step-btn:active {
+  background: var(--bg-card-subtle);
+  color: var(--text-primary);
+  border-color: var(--border-active);
+  transform: scale(0.96);
+}
+
+/* Custom Range Input */
+.custom-range {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--bg-input);
+  outline: none;
+  cursor: pointer;
+}
+
+.custom-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 3px solid var(--tesla-red);
+  box-shadow: 0 0 10px rgba(232, 33, 39, 0.5);
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.custom-range::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+.custom-range::-moz-range-thumb {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 3px solid var(--tesla-red);
+  box-shadow: 0 0 10px rgba(232, 33, 39, 0.5);
+  cursor: pointer;
+}
+
+/* Chip Butonları */
+.chip-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.chip {
+  flex: 1;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+  min-height: 40px;
+}
+
+.chip.active-chip {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border-color: var(--border-active);
+}
+
+/* Hedef Şarj Kartları */
+.preset-targets {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.chip-target {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 52px;
+}
+
+.chip-target .target-pct {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.chip-target .target-sub {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+.chip-target.active-target {
+  background: rgba(232, 33, 39, 0.12);
+  border-color: var(--tesla-red);
+}
+
+.chip-target.active-target .target-pct {
+  color: #ff5252;
+}
+
+.chip-target.active-target .target-sub {
+  color: #ff9e9e;
+}
+
+/* Segmented Controls (13A & 10A Seçimi) */
+.segmented-control {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: var(--bg-input);
+  padding: 4px;
+  border-radius: var(--radius-md);
+  gap: 4px;
+  border: 1px solid var(--border-color);
+}
+
+.mode-segmented {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.segment-btn {
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 10px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 48px;
+}
+
+.segment-title {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+}
+
+.segment-desc {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.segment-btn.active-segment {
+  background: var(--bg-card);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.segment-btn.active-segment .segment-title {
+  color: #ffffff;
+}
+
+.segment-btn.active-segment .segment-desc {
+  color: var(--electric-cyan);
+}
+
+/* Amper Slider */
+.custom-amp-container {
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-color);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  margin-top: 6px;
+}
+
+.custom-amp-val {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--electric-cyan);
+  min-width: 44px;
+  text-align: right;
+}
+
+/* Çıkış Saati Seçici */
+.departure-time-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.time-input-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 8px 16px;
+}
+
+.time-input-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.time-native-input {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 1.4rem;
+  font-weight: 800;
+  font-family: inherit;
+  outline: none;
+  cursor: pointer;
+}
+
+.divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: 2px 0;
+}
+
+/* Gece Tarifesi Kartı */
+.tariff-card {
+  padding: 16px 20px;
+}
+
+.card-header-collapsible {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.card-header-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.icon-tariff {
+  font-size: 1.4rem;
+}
+
+.tariff-title-group h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.tariff-sub-text {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.toggle-arrow {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  transition: transform 0.3s ease;
+}
+
+.card-header-collapsible.open .toggle-arrow {
+  transform: rotate(180deg);
+}
+
+.tariff-body {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tariff-meter {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.meter-bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.meter-track {
+  height: 8px;
+  background: var(--bg-input);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.meter-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6 0%, #10b981 100%);
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease;
+}
+
+.tariff-breakdown-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  background: var(--bg-input);
+  padding: 10px;
+  border-radius: var(--radius-md);
+}
+
+.tariff-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.t-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.t-val {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.highlight-cost .t-val {
+  color: #34d399;
+  font-size: 0.95rem;
+}
+
+.savings-note {
+  font-size: 0.78rem;
+  color: #a7f3d0;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+/* PWA Install Kartı */
+.install-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  background: linear-gradient(135deg, rgba(232, 33, 39, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%);
+  border: 1px solid rgba(232, 33, 39, 0.25);
+}
+
+.install-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.install-icon {
+  font-size: 1.6rem;
+}
+
+.install-info strong {
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  display: block;
+}
+
+.install-info p {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* Modallar */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+}
+
+@media (min-width: 480px) {
+  .modal-overlay {
+    align-items: center;
+    padding: 20px;
+  }
+}
+
+.modal-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  width: 100%;
+  max-width: 480px;
+  max-height: 85vh;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: 24px;
+  overflow-y: auto;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (min-width: 480px) {
+  .modal-card {
+    border-radius: var(--radius-lg);
+  }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-header h2 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.modal-close {
+  background: var(--bg-input);
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.5rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.setting-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.setting-item label {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.setting-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.setting-hint {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--electric-cyan);
+}
+
+.sub-hint {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.custom-select, .custom-input {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  font-family: inherit;
+  outline: none;
+  min-height: 48px;
+}
+
+.tariff-inputs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.sub-label {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* Tesla Guide Modalı */
+.guide-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.step-card {
+  display: flex;
+  gap: 14px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  padding: 14px;
+  border-radius: var(--radius-md);
+  align-items: flex-start;
+}
+
+.step-card.highlight-step {
+  border-color: rgba(232, 33, 39, 0.4);
+  background: rgba(232, 33, 39, 0.08);
+}
+
+.step-num {
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.highlight-step .step-num {
+  background: var(--tesla-red);
+  color: #ffffff;
+}
+
+.step-text strong {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  display: block;
+}
+
+.step-text p {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 3px;
+  line-height: 1.35;
+}
+
+.red-text {
+  color: #ff5252;
+  font-size: 1rem;
+}
+
+.step-tip {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  background: rgba(0, 210, 255, 0.08);
+  border: 1px solid rgba(0, 210, 255, 0.2);
+  padding: 12px;
+  border-radius: var(--radius-md);
+  line-height: 1.4;
+}
+
+/* Toast Bildirimi */
+.toast-notification {
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: #ffffff;
+  color: #0a0c10;
+  padding: 12px 24px;
+  border-radius: var(--radius-full);
+  font-size: 0.88rem;
+  font-weight: 700;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 2000;
+  white-space: nowrap;
+}
+
+.toast-notification.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.app-footer {
+  text-align: center;
+  padding: 10px 0;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
