@@ -127,38 +127,6 @@ export const VEHICLE_PRESETS = {
     note: 'Blade LFP bataryayı güvenle %100 doldurabilirsiniz.'
   },
 
-  // MG
-  'mg-mg4-std': {
-    brand: 'MG',
-    name: 'MG4 Comfort (51 kWh LFP)',
-    shortName: 'MG4 Comfort',
-    capacity: 51.0,
-    batteryType: 'LFP',
-    consumption: 155,
-    recommendedDailySoc: 100,
-    note: 'LFP bataryayı %100 doldurabilirsiniz.'
-  },
-  'mg-mg4-lux': {
-    brand: 'MG',
-    name: 'MG4 Luxury (64 kWh NMC)',
-    shortName: 'MG4 Luxury',
-    capacity: 64.0,
-    batteryType: 'NMC',
-    consumption: 160,
-    recommendedDailySoc: 80,
-    note: 'Günlük kullanım için %80 önerilir.'
-  },
-  'mg-zs-ev': {
-    brand: 'MG',
-    name: 'MG ZS EV (51.1 / 72.6 kWh)',
-    shortName: 'MG ZS EV',
-    capacity: 51.1,
-    batteryType: 'LFP',
-    consumption: 173,
-    recommendedDailySoc: 100,
-    note: 'Standart menzil LFP için %100 önerilir.'
-  },
-
   // RENAULT
   'renault-megane': {
     brand: 'Renault',
@@ -200,7 +168,7 @@ export const VEHICLE_PRESETS = {
     batteryType: 'NMC',
     consumption: 168,
     recommendedDailySoc: 80,
-    note: '800V mimari, evde AC şarj 11 kW destekler.'
+    note: '800V mimari, evde AC şarj desteği.'
   },
   'hyundai-ioniq6': {
     brand: 'Hyundai',
@@ -230,7 +198,39 @@ export const VEHICLE_PRESETS = {
     batteryType: 'NMC',
     consumption: 220,
     recommendedDailySoc: 80,
-    note: 'Büyük batarya, evde şarj planlaması kritiktir.'
+    note: 'Büyük batarya, evde şarj planlaması.'
+  },
+
+  // MG
+  'mg-mg4-std': {
+    brand: 'MG',
+    name: 'MG4 Comfort (51 kWh LFP)',
+    shortName: 'MG4 Comfort',
+    capacity: 51.0,
+    batteryType: 'LFP',
+    consumption: 155,
+    recommendedDailySoc: 100,
+    note: 'LFP bataryayı %100 doldurabilirsiniz.'
+  },
+  'mg-mg4-lux': {
+    brand: 'MG',
+    name: 'MG4 Luxury (64 kWh NMC)',
+    shortName: 'MG4 Luxury',
+    capacity: 64.0,
+    batteryType: 'NMC',
+    consumption: 160,
+    recommendedDailySoc: 80,
+    note: 'Günlük kullanım için %80 önerilir.'
+  },
+  'mg-zs-ev': {
+    brand: 'MG',
+    name: 'MG ZS EV (51.1 / 72.6 kWh)',
+    shortName: 'MG ZS EV',
+    capacity: 51.1,
+    batteryType: 'LFP',
+    consumption: 173,
+    recommendedDailySoc: 100,
+    note: 'Standart menzil LFP için %100 önerilir.'
   },
 
   // VOLVO
@@ -328,37 +328,39 @@ export const VEHICLE_PRESETS = {
     batteryType: 'Özel',
     consumption: 160,
     recommendedDailySoc: 100,
-    note: 'Batarya boyutunu dilediğiniz gibi belirleyebilirsiniz.'
+    note: 'Batarya boyutunu serbestçe belirleyebilirsiniz.'
   }
 };
 
-const STORAGE_KEY = 'ev_charging_calculator_v3';
+const STORAGE_KEY = 'ev_charging_calculator_v4';
 
 export const DEFAULT_STATE = {
   currentSoc: 30,             // Mevcut batarya %
-  targetSoc: 100,            // Hedef batarya % (kullanıcı %100 istiyor)
-  amperage: 13,              // 13A (kullanıcı en çok 13A şarj ediyor)
+  targetSoc: 100,            // Hedef batarya %
+  amperage: 13,              // 13A (varsayılan başlama akımı)
   departureTime: '07:30',    // Sabah çıkış saati
   calcMode: 'departure',     // 'departure' (çıkış saatine göre) veya 'now' (şimdi şarja tak)
   vehicleModel: 'tesla-my-rwd', // KULLANICININ ARABASI: Tesla Model Y Standart (60 kWh LFP)
   customCapacity: 60.0,
-  voltage: 220,              // 210-220V arası pratik ev voltajı (varsayılan: 220V)
-  efficiency: 88,            // 10-13A ev şarjında ~%88 verim
+  voltage: 220,              // Kullanıcının ortalaması: 220V
+  efficiency: 88,            // 10-13A ev şarjında ortalama %88 verim
 
-  // Sadeleştirilmiş Fatura Ayarları (Vergiler dahil net birim fiyat)
-  tariffType: 'standard',     // 'standard' (Faturanız) veya 'three-tier' (3 Zamanlı)
-  standardPriceMode: 'avg-tier', // 'avg-tier' (3.84 TL), 'high-tier' (4.99 TL), 'custom'
-  standardRate: 3.84,        // Fatura ortalaması (1520 TL / 395 kWh = 3.84 TL/kWh)
-  highTierRate: 4.99,        // Yüksek kademe birim fiyatı (4.32 TL + vergiler = 4.99 TL)
-  customRate: 3.84           // Manuel girilen fiyat
+  // Gece Güvenlik Akımı Planı (10A Gece Düşürme)
+  enableNightDrop: false,    // Gece akımı düşürülsün mü?
+  nightDropTime: '00:00',    // Gece akımın düşeceği saat (örn: 00:00)
+  nightDropAmps: 10,         // Gece güvenli akım (örn: 10A)
+
+  // Parametrik Fatura Hesaplayıcı (Fatura Tutarı ÷ kWh)
+  billTotalAmount: 1520.30,  // Son fatura ödenecek tutar (TL)
+  billTotalKwh: 395.68,      // Son fatura toplam tüketim (kWh)
+  standardRate: 3.84         // Hesaplanmış veya manuel girilen birim fiyat (TL/kWh)
 };
 
 export function loadSettings() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
-      // Önceki versiyonlardan aktarım
-      const oldKeys = ['ev_charging_calculator_v2', 'tesla_charging_calculator_v1'];
+      const oldKeys = ['ev_charging_calculator_v3', 'ev_charging_calculator_v2', 'tesla_charging_calculator_v1'];
       for (const k of oldKeys) {
         const oldRaw = localStorage.getItem(k);
         if (oldRaw) {

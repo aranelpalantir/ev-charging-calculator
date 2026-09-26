@@ -1,4 +1,4 @@
-/* css/style.css - EV & Tesla Şarj PWA Teması ve Responsive Tasarım */
+/* css/style.css - EV Şarj PWA Teması ve Responsive Tasarım */
 
 :root {
   --bg-main: #0a0c10;
@@ -51,7 +51,7 @@ body {
   overflow-x: hidden;
 }
 
-/* Sayfa Çerçevesi (Mobil Odaklı Maksimum Genişlik) */
+/* Sayfa Çerçevesi */
 .app-container {
   width: 100%;
   max-width: 480px;
@@ -81,8 +81,8 @@ body {
   width: 38px;
   height: 38px;
   border-radius: var(--radius-md);
-  background: rgba(232, 33, 39, 0.12);
-  border: 1px solid rgba(232, 33, 39, 0.25);
+  background: rgba(0, 210, 255, 0.12);
+  border: 1px solid rgba(0, 210, 255, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -168,7 +168,7 @@ body {
 /* Hero Sonuç Kartı */
 .result-card {
   background: linear-gradient(145deg, #161a29 0%, #0e111a 100%);
-  border: 1px solid rgba(232, 33, 39, 0.25);
+  border: 1px solid rgba(0, 210, 255, 0.25);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   text-align: center;
 }
@@ -206,9 +206,9 @@ body {
 
 .day-badge {
   font-size: 0.7rem;
-  background: rgba(232, 33, 39, 0.15);
-  color: #ff6b6e;
-  border: 1px solid rgba(232, 33, 39, 0.3);
+  background: rgba(0, 210, 255, 0.15);
+  color: #38bdf8;
+  border: 1px solid rgba(0, 210, 255, 0.3);
   padding: 2px 8px;
   border-radius: var(--radius-full);
   font-weight: 700;
@@ -234,12 +234,25 @@ body {
 .result-summary-text {
   font-size: 0.9rem;
   color: var(--text-secondary);
-  margin: 10px 0 16px 0;
+  margin: 10px 0 14px 0;
   line-height: 1.4;
 }
 
 .result-summary-text strong {
   color: var(--text-primary);
+}
+
+/* Gece Akımı Düşürme Bildirim Rozeti */
+.night-drop-badge {
+  background: rgba(6, 182, 212, 0.1);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  color: #a5f3fc;
+  margin-bottom: 14px;
+  text-align: left;
+  line-height: 1.35;
 }
 
 /* Yetişmeme Uyarısı */
@@ -472,13 +485,24 @@ body {
   color: var(--text-primary);
 }
 
-.helper-info {
+.voltage-indicator-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   font-size: 0.8rem;
+  font-weight: 700;
   color: var(--electric-cyan);
-  font-weight: 600;
 }
 
-/* Büyütülmüş ve 100 Sayısının Rahat Sığdığı Stepper Rozeti */
+.voltage-tag {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+}
+
+/* Büyütülmüş Stepper Rozeti: 100 Tamamen Sığıyor, Seçilmesi Kolay */
 .stepper-value-badge {
   display: inline-flex;
   align-items: baseline;
@@ -489,24 +513,26 @@ body {
 }
 
 .stepper-value-badge.large-badge {
-  padding: 5px 14px;
+  padding: 6px 14px;
   background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.18);
+  cursor: text;
 }
 
 .stepper-value-badge input {
   background: transparent;
   border: none;
   color: #ffffff;
-  font-size: 1.45rem;
+  font-size: 1.5rem;
   font-weight: 800;
-  width: 60px;
-  min-width: 60px;
+  width: 68px;
+  min-width: 68px;
   text-align: right;
   outline: none;
   font-family: inherit;
   padding: 0;
   margin: 0;
+  cursor: text;
 }
 
 .stepper-value-badge .unit {
@@ -563,8 +589,8 @@ body {
   height: 26px;
   border-radius: 50%;
   background: #ffffff;
-  border: 3px solid var(--tesla-red);
-  box-shadow: 0 0 10px rgba(232, 33, 39, 0.5);
+  border: 3px solid var(--electric-cyan);
+  box-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
   cursor: pointer;
   transition: transform 0.1s ease;
 }
@@ -578,8 +604,8 @@ body {
   height: 26px;
   border-radius: 50%;
   background: #ffffff;
-  border: 3px solid var(--tesla-red);
-  box-shadow: 0 0 10px rgba(232, 33, 39, 0.5);
+  border: 3px solid var(--electric-cyan);
+  box-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
   cursor: pointer;
 }
 
@@ -653,19 +679,19 @@ body {
 }
 
 .chip-target.active-target {
-  background: rgba(232, 33, 39, 0.12);
-  border-color: var(--tesla-red);
+  background: rgba(0, 210, 255, 0.12);
+  border-color: var(--electric-cyan);
 }
 
 .chip-target.active-target .target-pct {
-  color: #ff5252;
+  color: #38bdf8;
 }
 
 .chip-target.active-target .target-sub {
-  color: #ff9e9e;
+  color: #bae6fd;
 }
 
-/* Segmented Controls (13A & 10A & Mod Seçimi) */
+/* Segmented Controls (Mod & Amper) */
 .segmented-control {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -735,6 +761,55 @@ body {
   color: var(--electric-cyan);
   min-width: 44px;
   text-align: right;
+}
+
+/* Gece Güvenlik Akımı Plan Kartı */
+.night-drop-plan-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.night-drop-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.night-drop-inputs {
+  display: flex;
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border-color);
+}
+
+.night-drop-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.night-drop-field label {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+.time-compact-input, .select-compact {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  border-radius: var(--radius-sm);
+  padding: 6px 8px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  outline: none;
+  height: 38px;
 }
 
 /* Çıkış Saati Seçici */
@@ -828,28 +903,6 @@ body {
   gap: 12px;
 }
 
-.rate-choice-row {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.custom-rate-input-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--bg-input);
-  padding: 8px 12px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
-}
-
-.custom-rate-input-row .custom-input {
-  flex: 1;
-  min-height: 40px;
-  padding: 6px 12px;
-}
-
 .tariff-breakdown-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -888,8 +941,8 @@ body {
   justify-content: space-between;
   gap: 12px;
   padding: 14px 18px;
-  background: linear-gradient(135deg, rgba(232, 33, 39, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%);
-  border: 1px solid rgba(232, 33, 39, 0.25);
+  background: linear-gradient(135deg, rgba(0, 210, 255, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%);
+  border: 1px solid rgba(0, 210, 255, 0.25);
 }
 
 .install-info {
@@ -913,7 +966,7 @@ body {
   color: var(--text-secondary);
 }
 
-/* Modallar (Yatay Scroll Tamamen Engellenmiş) */
+/* Modallar */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -944,7 +997,7 @@ body {
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   padding: 20px;
   overflow-y: auto;
-  overflow-x: hidden; /* Sağ scroll engellendi */
+  overflow-x: hidden;
   box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
   animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   box-sizing: border-box;
@@ -1050,6 +1103,55 @@ body {
   display: block;
 }
 
+/* Parametrik Fatura Formülü Kutusu */
+.formula-box {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.formula-desc {
+  font-size: 0.78rem;
+  color: var(--electric-cyan);
+  font-weight: 600;
+  background: rgba(6, 182, 212, 0.08);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+}
+
+.formula-inputs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.formula-result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-input);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.formula-result-row strong {
+  font-size: 0.95rem;
+  color: #34d399;
+}
+
+.formula-manual-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
 /* Guide Modalı */
 .guide-steps {
   display: flex;
@@ -1068,8 +1170,8 @@ body {
 }
 
 .step-card.highlight-step {
-  border-color: rgba(232, 33, 39, 0.4);
-  background: rgba(232, 33, 39, 0.08);
+  border-color: rgba(0, 210, 255, 0.4);
+  background: rgba(0, 210, 255, 0.08);
 }
 
 .step-num {
@@ -1086,8 +1188,8 @@ body {
 }
 
 .highlight-step .step-num {
-  background: var(--tesla-red);
-  color: #ffffff;
+  background: var(--electric-cyan);
+  color: #0a0c10;
 }
 
 .step-text strong {
@@ -1104,7 +1206,7 @@ body {
 }
 
 .red-text {
-  color: #ff5252;
+  color: #38bdf8;
   font-size: 1rem;
 }
 
