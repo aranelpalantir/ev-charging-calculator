@@ -1159,12 +1159,14 @@ function bindEventListeners() {
     els.btnCalibMinus.addEventListener('click', () => {
       const v = Number(els.inputCalibSoc.value) || 50;
       els.inputCalibSoc.value = Math.max(1, v - 1);
+      updateCalibPillHighlight();
     });
   }
   if (els.btnCalibPlus) {
     els.btnCalibPlus.addEventListener('click', () => {
       const v = Number(els.inputCalibSoc.value) || 50;
       els.inputCalibSoc.value = Math.min(100, v + 1);
+      updateCalibPillHighlight();
     });
   }
   if (els.calibQuickPills) {
@@ -1173,9 +1175,13 @@ function bindEventListeners() {
         const val = Number(pill.getAttribute('data-calib'));
         if (val && els.inputCalibSoc) {
           els.inputCalibSoc.value = val;
+          updateCalibPillHighlight();
         }
       });
     });
+  }
+  if (els.inputCalibSoc) {
+    els.inputCalibSoc.addEventListener('input', updateCalibPillHighlight);
   }
   if (els.btnApplyCalibrate) {
     els.btnApplyCalibrate.addEventListener('click', () => {
@@ -1224,12 +1230,16 @@ function switchAppView(viewName) {
     if (els.viewCalculator) els.viewCalculator.style.display = 'none';
     if (els.viewLiveCharge) els.viewLiveCharge.style.display = 'block';
     if (els.liveFloatingBanner) els.liveFloatingBanner.style.display = 'none';
+    if (els.btnHeaderLiveBadge) els.btnHeaderLiveBadge.style.display = 'none';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } else {
     if (els.viewCalculator) els.viewCalculator.style.display = 'block';
     if (els.viewLiveCharge) els.viewLiveCharge.style.display = 'none';
     if (activeSession && els.liveFloatingBanner) {
       els.liveFloatingBanner.style.display = 'flex';
+    }
+    if (activeSession && els.btnHeaderLiveBadge) {
+      els.btnHeaderLiveBadge.style.display = 'inline-flex';
     }
     updateStartChargeButton();
   }
@@ -1286,7 +1296,11 @@ function updateLiveCockpit() {
 
   // Header pill & floating banner güncelle
   if (els.btnHeaderLiveBadge) {
-    els.btnHeaderLiveBadge.style.display = 'inline-flex';
+    if (currentView === 'calculator') {
+      els.btnHeaderLiveBadge.style.display = 'inline-flex';
+    } else {
+      els.btnHeaderLiveBadge.style.display = 'none';
+    }
     if (els.headerLiveSoc) els.headerLiveSoc.textContent = `%${live.currentSoc.toFixed(1)}`;
   }
   if (els.liveFloatingBanner) {
@@ -1350,12 +1364,27 @@ function updateLiveCockpit() {
   }
 }
 
+function updateCalibPillHighlight() {
+  const currentVal = Number(els.inputCalibSoc?.value);
+  if (els.calibQuickPills) {
+    els.calibQuickPills.forEach(pill => {
+      const pVal = Number(pill.getAttribute('data-calib'));
+      if (pVal === currentVal) {
+        pill.classList.add('active');
+      } else {
+        pill.classList.remove('active');
+      }
+    });
+  }
+}
+
 function openCalibrateModal() {
   if (!activeSession || !latestLiveStat) return;
   const currentEst = Math.round(latestLiveStat.currentSoc);
   if (els.inputCalibSoc) {
     els.inputCalibSoc.value = currentEst;
   }
+  updateCalibPillHighlight();
   if (els.calibrateModal) {
     els.calibrateModal.style.display = 'flex';
   }
