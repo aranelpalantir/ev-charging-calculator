@@ -24,12 +24,31 @@ Sabah belirlediğiniz saatte (örneğin **07:30**) aracınızdan prizi çektiği
 
 ---
 
-## 🚀 Cloudflare Pages (`*.pages.dev`) ile Yayınlama
+## 🌐 Canlı Demo (Web / PWA)
 
-Terminalinizden `d:\AiProjects\Charging` klasöründeyken şu komutu çalıştırabilirsiniz:
+Uygulamaya tarayıcınızdan veya telefonunuzdan doğrudan erişebilirsiniz:
+👉 **[https://aranelpalantir.github.io/ev-charging-calculator/](https://aranelpalantir.github.io/ev-charging-calculator/)**
+
+*(iPhone Safari veya Android Chrome'da "Ana Ekrana Ekle" diyerek tam ekran ve internetsiz mobil uygulama olarak kullanabilirsiniz.)*
+
+---
+
+## ⚡ Desteklenen Şarj Güçleri ve Cihazlar
+
+- **10A (2.2 kW):** Standart güvenli priz şarjı
+- **13A (2.9 kW):** Standart ev prizi (Schuko)
+- **16A (3.7 kW):** 16A Mavi Endüstriyel Priz (Monofaze CEE)
+- **7.4 kW:** 32A Mavi Endüstriyel Priz (Tesla 32A Adaptör) / Monofaze Wallbox
+- **11 kW:** 3-Faz 16A Trifaze Wallbox (En yaygın AC istasyon)
+- **22 kW:** 3-Faz 32A Hızlı AC İstasyon & Wallbox
+- **Özel Ayar:** 6A - 32A hassas akım kaydırıcısı ve 1 Faz / 3 Faz seçimi
+
+---
+
+## 🚀 Cloudflare Pages ile Yayınlama (Alternatif)
+
+İsterseniz Cloudflare Pages üzerinden de tek komutla yayına alabilirsiniz:
 
 ```bash
 npx wrangler pages deploy . --project-name=ev-charging
 ```
-
-İlk çalıştırmada tarayıcınızda Cloudflare girişi onaylandıktan sonra siteniz anında `https://ev-charging.pages.dev` olarak yayına girer.
