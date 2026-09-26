@@ -27,12 +27,19 @@ Uygulamaya tarayıcınızdan veya telefonunuzdan doğrudan erişebilirsiniz:
 
 ## ✨ Öne Çıkan Özellikler
 
+- 🏎️ **Canlı Şarj Takip Kokpiti (Live Charge Cockpit):**
+  - **Canlı Sayaç & Geri Sayım:** Aracı prize taktığınızda tek tıkla *"Şarjı Başlattım"* diyerek tam ekran canlı takip kokpitine geçebilirsiniz. Saniye saniye geriye sayan dijital sayaç (`hh:mm:ss`), tahmini bitiş saati ve ondalıklı şarj yüzdesi (`%28.5`) eşzamanlı ilerler.
+  - **🎯 Arabayla Eşitle (Kalibrasyon):** Araç göstergesindeki yüzde ile simülasyon arasında 1-2 puan sapma olursa tek tıkla arabanızın ekranına göre senkronize edebilirsiniz.
+  - **⚙️ Hesaplayıcıdan Canlı Şarja Detaylı Ayar Aktarımı:** Şarj sürerken hesaplayıcıya dönüp voltajı, priz akımını (amper slider'ı), gece güvenlik planını veya hedef şarjı detaylıca değiştirebilir; *"Yeni Ayarları Canlı Şarja Uygula"* butonuyla devam eden seansa kesintisiz aktarabilirsiniz (biriken enerji ve istatistikler asla kaybolmaz).
+  - **📊 Anlık Canlı Metrikler:** Şebekeden çekilen güç (kW / A), bataryaya eklenen net enerji (+kWh), menzil kazancı (+km) ve anlık elektrik tutarı (TL).
+  - **🎉 Seans Sonu Özet Raporu:** Şarj tamamlandığında veya durdurulduğunda seans süresini, aktarılan toplam kWh'yi, kazanılan net menzili ve elektrik faturasını özetleyen kart.
+  - **💾 Kesintisiz Oturum (`localStorage`):** Tarayıcı kapansa veya telefon uykuya geçse bile şarj takibi arka planda işlemeye devam eder; uygulamayı açtığınız anda canlı kokpit kaldığı yerden karşılar.
 - ⏰ **Çıkış Saatine Göre Geriye Doğru Zamanlama:**
   - Sabah evden çıkış saatinizi (örneğin **07:30**) ve hedef şarj yüzdenizi (**%80** veya **%100**) seçin. Sistem tüm voltaj ve şarj kayıplarını hesaplayarak aracı tam saat kaçta şarja takmanız veya araç içi zamanlayıcıyı kaça kurmanız gerektiğini gösterir.
 - 🛡️ **İki Fazlı Gece Güvenlik Akımı Planı (13A ➔ 10A):**
   - Şarja akşam prizin başında uyanıkken **13A** ile başlayıp, gece uyurken priz ve kablo güvenliği için belirlediğiniz saatte (örneğin **00:00**) akımı **10A**'e düşürmeyi planlayabilirsiniz. Uygulama bu iki fazlı güç eğrisini geriye doğru hesaplayarak tam başlama saatini belirler.
 - 🔌 **Gerçekçi Şebeke Voltajı & Kayıp Oranı (215V):**
-  - Türkiye'deki ev prizlerinde yük altındaki voltaj düşüşünü yansıtan **215V** varsayılan voltaj değeri ve şarj kayıp katsayısı ile gerçeğe en yakın süre tahmini.
+  - Türkiye'deki ev prizlerinde yük altındaki voltaj düşüşünü yansıtan **215V** varsayılan voltaj değeri ve %90 şarj verimliliği ile gerçeğe en yakın süre tahmini.
 - 💰 **Şeffaf Fatura Formülü:**
   - `Fatura Tutarı (TL) ÷ Toplam Tüketim (kWh) = Birim Fiyat` formülüyle faturanızdaki net tutarı anında girip şarj maliyetinizi ve km başına tüketim tutarınızı hesaplayabilirsiniz.
 - 🚗 **Geniş Elektrikli Araç (EV) Veritabanı:**
@@ -62,13 +69,13 @@ Uygulamaya tarayıcınızdan veya telefonunuzdan doğrudan erişebilirsiniz:
 
 ```text
 ev-charging-calculator/
-├── index.html            # Ana arayüz, kartlar, araç seçici ve ayar modalları
+├── index.html            # Ana hesaplayıcı, Canlı Takip Kokpiti, araç seçici ve modallar
 ├── css/
-│   └── style.css         # Modern cam-morfik (glassmorphism) karanlık tema & duyarlı tasarım
+│   └── style.css         # Modern cam-morfik (glassmorphism) karanlık tema & duyarlı kokpit
 ├── js/
-│   ├── app.js            # UI olay yönetimi, form etkileşimleri ve PWA kaydı
-│   ├── calculator.js     # Şarj süresi, iki fazlı gece akımı ve geriye zamanlama motoru
-│   └── storage.js        # Araç profilleri veritabanı ve localStorage kalıcılık katmanı
+│   ├── app.js            # UI olay yönetimi, canlı kokpit kontrolcüsü ve PWA kaydı
+│   ├── calculator.js     # Şarj süresi, canlı takip motoru, iki fazlı gece akımı algoritması
+│   └── storage.js        # Araç profilleri, aktif seans kalıcılığı ve localStorage katmanı
 ├── sw.js                 # Safari WebKit uyumlu, çevrimdışı önbellekleyen Service Worker
 └── manifest.webmanifest  # PWA kurulum ve ana ekran meta yapılandırması
 ```

@@ -672,3 +672,37 @@ export function saveSettings(state) {
     console.error('Ayarlar kaydedilemedi:', e);
   }
 }
+
+// ==========================================
+// CANLI ŞARJ SEANSI KALICILIK KATMANI
+// ==========================================
+const SESSION_KEY = 'tesla_charging_active_session_v1';
+
+export function saveActiveSession(session) {
+  try {
+    if (!session) {
+      localStorage.removeItem(SESSION_KEY);
+    } else {
+      localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    }
+  } catch (e) {
+    console.error('Aktif seans kaydedilemedi:', e);
+  }
+}
+
+export function loadActiveSession() {
+  try {
+    const raw = localStorage.getItem(SESSION_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+export function clearActiveSession() {
+  try {
+    localStorage.removeItem(SESSION_KEY);
+  } catch (e) {
+    // silent catch
+  }
+}

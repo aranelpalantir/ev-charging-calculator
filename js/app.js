@@ -1,10 +1,16 @@
 // js/app.js - EV Şarj Zamanlayıcı ve Fatura Hesaplayıcı
-import { loadSettings, saveSettings, VEHICLE_PRESETS, DEFAULT_STATE } from './storage.js';
-import { calculateCharging, formatFriendlyTime } from './calculator.js';
+import { loadSettings, saveSettings, VEHICLE_PRESETS, DEFAULT_STATE, saveActiveSession, loadActiveSession, clearActiveSession } from './storage.js';
+import { calculateCharging, calculateLiveSession, formatFriendlyTime } from './calculator.js';
 
 // Mevcut durum
 let state = loadSettings();
 let deferredInstallPrompt = null;
+
+// Canlı Şarj Seansı Durumu
+let activeSession = null;
+let liveInterval = null;
+let currentView = 'calculator'; // 'calculator' | 'live'
+let latestLiveStat = null;
 
 // DOM Elementleri
 const els = {
@@ -137,7 +143,64 @@ const els = {
   panelPwaIos: document.getElementById('panel-pwa-ios'),
   panelPwaAndroid: document.getElementById('panel-pwa-android'),
   btnAndroidDirectInstall: document.getElementById('btn-android-direct-install'),
-  toastMsg: document.getElementById('toast-msg')
+  toastMsg: document.getElementById('toast-msg'),
+
+  // Canlı Şarj Takip Elemanları
+  startChargeRow: document.getElementById('start-charge-row'),
+  btnStartCharge: document.getElementById('btn-start-charge'),
+  btnStartChargeText: document.getElementById('btn-start-charge-text'),
+  btnHeaderLiveBadge: document.getElementById('btn-header-live-badge'),
+  headerLiveSoc: document.getElementById('header-live-soc'),
+  liveFloatingBanner: document.getElementById('live-floating-banner'),
+  bannerLiveSoc: document.getElementById('banner-live-soc'),
+  bannerLiveRem: document.getElementById('banner-live-rem'),
+  btnBannerGoLive: document.getElementById('btn-banner-go-live'),
+  viewCalculator: document.getElementById('view-calculator'),
+  viewLiveCharge: document.getElementById('view-live-charge'),
+  liveCarName: document.getElementById('live-car-name'),
+  liveBatteryFill: document.getElementById('live-battery-fill'),
+  liveSocBig: document.getElementById('live-soc-big'),
+  liveStartSocVal: document.getElementById('live-start-soc-val'),
+  liveTargetSocVal: document.getElementById('live-target-soc-val'),
+  liveProgressPctVal: document.getElementById('live-progress-pct-val'),
+  liveTrackFill: document.getElementById('live-track-fill'),
+  liveCountdownVal: document.getElementById('live-countdown-val'),
+  liveFinishVal: document.getElementById('live-finish-val'),
+  liveFinishDay: document.getElementById('live-finish-day'),
+  liveNightStatusBadge: document.getElementById('live-night-status-badge'),
+  liveNightStatusText: document.getElementById('live-night-status-text'),
+  liveStatKw: document.getElementById('live-stat-kw'),
+  liveStatKwh: document.getElementById('live-stat-kwh'),
+  liveStatKm: document.getElementById('live-stat-km'),
+  liveStatCost: document.getElementById('live-stat-cost'),
+  btnOpenCalibrate: document.getElementById('btn-open-calibrate'),
+  btnPeekCalculator: document.getElementById('btn-peek-calculator'),
+  btnStopCharge: document.getElementById('btn-stop-charge'),
+
+  // Kalibrasyon Modalı (Arabayla Eşitle)
+  calibrateModal: document.getElementById('calibrate-modal'),
+  btnCloseCalibrate: document.getElementById('btn-close-calibrate'),
+  inputCalibSoc: document.getElementById('input-calib-soc'),
+  btnCalibMinus: document.getElementById('btn-calib-minus'),
+  btnCalibPlus: document.getElementById('btn-calib-plus'),
+  btnApplyCalibrate: document.getElementById('btn-apply-calibrate'),
+  calibQuickPills: document.querySelectorAll('.soc-quick-pills button[data-calib]'),
+
+  // Seans Özeti Modalı
+  sessionSummaryModal: document.getElementById('session-summary-modal'),
+  btnCloseSummary: document.getElementById('btn-close-summary'),
+  btnDismissSummary: document.getElementById('btn-dismiss-summary'),
+  sumStartSoc: document.getElementById('sum-start-soc'),
+  sumEndSoc: document.getElementById('sum-end-soc'),
+  sumDuration: document.getElementById('sum-duration'),
+  sumKwh: document.getElementById('sum-kwh'),
+  sumKm: document.getElementById('sum-km'),
+  sumCost: document.getElementById('sum-cost'),
+
+  // Şarjı Bitir Onay Modalı
+  confirmStopModal: document.getElementById('confirm-stop-modal'),
+  btnCancelStop: document.getElementById('btn-cancel-stop'),
+  btnConfirmStop: document.getElementById('btn-confirm-stop')
 };
 
 // Seçenekten araç parametrelerini oku
@@ -181,9 +244,19 @@ function initApp() {
   handlePwaInstallPrompt();
   recalculateAndRender();
 
-  // Her 30 saniyede bir otomatik saat güncellemesi
+  // Kaydedilmiş aktif canlı seans var mı kontrol et
+  const savedSession = loadActiveSession();
+  if (savedSession) {
+    activeSession = savedSession;
+    switchAppView('live');
+    startLiveTimer();
+  }
+
+  // Her 30 saniyede bir otomatik saat güncellemesi (hesaplayıcı modu için)
   setInterval(() => {
-    recalculateAndRender();
+    if (currentView === 'calculator') {
+      recalculateAndRender();
+    }
   }, 30000);
 }
 
@@ -372,6 +445,38 @@ function updateFormulaDisplay() {
   }
 }
 
+// Şarjı Başlat / Canlı Güncelle Butonunun Durumunu Ayarla
+function updateStartChargeButton(result = null) {
+  if (!els.btnStartCharge || !els.startChargeRow) return;
+
+  if (activeSession) {
+    // Aktif canlı şarj seansı varken: Buton "Bu Ayarları Canlı Şarja Uygula" haline dönüşür!
+    els.startChargeRow.style.display = 'block';
+    els.btnStartCharge.classList.remove('btn-primary');
+    els.btnStartCharge.classList.add('btn-apply-live');
+    const curSoc = latestLiveStat ? latestLiveStat.currentSoc.toFixed(1) : Number(activeSession.startSoc).toFixed(1);
+    const label = `Yeni Ayarları Canlı Şarja Uygula (%${curSoc} ile Devam Et) ➔`;
+    if (els.btnStartChargeText) {
+      els.btnStartChargeText.textContent = label;
+    } else {
+      els.btnStartCharge.textContent = label;
+    }
+    els.btnStartCharge.title = 'Hesaplayıcıdaki yeni voltaj, amper ve hedefi aktif canlı seansa aktarır';
+  } else {
+    // Aktif seans yokken: Standart kırmızı "Şarjı Başlattım" butonu
+    const hasDelta = result ? (result.deltaSoc > 0) : (Number(state.targetSoc) > Number(state.currentSoc));
+    els.startChargeRow.style.display = hasDelta ? 'block' : 'none';
+    els.btnStartCharge.classList.remove('btn-apply-live');
+    els.btnStartCharge.classList.add('btn-primary');
+    if (els.btnStartChargeText) {
+      els.btnStartChargeText.textContent = 'Şarjı Başlattım (Canlı Takip Et)';
+    } else {
+      els.btnStartCharge.textContent = 'Şarjı Başlattım (Canlı Takip Et)';
+    }
+    els.btnStartCharge.title = 'Şarjı şimdi başlattım, canlı olarak takip et';
+  }
+}
+
 // Hesapla ve Ekrana Bas
 function recalculateAndRender() {
   const result = calculateCharging(state, new Date());
@@ -536,6 +641,9 @@ function recalculateAndRender() {
       els.guideTargetAmp.textContent = `${result.amperage}A`;
     }
   }
+
+  // Şarjı Başlat / Canlı Güncelle Butonu
+  updateStartChargeButton(result);
 
   // Zamanlama ayarı rehber butonu:
   // Sadece çıkış saatine göre modundaysa, hedef saate YETİŞİYORSA (!result.isOverdue)
@@ -983,6 +1091,376 @@ function bindEventListeners() {
       els.guideModal.style.display = 'none';
     }
   });
+
+  // ==========================================
+  // CANLI ŞARJ TAKİP OLAY DİNLEYİCİLERİ
+  // ==========================================
+  if (els.btnStartCharge) {
+    els.btnStartCharge.addEventListener('click', () => {
+      if (activeSession) {
+        applyCalculatorSettingsToActiveSession();
+      } else {
+        startChargeSession();
+      }
+    });
+  }
+  if (els.btnHeaderLiveBadge) {
+    els.btnHeaderLiveBadge.addEventListener('click', () => switchAppView('live'));
+  }
+  if (els.btnBannerGoLive) {
+    els.btnBannerGoLive.addEventListener('click', () => switchAppView('live'));
+  }
+  if (els.btnPeekCalculator) {
+    els.btnPeekCalculator.addEventListener('click', () => switchAppView('calculator'));
+  }
+  if (els.btnStopCharge) {
+    els.btnStopCharge.addEventListener('click', () => {
+      if (els.confirmStopModal) {
+        els.confirmStopModal.style.display = 'flex';
+      } else if (confirm('Şarj seansını sonlandırmak ve özet raporu görmek istiyor musunuz?')) {
+        finishChargeSession(false);
+      }
+    });
+  }
+
+  // Şarjı Bitir Onay Modalı Dinleyicileri
+  if (els.btnCancelStop) {
+    els.btnCancelStop.addEventListener('click', () => {
+      if (els.confirmStopModal) els.confirmStopModal.style.display = 'none';
+    });
+  }
+  if (els.confirmStopModal) {
+    els.confirmStopModal.addEventListener('click', (e) => {
+      if (e.target === els.confirmStopModal) els.confirmStopModal.style.display = 'none';
+    });
+  }
+  if (els.btnConfirmStop) {
+    els.btnConfirmStop.addEventListener('click', () => {
+      if (els.confirmStopModal) els.confirmStopModal.style.display = 'none';
+      finishChargeSession(false);
+    });
+  }
+
+  // Kalibrasyon Modalı
+  if (els.btnOpenCalibrate) {
+    els.btnOpenCalibrate.addEventListener('click', openCalibrateModal);
+  }
+  if (els.btnCloseCalibrate) {
+    els.btnCloseCalibrate.addEventListener('click', () => {
+      if (els.calibrateModal) els.calibrateModal.style.display = 'none';
+    });
+  }
+  if (els.calibrateModal) {
+    els.calibrateModal.addEventListener('click', (e) => {
+      if (e.target === els.calibrateModal) els.calibrateModal.style.display = 'none';
+    });
+  }
+  if (els.btnCalibMinus) {
+    els.btnCalibMinus.addEventListener('click', () => {
+      const v = Number(els.inputCalibSoc.value) || 50;
+      els.inputCalibSoc.value = Math.max(1, v - 1);
+    });
+  }
+  if (els.btnCalibPlus) {
+    els.btnCalibPlus.addEventListener('click', () => {
+      const v = Number(els.inputCalibSoc.value) || 50;
+      els.inputCalibSoc.value = Math.min(100, v + 1);
+    });
+  }
+  if (els.calibQuickPills) {
+    els.calibQuickPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        const val = Number(pill.getAttribute('data-calib'));
+        if (val && els.inputCalibSoc) {
+          els.inputCalibSoc.value = val;
+        }
+      });
+    });
+  }
+  if (els.btnApplyCalibrate) {
+    els.btnApplyCalibrate.addEventListener('click', () => {
+      const v = Number(els.inputCalibSoc.value);
+      applyCalibration(v);
+    });
+  }
+
+  // Kokpitten hızlı düzenleme kısayolları (Detaylı düzenleme için Hesaplayıcıyı açar)
+  if (els.liveTargetSocVal) {
+    els.liveTargetSocVal.style.cursor = 'pointer';
+    els.liveTargetSocVal.title = 'Hedef şarjı hesaplayıcıda düzenle';
+    els.liveTargetSocVal.addEventListener('click', () => switchAppView('calculator'));
+  }
+  if (els.liveStatKw && els.liveStatKw.parentElement) {
+    els.liveStatKw.parentElement.style.cursor = 'pointer';
+    els.liveStatKw.parentElement.title = 'Şarj gücünü ve amperini hesaplayıcıda düzenle';
+    els.liveStatKw.parentElement.addEventListener('click', () => switchAppView('calculator'));
+  }
+
+  // Özet Modalı
+  if (els.btnCloseSummary) {
+    els.btnCloseSummary.addEventListener('click', () => {
+      if (els.sessionSummaryModal) els.sessionSummaryModal.style.display = 'none';
+    });
+  }
+  if (els.btnDismissSummary) {
+    els.btnDismissSummary.addEventListener('click', () => {
+      if (els.sessionSummaryModal) els.sessionSummaryModal.style.display = 'none';
+    });
+  }
+  if (els.sessionSummaryModal) {
+    els.sessionSummaryModal.addEventListener('click', (e) => {
+      if (e.target === els.sessionSummaryModal) els.sessionSummaryModal.style.display = 'none';
+    });
+  }
+}
+
+// ==========================================
+// CANLI ŞARJ TAKİP YÖNETİMİ (LIVE CHARGING COCKPIT)
+// ==========================================
+
+function switchAppView(viewName) {
+  currentView = viewName;
+  if (viewName === 'live') {
+    if (els.viewCalculator) els.viewCalculator.style.display = 'none';
+    if (els.viewLiveCharge) els.viewLiveCharge.style.display = 'block';
+    if (els.liveFloatingBanner) els.liveFloatingBanner.style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    if (els.viewCalculator) els.viewCalculator.style.display = 'block';
+    if (els.viewLiveCharge) els.viewLiveCharge.style.display = 'none';
+    if (activeSession && els.liveFloatingBanner) {
+      els.liveFloatingBanner.style.display = 'flex';
+    }
+    updateStartChargeButton();
+  }
+}
+
+function startChargeSession() {
+  if (Number(state.currentSoc) >= Number(state.targetSoc)) {
+    showToast('⚠️ Mevcut şarjınız zaten hedef şarja eşit veya daha yüksek!');
+    return;
+  }
+
+  // Model adı
+  const selectedOpt = els.selectVehicleModel.options[els.selectVehicleModel.selectedIndex];
+  const modelName = selectedOpt ? selectedOpt.textContent.trim() : (state.modelName || 'Elektrikli Araç');
+
+  activeSession = {
+    startTime: Date.now(),
+    initialStartSoc: Number(state.currentSoc),
+    startSoc: Number(state.currentSoc),
+    targetSoc: Number(state.targetSoc),
+    voltage: Number(state.voltage) || 215,
+    initialAmperage: Number(state.amperage) || 13,
+    chargingPhases: Number(state.chargingPhases) || 1,
+    efficiency: Number(state.efficiency) || 90,
+    usableCapacity: Number(state.usableCapacity || state.batteryCapacity || 60.5),
+    realConsumption: Number(state.realConsumption || 13.1),
+    standardRate: Number(state.standardRate || 3.85),
+    enableNightDrop: Boolean(state.enableNightDrop),
+    nightDropTime: state.nightDropTime || '00:00',
+    nightDropAmps: Number(state.nightDropAmps || 10),
+    vehicleModel: state.vehicleModel,
+    modelName: modelName,
+    accumulatedKwh: 0
+  };
+
+  saveActiveSession(activeSession);
+  switchAppView('live');
+  startLiveTimer();
+  showToast('⚡ Şarj takibi başlatıldı! Canlı sayaç devrede.');
+}
+
+function startLiveTimer() {
+  if (liveInterval) clearInterval(liveInterval);
+  updateLiveCockpit();
+  liveInterval = setInterval(updateLiveCockpit, 1000);
+}
+
+function updateLiveCockpit() {
+  if (!activeSession) return;
+
+  const now = new Date();
+  const live = calculateLiveSession(activeSession, now);
+  latestLiveStat = live;
+
+  // Header pill & floating banner güncelle
+  if (els.btnHeaderLiveBadge) {
+    els.btnHeaderLiveBadge.style.display = 'inline-flex';
+    if (els.headerLiveSoc) els.headerLiveSoc.textContent = `%${live.currentSoc.toFixed(1)}`;
+  }
+  if (els.liveFloatingBanner) {
+    if (currentView === 'calculator') {
+      els.liveFloatingBanner.style.display = 'flex';
+      if (els.bannerLiveSoc) els.bannerLiveSoc.textContent = `%${live.currentSoc.toFixed(1)}`;
+      if (els.bannerLiveRem) els.bannerLiveRem.textContent = live.remainingShort;
+      updateStartChargeButton();
+    } else {
+      els.liveFloatingBanner.style.display = 'none';
+    }
+  }
+
+  // Canlı Ekran Elemanları
+  if (els.liveCarName) els.liveCarName.textContent = activeSession.modelName;
+  if (els.liveSocBig) els.liveSocBig.textContent = live.currentSoc.toFixed(1);
+  if (els.liveBatteryFill) {
+    els.liveBatteryFill.style.width = `${Math.min(100, Math.max(5, live.currentSoc))}%`;
+  }
+  if (els.liveStartSocVal) els.liveStartSocVal.textContent = `%${activeSession.initialStartSoc}`;
+  if (els.liveTargetSocVal) els.liveTargetSocVal.textContent = `%${activeSession.targetSoc}`;
+  if (els.liveProgressPctVal) {
+    els.liveProgressPctVal.textContent = `%${Math.round(live.progressPercent)} tamamlandı`;
+  }
+  if (els.liveTrackFill) {
+    els.liveTrackFill.style.width = `${live.progressPercent}%`;
+  }
+  if (els.liveCountdownVal) els.liveCountdownVal.textContent = live.remainingFormatted;
+  if (els.liveFinishVal) els.liveFinishVal.textContent = live.endTimeFormatted;
+  if (els.liveFinishDay) els.liveFinishDay.textContent = live.dayLabel;
+  if (els.liveStatKw) {
+    els.liveStatKw.textContent = `${live.currentPowerKw.toFixed(1)} kW (${live.currentAmps}A)`;
+  }
+  if (els.liveStatKwh) {
+    els.liveStatKwh.textContent = `+${live.addedNetKwh.toFixed(1)} kWh`;
+  }
+  if (els.liveStatKm) {
+    els.liveStatKm.textContent = `+${Math.round(live.addedKm)} km`;
+  }
+  if (els.liveStatCost) {
+    els.liveStatCost.textContent = `${live.addedCost.toFixed(2)} TL`;
+  }
+
+  // Gece Güvenlik Akımı Bildirimi
+  if (els.liveNightStatusBadge) {
+    if (activeSession.enableNightDrop) {
+      els.liveNightStatusBadge.style.display = 'inline-flex';
+      if (els.liveNightStatusText) {
+        els.liveNightStatusText.textContent = live.isNightPhase
+          ? `Gece güvenlik modu aktif (${activeSession.nightDropAmps}A).`
+          : `Gece ${activeSession.nightDropTime}'da ${activeSession.nightDropAmps}A güvenli moda geçecek.`;
+      }
+    } else {
+      els.liveNightStatusBadge.style.display = 'none';
+    }
+  }
+
+  // Otomatik Tamamlanma Kontrolü
+  if (live.isComplete) {
+    finishChargeSession(true);
+  }
+}
+
+function openCalibrateModal() {
+  if (!activeSession || !latestLiveStat) return;
+  const currentEst = Math.round(latestLiveStat.currentSoc);
+  if (els.inputCalibSoc) {
+    els.inputCalibSoc.value = currentEst;
+  }
+  if (els.calibrateModal) {
+    els.calibrateModal.style.display = 'flex';
+  }
+}
+
+function applyCalibration(newSocVal) {
+  const soc = Math.min(100, Math.max(1, Number(newSocVal)));
+  if (isNaN(soc)) {
+    showToast('⚠️ Geçerli bir şarj yüzdesi girin!');
+    return;
+  }
+  if (!activeSession) return;
+  const now = new Date();
+  const currentLive = calculateLiveSession(activeSession, now);
+
+  activeSession.accumulatedKwh = currentLive.addedNetKwh;
+  activeSession.startSoc = soc;
+  activeSession.startTime = now.getTime();
+
+  saveActiveSession(activeSession);
+  if (els.calibrateModal) els.calibrateModal.style.display = 'none';
+  updateLiveCockpit();
+  showToast(`🎯 Araç şarjı %${soc} olarak eşitlendi!`);
+}
+
+// Hesaplayıcıdaki tüm detaylı ayarları (Voltaj, Amper, Gece Planı, Hedef % vb.) aktif canlı seansa aktarır
+function applyCalculatorSettingsToActiveSession() {
+  if (!activeSession) return;
+  const now = new Date();
+  const currentLive = calculateLiveSession(activeSession, now);
+
+  const newTarget = Number(state.targetSoc);
+  if (newTarget <= currentLive.currentSoc) {
+    showToast(`⚠️ Hedef şarj (%${newTarget}) mevcut şarjdan (%${currentLive.currentSoc.toFixed(1)}) yüksek olmalıdır!`);
+    return;
+  }
+
+  const selectedOpt = els.selectVehicleModel.options[els.selectVehicleModel.selectedIndex];
+  const modelName = selectedOpt ? selectedOpt.textContent.trim() : (state.modelName || 'Elektrikli Araç');
+
+  // Şimdiye kadar doldurulmuş olan net enerjiyi dondur, istatistikler kesintisiz aksın
+  activeSession.accumulatedKwh = currentLive.addedNetKwh;
+  activeSession.startSoc = currentLive.currentSoc;
+  activeSession.targetSoc = newTarget;
+  activeSession.voltage = Number(state.voltage) || 215;
+  activeSession.initialAmperage = Number(state.amperage) || 13;
+  activeSession.chargingPhases = Number(state.chargingPhases) || 1;
+  activeSession.efficiency = Number(state.efficiency) || 90;
+  activeSession.usableCapacity = Number(state.usableCapacity || state.batteryCapacity || 60.5);
+  activeSession.realConsumption = Number(state.realConsumption || 13.1);
+  activeSession.standardRate = Number(state.standardRate || 3.85);
+  activeSession.enableNightDrop = Boolean(state.enableNightDrop);
+  activeSession.nightDropTime = state.nightDropTime || '00:00';
+  activeSession.nightDropAmps = Number(state.nightDropAmps || 10);
+  activeSession.vehicleModel = state.vehicleModel;
+  activeSession.modelName = modelName;
+  activeSession.startTime = now.getTime();
+
+  saveActiveSession(activeSession);
+  switchAppView('live');
+  updateLiveCockpit();
+  showToast('⚡ Yeni şarj ayarları başarıyla canlı seansa uygulandı!');
+}
+
+function finishChargeSession(isAutoCompleted = false) {
+  if (!activeSession) return;
+  const now = new Date();
+  const finalLive = calculateLiveSession(activeSession, now);
+
+  // Özet modalını doldur
+  if (els.sumStartSoc) els.sumStartSoc.textContent = `%${activeSession.initialStartSoc}`;
+  if (els.sumEndSoc) els.sumEndSoc.textContent = `%${Math.round(finalLive.currentSoc)}`;
+
+  const totalMin = Math.round(finalLive.elapsedSeconds / 60);
+  const h = Math.floor(totalMin / 60);
+  const m = totalMin % 60;
+  const durStr = h > 0 ? `${h} sa ${m} dk` : `${m} dk`;
+  if (els.sumDuration) els.sumDuration.textContent = durStr;
+  if (els.sumKwh) els.sumKwh.textContent = `+${finalLive.addedNetKwh.toFixed(1)} kWh`;
+  if (els.sumKm) els.sumKm.textContent = `+${Math.round(finalLive.addedKm)} km`;
+  if (els.sumCost) els.sumCost.textContent = `${finalLive.addedCost.toFixed(2)} TL`;
+
+  // Zamanlayıcıyı durdur ve seansı temizle
+  if (liveInterval) clearInterval(liveInterval);
+  liveInterval = null;
+  activeSession = null;
+  clearActiveSession();
+
+  // Header pill & floating banner gizle
+  if (els.btnHeaderLiveBadge) els.btnHeaderLiveBadge.style.display = 'none';
+  if (els.liveFloatingBanner) els.liveFloatingBanner.style.display = 'none';
+
+  switchAppView('calculator');
+  recalculateAndRender();
+
+  // Özet modalını aç
+  if (els.sessionSummaryModal) {
+    els.sessionSummaryModal.style.display = 'flex';
+  }
+
+  if (isAutoCompleted) {
+    showToast('🎉 Tebrikler! Hedef şarja ulaşıldı.');
+  } else {
+    showToast('⏹️ Şarj seansı tamamlandı.');
+  }
 }
 
 // Toast Gösterici

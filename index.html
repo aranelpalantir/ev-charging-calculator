@@ -39,6 +39,10 @@
         </div>
       </div>
       <div class="header-actions">
+        <button id="btn-header-live-badge" class="live-header-pill" style="display: none;" title="Canlı Şarj Ekranına Geç">
+          <span class="live-dot-pulse"></span>
+          <span id="header-live-soc">%54.2</span>
+        </button>
         <a href="https://github.com/aranelpalantir/ev-charging-calculator" target="_blank" rel="noopener noreferrer" class="icon-btn" aria-label="GitHub Repository" title="GitHub (Açık Kaynak)">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
             <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
@@ -55,8 +59,19 @@
 
     <!-- Ana İçerik -->
     <main class="main-content">
-      <!-- 1. HERO SONUÇ KARTI -->
-      <section class="card result-card" id="result-card">
+      <!-- Canlı Şarj Sürerken Hesaplayıcıda Görünen Kayan Bildirim Bandı -->
+      <div id="live-floating-banner" class="live-floating-banner" style="display: none;">
+        <div class="banner-left">
+          <span class="live-dot-pulse"></span>
+          <span>Şarj Sürüyor: <strong id="banner-live-soc">%54.2</strong> <span class="banner-time-sub">(Kalan: <span id="banner-live-rem">3 sa 12 dk</span>)</span></span>
+        </div>
+        <button id="btn-banner-go-live" class="banner-pill-btn">Canlı Ekrana Dön ➔</button>
+      </div>
+
+      <!-- 1. GÖRÜNÜM: HESAPLAYICI EKRANI -->
+      <div id="view-calculator" class="app-view">
+        <!-- 1. HERO SONUÇ KARTI -->
+        <section class="card result-card" id="result-card">
         <div class="result-badge-row">
           <span class="status-indicator live-pulse"></span>
           <span class="result-label" id="result-mode-label">ŞARJIN BİTİŞ SAATİ</span>
@@ -106,8 +121,18 @@
           </div>
         </div>
 
-        <!-- Aksiyon Butonları (Kopyala kaldırıldı, sadece zamanlama rehberi) -->
-        <div class="result-actions" id="result-actions-row">
+        <!-- Şarjı Başlat / Canlı Güncelle Butonu -->
+        <div class="start-charge-row" id="start-charge-row">
+          <button id="btn-start-charge" class="btn btn-primary btn-full pulse-btn" title="Şarjı şimdi başlattım, canlı olarak takip et">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+            <span id="btn-start-charge-text">Şarjı Başlattım (Canlı Takip Et)</span>
+          </button>
+        </div>
+
+        <!-- Uygulama Zamanlama Ayarı Rehberi (Sadece çıkış saatine göre modunda) -->
+        <div class="result-actions" id="result-actions-row" style="margin-top: 10px;">
           <button id="btn-tesla-guide" class="btn btn-outline btn-full" title="Araç uygulamasında zamanlama saati ayarı">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="5" y="2" width="14" height="20" rx="3"></rect>
@@ -408,7 +433,130 @@
           <button id="btn-dismiss-install" class="btn-icon-dismiss" aria-label="Kapat" title="Kapat">&times;</button>
         </div>
       </section>
+      </div>
+      <!-- /view-calculator -->
 
+      <!-- 2. GÖRÜNÜM: CANLI ŞARJ TAKİP EKRANI (COCKPIT) -->
+      <div id="view-live-charge" class="app-view" style="display: none;">
+        <section class="card live-card">
+          <!-- Başlık ve Durum -->
+          <div class="live-card-header">
+            <div class="live-tag-pill">
+              <span class="live-dot-pulse"></span>
+              <span class="live-tag-text">CANLI ŞARJ SEANSI</span>
+            </div>
+            <span class="live-model-tag" id="live-car-name">Model Y Juniper Standard</span>
+          </div>
+
+          <!-- Canlı Batarya Hero Alanı -->
+          <div class="live-battery-hero">
+            <!-- Büyük Şarj İkonu / Batarya Göstergesi -->
+            <div class="live-battery-graphic">
+              <div class="live-battery-outline">
+                <div class="live-battery-level" id="live-battery-fill" style="width: 50%;">
+                  <div class="battery-glow-pulse"></div>
+                </div>
+              </div>
+              <div class="live-battery-cap"></div>
+            </div>
+
+            <!-- Dev Yüzde Sayısı -->
+            <div class="live-soc-wrap">
+              <span class="live-soc-big" id="live-soc-big">54.2</span>
+              <span class="live-soc-unit">%</span>
+            </div>
+
+            <!-- Başlangıç -> Hedef İlerleme Çubuğu -->
+            <div class="live-track-bar-container">
+              <div class="live-track-labels">
+                <span>Başlangıç: <strong id="live-start-soc-val">%30</strong></span>
+                <span id="live-progress-pct-val" class="live-pct-badge">%48 tamamlandı</span>
+                <span>Hedef: <strong id="live-target-soc-val">%80</strong></span>
+              </div>
+              <div class="live-track-bar">
+                <div class="live-track-fill" id="live-track-fill" style="width: 48%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Zaman Sayaçları: Kalan Süre & Bitiş Saati -->
+          <div class="live-timer-dashboard">
+            <div class="live-time-card">
+              <span class="lt-label">⏱️ KALAN SÜRE</span>
+              <span class="lt-val-big" id="live-countdown-val">03:24:18</span>
+              <span class="lt-sub">canlı geri sayım</span>
+            </div>
+            <div class="live-time-card highlight-time-card">
+              <span class="lt-label">🏁 TAHMİNİ BİTİŞ</span>
+              <span class="lt-val-big" id="live-finish-val">04:12</span>
+              <span class="lt-sub" id="live-finish-day">Yarın</span>
+            </div>
+          </div>
+
+          <!-- Gece Güvenlik Akımı Durumu -->
+          <div class="night-drop-badge" id="live-night-status-badge" style="display: none;">
+            🌙 <span id="live-night-status-text">Gece 00:00'da 10A güvenli moda geçecek.</span>
+          </div>
+
+          <!-- Canlı İstatistikler Grid -->
+          <div class="quick-stats-grid">
+            <div class="stat-item">
+              <span class="stat-name">Şarj Gücü</span>
+              <span class="stat-value" id="live-stat-kw">2.8 kW</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-name">Eklenen</span>
+              <span class="stat-value" id="live-stat-kwh">+14.6 kWh</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-name">Kazanılan Menzil</span>
+              <span class="stat-value" id="live-stat-km">+112 km</span>
+            </div>
+            <div class="stat-item highlight-stat">
+              <span class="stat-name">Maliyet</span>
+              <span class="stat-value" id="live-stat-cost">56.2 TL</span>
+            </div>
+          </div>
+
+          <!-- Aksiyon ve Kontrol Butonları -->
+          <div class="live-actions-container">
+            <div class="live-actions-row">
+              <button id="btn-open-calibrate" class="btn btn-outline" title="Araba ekranındaki gerçek yüzde ile eşitle">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="22" y1="12" x2="18" y2="12"></line>
+                  <line x1="6" y1="12" x2="2" y2="12"></line>
+                  <line x1="12" y1="6" x2="12" y2="2"></line>
+                  <line x1="12" y1="22" x2="12" y2="18"></line>
+                </svg>
+                Arabayla Eşitle (% Düzelt)
+              </button>
+              <button id="btn-peek-calculator" class="btn btn-outline" title="Hesaplayıcıda voltaj, amper ve detaylı ayarları düzenle">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="4" y1="21" x2="4" y2="14"></line>
+                  <line x1="4" y1="10" x2="4" y2="3"></line>
+                  <line x1="12" y1="21" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12" y2="3"></line>
+                  <line x1="20" y1="21" x2="20" y2="16"></line>
+                  <line x1="20" y1="12" x2="20" y2="3"></line>
+                  <line x1="1" y1="14" x2="7" y2="14"></line>
+                  <line x1="9" y1="8" x2="15" y2="8"></line>
+                  <line x1="17" y1="16" x2="23" y2="16"></line>
+                </svg>
+                Şarjı Düzenle (Hesaplayıcı)
+              </button>
+            </div>
+
+            <button id="btn-stop-charge" class="btn btn-danger-soft btn-full" title="Şarj seansını tamamla veya durdur">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+                <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+              </svg>
+              Şarjı Bitir / Seansı Durdur
+            </button>
+          </div>
+        </section>
+      </div>
+      <!-- /view-live-charge -->
     </main>
 
     <!-- AYARLAR & FORMÜL MODALI (Çakışma Olmayan 2 Modlu Tasarım) -->
@@ -2383,6 +2531,110 @@
           </div>
 
           <button id="btn-dismiss-pwa-guide" class="btn btn-primary btn-full" style="margin-top: 8px;">Anladım, Harika!</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ARABAYLA EŞİTLE / KALİBRASYON MODALI -->
+    <div class="modal-overlay" id="calibrate-modal" style="display: none;">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h2>🎯 Arabayla Eşitle</h2>
+          <button class="modal-close" id="btn-close-calibrate" aria-label="Kapat">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 16px;">
+            Arabanızın ekranındaki şarj yüzdesi uygulamadaki tahminden farklıysa, buradan gerçek yüzdeyi girip senkronize edebilirsiniz. Kalan süre ve bitiş saati anında yeniden hesaplanacaktır.
+          </p>
+
+          <div class="calibrate-box">
+            <span class="sub-label">Arabanızın Ekranındaki Gerçek Şarj (%):</span>
+            <div class="stepper-row" style="margin-top: 8px;">
+              <button type="button" class="btn-step" id="btn-calib-minus" aria-label="1 azalt">-1%</button>
+              <input type="number" id="input-calib-soc" min="1" max="100" class="stepper-native-input" value="50">
+              <button type="button" class="btn-step" id="btn-calib-plus" aria-label="1 arttır">+1%</button>
+            </div>
+            <div class="soc-quick-pills" style="margin-top: 10px;">
+              <button type="button" class="soc-pill" data-calib="30">%30</button>
+              <button type="button" class="soc-pill" data-calib="40">%40</button>
+              <button type="button" class="soc-pill" data-calib="50">%50</button>
+              <button type="button" class="soc-pill" data-calib="60">%60</button>
+              <button type="button" class="soc-pill" data-calib="70">%70</button>
+              <button type="button" class="soc-pill" data-calib="80">%80</button>
+              <button type="button" class="soc-pill" data-calib="90">%90</button>
+            </div>
+          </div>
+
+          <button id="btn-apply-calibrate" class="btn btn-primary btn-full" style="margin-top: 20px;">
+            🎯 Eşitle ve Yeniden Hesapla
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ŞARJ SEANSI ÖZETİ MODALI -->
+    <div class="modal-overlay" id="session-summary-modal" style="display: none;">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h2>🎉 Şarj Seansı Özeti</h2>
+          <button class="modal-close" id="btn-close-summary" aria-label="Kapat">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="summary-hero-card">
+            <div class="summary-soc-flow">
+              <div class="flow-point">
+                <span class="flow-label">Başlangıç</span>
+                <strong id="sum-start-soc" class="flow-val">%30</strong>
+              </div>
+              <span class="flow-arrow">➔</span>
+              <div class="flow-point highlight-point">
+                <span class="flow-label">Bitiş</span>
+                <strong id="sum-end-soc" class="flow-val">%80</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="summary-grid">
+            <div class="sum-item">
+              <span class="sum-name">⏱️ Toplam Süre</span>
+              <strong id="sum-duration" class="sum-val">4 sa 18 dk</strong>
+            </div>
+            <div class="sum-item">
+              <span class="sum-name">🔋 Eklenen Enerji</span>
+              <strong id="sum-kwh" class="sum-val">+30.2 kWh</strong>
+            </div>
+            <div class="sum-item">
+              <span class="sum-name">🛣️ Kazanılan Menzil</span>
+              <strong id="sum-km" class="sum-val">+230 km</strong>
+            </div>
+            <div class="sum-item highlight-sum-item">
+              <span class="sum-name">💰 Toplam Maliyet</span>
+              <strong id="sum-cost" class="sum-val">116.27 TL</strong>
+            </div>
+          </div>
+
+          <button id="btn-dismiss-summary" class="btn btn-primary btn-full" style="margin-top: 20px;">
+            Ana Ekrana Dön
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ŞARJI BİTİR ONAY MODALI (Özel Modern Confirm) -->
+    <div class="modal-overlay" id="confirm-stop-modal" style="display: none;">
+      <div class="modal-card modal-confirm-card">
+        <div class="confirm-icon-badge">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2">
+            <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+          </svg>
+        </div>
+        <h3 class="confirm-title">Şarj Seansı Sonlandırılsın mı?</h3>
+        <p class="confirm-desc">
+          Canlı şarj takibi durdurulacak ve bu seansın enerji, menzil ve maliyet özet raporu gösterilecektir.
+        </p>
+        <div class="confirm-actions-row">
+          <button type="button" class="btn btn-outline" id="btn-cancel-stop">Vazgeç</button>
+          <button type="button" class="btn btn-danger" id="btn-confirm-stop">Evet, Şarjı Bitir</button>
         </div>
       </div>
     </div>

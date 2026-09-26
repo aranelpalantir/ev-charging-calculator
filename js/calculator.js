@@ -254,3 +254,109 @@ export function formatFriendlyTime(date, referenceNow = new Date()) {
     return { time: timeStr, dayLabel: dateFormatted, fullText: `${dateFormatted} saat ${timeStr}` };
   }
 }
+
+/**
+ * Canlı Şarj Seansı Hesaplama Motoru
+ * Başlangıç anından şu ana (now) kadar geçen süreyi ve eklenen enerjiyi hesaplar.
+ */
+export function calculateLiveSession(session, now = new Date()) {
+  const startTime = new Date(session.startTime);
+  const elapsedMs = Math.max(0, now.getTime() - startTime.getTime());
+  const elapsedHours = elapsedMs / (1000 * 60 * 60);
+
+  const phases = Number(session.chargingPhases) || 1;
+  const voltage = Number(session.voltage) || 215;
+  const initialAmps = Number(session.initialAmperage) || 13;
+  const efficiency = (Number(session.efficiency) || 90) / 100;
+  const usableCapacity = Number(session.usableCapacity) || 60.5;
+  const startSoc = Number(session.startSoc) || 30;
+  const initialStartSoc = Number(session.initialStartSoc !== undefined ? session.initialStartSoc : startSoc);
+  const targetSoc = Number(session.targetSoc) || 80;
+  const realConsumption = Number(session.realConsumption) || 13.1;
+  const standardRate = Number(session.standardRate) || 3.85;
+
+  const initialNetKw = (phases * voltage * initialAmps * efficiency) / 1000;
+
+  let deliveredNetKwh = 0;
+  let currentAmps = initialAmps;
+  let isNightPhase = false;
+
+  if (session.enableNightDrop && session.nightDropTime) {
+    const [dHour, dMin] = session.nightDropTime.split(':').map(Number);
+    let dropDate = new Date(startTime);
+    dropDate.setHours(dHour, dMin, 0, 0);
+    if (dropDate.getTime() <= startTime.getTime()) {
+      dropDate.setDate(dropDate.getDate() + 1);
+    }
+    const nightAmps = Number(session.nightDropAmps) || 10;
+    const nightNetKw = (phases * voltage * nightAmps * efficiency) / 1000;
+
+    if (now.getTime() < dropDate.getTime()) {
+      deliveredNetKwh = initialNetKw * elapsedHours;
+      currentAmps = initialAmps;
+      isNightPhase = false;
+    } else {
+      const p1Hours = Math.max(0, dropDate.getTime() - startTime.getTime()) / (1000 * 60 * 60);
+      const p2Hours = Math.max(0, now.getTime() - dropDate.getTime()) / (1000 * 60 * 60);
+      deliveredNetKwh = (initialNetKw * p1Hours) + (nightNetKw * p2Hours);
+      currentAmps = nightAmps;
+      isNightPhase = true;
+    }
+  } else {
+    deliveredNetKwh = initialNetKw * elapsedHours;
+  }
+
+  const addedNetKwh = deliveredNetKwh + (Number(session.accumulatedKwh) || 0);
+  const currentSoc = Math.min(targetSoc, startSoc + (deliveredNetKwh / usableCapacity) * 100);
+  const isComplete = currentSoc >= targetSoc;
+
+  // Kalan Süre Hesabı
+  const remainingNetKwh = Math.max(0, ((targetSoc - currentSoc) / 100) * usableCapacity);
+  const currentNetKw = (phases * voltage * currentAmps * efficiency) / 1000;
+  const remainingHours = currentNetKw > 0 ? (remainingNetKwh / currentNetKw) : 0;
+  const remainingSeconds = Math.round(remainingHours * 3600);
+
+  const estimatedEndTime = new Date(now.getTime() + remainingSeconds * 1000);
+  const gridKwh = addedNetKwh / efficiency;
+  const addedCost = gridKwh * standardRate;
+  const addedKm = (addedNetKwh / (realConsumption / 100));
+
+  const totalRange = Math.max(1, targetSoc - initialStartSoc);
+  const progressPercent = Math.max(0, Math.min(100, ((currentSoc - initialStartSoc) / totalRange) * 100));
+
+  // Kalan süre formatı
+  const remH = Math.floor(remainingSeconds / 3600);
+  const remM = Math.floor((remainingSeconds % 3600) / 60);
+  const remS = remainingSeconds % 60;
+  const remainingFormatted = `${String(remH).padStart(2, '0')}:${String(remM).padStart(2, '0')}:${String(remS).padStart(2, '0')}`;
+  const remainingShort = remH > 0 ? `${remH} sa ${remM} dk` : `${remM} dk ${remS} sn`;
+
+  // Bitiş saati formatı
+  const endH = String(estimatedEndTime.getHours()).padStart(2, '0');
+  const endM = String(estimatedEndTime.getMinutes()).padStart(2, '0');
+  const endTimeFormatted = `${endH}:${endM}`;
+
+  // Gün etiketi
+  const isTomorrow = estimatedEndTime.getDate() !== now.getDate();
+  const dayLabel = isTomorrow ? 'Yarın' : 'Bugün';
+
+  return {
+    currentSoc,
+    isComplete,
+    remainingSeconds,
+    remainingFormatted,
+    remainingShort,
+    estimatedEndTime,
+    endTimeFormatted,
+    dayLabel,
+    currentAmps,
+    isNightPhase,
+    currentPowerKw: (phases * voltage * currentAmps) / 1000,
+    addedNetKwh,
+    gridKwh,
+    addedCost,
+    addedKm,
+    progressPercent,
+    elapsedSeconds: Math.round(elapsedMs / 1000)
+  };
+}

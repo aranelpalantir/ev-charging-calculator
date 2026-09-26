@@ -8,8 +8,8 @@
   --border-color: rgba(255, 255, 255, 0.08);
   --border-active: rgba(255, 255, 255, 0.2);
   
-  --tesla-red: #e82127;
-  --tesla-red-glow: rgba(232, 33, 39, 0.25);
+  --tesla-red: #c92a2a;
+  --tesla-red-glow: rgba(201, 42, 42, 0.25);
   --electric-blue: #00d2ff;
   --electric-cyan: #06b6d4;
   --success-green: #10b981;
@@ -342,6 +342,10 @@ body {
 }
 
 /* Aksiyon Butonları */
+.start-charge-row {
+  margin-top: 14px;
+}
+
 .result-actions {
   display: flex;
   gap: 10px;
@@ -364,14 +368,39 @@ body {
 }
 
 .btn-primary {
-  background: var(--tesla-red);
+  background: linear-gradient(135deg, #d32f2f, #b71c1c);
   color: #ffffff;
-  box-shadow: 0 4px 16px var(--tesla-red-glow);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px rgba(183, 28, 28, 0.32);
 }
 
 .btn-primary:active {
   transform: scale(0.98);
-  background: #d3181d;
+  background: linear-gradient(135deg, #b71c1c, #8e1414);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #d32f2f, #b71c1c);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 14px rgba(183, 28, 28, 0.3);
+}
+
+.btn-danger:active {
+  transform: scale(0.98);
+  background: linear-gradient(135deg, #b71c1c, #8e1414);
+}
+
+.btn-apply-live {
+  background: linear-gradient(135deg, #00d2ff, #0072ff);
+  color: #ffffff;
+  border: 1px solid rgba(0, 210, 255, 0.4);
+  box-shadow: 0 4px 18px rgba(0, 210, 255, 0.35);
+}
+
+.btn-apply-live:active {
+  transform: scale(0.98);
+  background: linear-gradient(135deg, #00bce6, #005fd9);
 }
 
 .btn-outline {
@@ -1643,4 +1672,481 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+/* ========================================================
+   CANLI ŞARJ TAKİP EKRANI (LIVE CHARGING COCKPIT)
+   ======================================================== */
+
+.live-card {
+  border: 1px solid rgba(0, 210, 255, 0.35);
+  box-shadow: 0 0 30px rgba(0, 210, 255, 0.12), var(--shadow-card);
+  position: relative;
+  background: linear-gradient(180deg, rgba(19, 22, 32, 0.95) 0%, rgba(10, 12, 16, 0.98) 100%);
+}
+
+.live-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.live-tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 210, 255, 0.12);
+  border: 1px solid rgba(0, 210, 255, 0.3);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+}
+
+.live-tag-text {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--electric-cyan);
+}
+
+.live-dot-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #00ff88;
+  box-shadow: 0 0 10px #00ff88;
+  animation: liveDotBlink 1.5s infinite ease-in-out;
+}
+
+@keyframes liveDotBlink {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.8); }
+}
+
+.live-model-tag {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  max-width: 190px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Canlı Batarya Hero */
+.live-battery-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 0 20px;
+}
+
+.live-battery-graphic {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.live-battery-outline {
+  width: 140px;
+  height: 60px;
+  border: 3px solid rgba(255, 255, 255, 0.25);
+  border-radius: 12px;
+  padding: 4px;
+  background: rgba(0, 0, 0, 0.4);
+  box-sizing: border-box;
+}
+
+.live-battery-level {
+  height: 100%;
+  background: linear-gradient(90deg, #00d2ff 0%, #00ff88 100%);
+  border-radius: 6px;
+  transition: width 0.5s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 16px rgba(0, 255, 136, 0.4);
+}
+
+.battery-glow-pulse {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: batteryShine 2.5s infinite linear;
+}
+
+@keyframes batteryShine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.live-battery-cap {
+  width: 6px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 0 4px 4px 0;
+  margin-left: 2px;
+}
+
+.live-soc-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  line-height: 1;
+  margin-bottom: 14px;
+}
+
+.live-soc-big {
+  font-size: 3.8rem;
+  font-weight: 900;
+  letter-spacing: -2px;
+  color: #ffffff;
+  text-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
+  font-variant-numeric: tabular-nums;
+}
+
+.live-soc-unit {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--electric-cyan);
+}
+
+/* İlerleme Çubuğu */
+.live-track-bar-container {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.live-track-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.live-pct-badge {
+  background: rgba(0, 255, 136, 0.12);
+  color: #00ff88;
+  padding: 1px 8px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 0.7rem;
+}
+
+.live-track-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.live-track-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00d2ff, #00ff88);
+  border-radius: var(--radius-full);
+  transition: width 0.5s ease;
+}
+
+/* Sayaç Dashboard */
+.live-timer-dashboard {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.live-time-card {
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 14px 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.live-time-card.highlight-time-card {
+  background: rgba(0, 210, 255, 0.07);
+  border-color: rgba(0, 210, 255, 0.25);
+}
+
+.lt-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.8px;
+}
+
+.lt-val-big {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+.highlight-time-card .lt-val-big {
+  color: var(--electric-cyan);
+}
+
+.lt-sub {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+/* Aksiyonlar */
+.live-actions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.live-actions-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.btn-danger-soft {
+  background: rgba(211, 47, 47, 0.08);
+  border: 1px solid rgba(211, 47, 47, 0.22);
+  color: #ef5350;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-danger-soft:hover, .btn-danger-soft:active {
+  background: rgba(211, 47, 47, 0.18);
+  color: #ffffff;
+  border-color: rgba(211, 47, 47, 0.45);
+}
+
+.pulse-btn {
+  animation: subtlePulseRed 2.5s infinite;
+}
+
+.btn-apply-live.pulse-btn {
+  animation: subtlePulseCyan 2.5s infinite;
+}
+
+@keyframes subtlePulseRed {
+  0%, 100% { box-shadow: 0 4px 14px rgba(201, 42, 42, 0.25); }
+  50% { box-shadow: 0 4px 20px rgba(201, 42, 42, 0.5); transform: translateY(-1px); }
+}
+
+@keyframes subtlePulseCyan {
+  0%, 100% { box-shadow: 0 4px 14px rgba(0, 210, 255, 0.3); }
+  50% { box-shadow: 0 4px 22px rgba(0, 210, 255, 0.6); transform: translateY(-1px); }
+}
+
+/* Özel Onay Modalı (Şarjı Bitir Dialog) */
+.modal-confirm-card {
+  max-width: 380px;
+  text-align: center;
+  padding: 26px 20px;
+}
+
+.confirm-icon-badge {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 14px auto;
+  border-radius: 50%;
+  background: rgba(211, 47, 47, 0.12);
+  border: 1px solid rgba(211, 47, 47, 0.28);
+  color: #ef5350;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.confirm-title {
+  font-size: 1.12rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.confirm-desc {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  margin-bottom: 22px;
+}
+
+.confirm-actions-row {
+  display: flex;
+  gap: 10px;
+}
+
+.confirm-actions-row .btn {
+  flex: 1;
+}
+
+/* Header Live Pill */
+.live-header-pill {
+  background: rgba(0, 255, 136, 0.12);
+  border: 1px solid rgba(0, 255, 136, 0.35);
+  color: #00ff88;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.live-header-pill:hover {
+  background: rgba(0, 255, 136, 0.22);
+}
+
+/* Floating Banner */
+.live-floating-banner {
+  background: rgba(19, 22, 32, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 210, 255, 0.3);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.banner-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--text-primary);
+}
+
+.banner-time-sub {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+
+.banner-pill-btn {
+  background: rgba(0, 210, 255, 0.15);
+  border: 1px solid var(--electric-cyan);
+  color: var(--electric-cyan);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.banner-pill-btn:hover {
+  background: var(--electric-cyan);
+  color: #000000;
+}
+
+/* Kalibrasyon Kutusu */
+.calibrate-box {
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+
+/* Özet Modalı */
+.summary-hero-card {
+  background: rgba(0, 210, 255, 0.08);
+  border: 1px solid rgba(0, 210, 255, 0.25);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.summary-soc-flow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.flow-point {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.flow-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.flow-val {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.highlight-point .flow-val {
+  color: #00ff88;
+}
+
+.flow-arrow {
+  font-size: 1.4rem;
+  color: var(--electric-cyan);
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.sum-item {
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sum-item.highlight-sum-item {
+  background: rgba(0, 255, 136, 0.08);
+  border-color: rgba(0, 255, 136, 0.25);
+}
+
+.sum-name {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.sum-val {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+.highlight-sum-item .sum-val {
+  color: #00ff88;
 }
