@@ -367,7 +367,7 @@ function recalculateAndRender() {
   const tgtSoc = Math.min(100, Math.max(curSoc, result.targetSoc));
   const delta = tgtSoc - curSoc;
 
-  els.batteryRangeText.textContent = `${curSoc}% ➔ ${tgtSoc}% (+${Math.round(result.addedKm)} km WLTP)`;
+  els.batteryRangeText.textContent = `%${curSoc} ➔ %${tgtSoc}`;
   els.barCurrent.style.width = `${curSoc}%`;
   els.barCurrent.innerHTML = `<span class="bar-tag current-tag">%${curSoc}</span>`;
 
