@@ -242,8 +242,8 @@ function syncInputsWithState() {
     els.usableBatteryDisplay.textContent = `${Number(state.usableCapacity || 60.5).toFixed(1)} kWh`;
   }
 
-  els.inputEfficiency.value = state.efficiency || 88;
-  els.efficiencyDisplay.textContent = `%${state.efficiency || 88}`;
+  els.inputEfficiency.value = state.efficiency || 90;
+  els.efficiencyDisplay.textContent = `%${state.efficiency || 90}`;
 
   // Formül & Tarife Alanları
   els.inputBillAmount.value = state.billTotalAmount || 1000.00;

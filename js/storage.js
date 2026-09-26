@@ -628,7 +628,7 @@ export const DEFAULT_STATE = {
   batteryType: 'LFP',
   drivetrain: 'rwd',
   voltage: 215,              // 215V varsayılan
-  efficiency: 88,            // 10-13A ev şarjında ortalama %88 verim
+  efficiency: 90,            // 10-13A ev şarjında ortalama %90 verim
 
   // Gece Güvenlik Akımı Planı (Uyurken 10A Düşürme)
   enableNightDrop: false,    // Gece akımı düşürülsün mü?
@@ -654,6 +654,9 @@ export function loadSettings() {
     }
     if (!parsed.chargingPowerPreset) {
       parsed.chargingPowerPreset = (parsed.amperage === 10 ? '10a' : (parsed.amperage === 16 ? (parsed.chargingPhases === 3 ? '11kw' : '16a') : (parsed.amperage === 32 ? (parsed.chargingPhases === 3 ? '22kw' : '7.4kw') : (parsed.amperage === 13 ? '13a' : 'custom'))));
+    }
+    if (parsed.efficiency === undefined || parsed.efficiency === 88) {
+      parsed.efficiency = 90;
     }
     return { ...DEFAULT_STATE, ...parsed };
   } catch (e) {

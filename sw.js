@@ -1,5 +1,5 @@
 // EV Şarj Zamanlayıcı - Service Worker (Safari/WebKit Redirect-Safe)
-const CACHE_NAME = 'ev-sarj-v5';
+const CACHE_NAME = 'ev-sarj-v6';
 const ASSETS_TO_CACHE = [
   './',
   './css/style.css',

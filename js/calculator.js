@@ -10,7 +10,7 @@ export function calculateCharging(state, referenceNow = new Date()) {
   const phases = Number(state.chargingPhases) || 1; // 1 (Monofaze) veya 3 (Trifaze)
   const initialAmps = Math.max(1, Number(state.amperage) || 13);
   const voltage = Math.max(180, Number(state.voltage) || 220);
-  const efficiency = Math.min(100, Math.max(50, Number(state.efficiency) || 88)) / 100;
+  const efficiency = Math.min(100, Math.max(50, Number(state.efficiency) || 90)) / 100;
 
   // Araç ve Batarya Bilgileri (Kullanılabilir Net Batarya)
   let capacity = 60.0;
