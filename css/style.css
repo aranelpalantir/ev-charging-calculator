@@ -60,6 +60,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  box-sizing: border-box;
 }
 
 /* Üst Başlık */
@@ -111,6 +112,13 @@ body {
   margin-top: 2px;
   transition: all 0.2s ease;
   font-family: inherit;
+  max-width: 220px;
+}
+
+.vehicle-picker-pill span:first-child {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .vehicle-picker-pill:hover, .vehicle-picker-pill:active {
@@ -154,6 +162,7 @@ body {
   box-shadow: var(--shadow-card);
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 /* Hero Sonuç Kartı */
@@ -469,32 +478,42 @@ body {
   font-weight: 600;
 }
 
+/* Büyütülmüş ve 100 Sayısının Rahat Sığdığı Stepper Rozeti */
 .stepper-value-badge {
   display: inline-flex;
   align-items: baseline;
   background: var(--bg-input);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  padding: 4px 10px;
+  padding: 4px 12px;
+}
+
+.stepper-value-badge.large-badge {
+  padding: 5px 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.16);
 }
 
 .stepper-value-badge input {
   background: transparent;
   border: none;
-  color: var(--text-primary);
-  font-size: 1.25rem;
+  color: #ffffff;
+  font-size: 1.45rem;
   font-weight: 800;
-  width: 44px;
+  width: 60px;
+  min-width: 60px;
   text-align: right;
   outline: none;
   font-family: inherit;
+  padding: 0;
+  margin: 0;
 }
 
 .stepper-value-badge .unit {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  font-weight: 700;
-  margin-left: 2px;
+  font-size: 0.95rem;
+  color: var(--electric-cyan);
+  font-weight: 800;
+  margin-left: 3px;
 }
 
 /* Slider Row */
@@ -508,7 +527,7 @@ body {
   background: var(--bg-input);
   border: 1px solid var(--border-color);
   color: var(--text-secondary);
-  min-width: 46px;
+  min-width: 48px;
   height: 42px;
   border-radius: var(--radius-md);
   font-size: 0.82rem;
@@ -570,6 +589,11 @@ body {
   gap: 8px;
   overflow-x: auto;
   padding-bottom: 2px;
+  scrollbar-width: none;
+}
+
+.chip-row::-webkit-scrollbar {
+  display: none;
 }
 
 .chip {
@@ -641,7 +665,7 @@ body {
   color: #ff9e9e;
 }
 
-/* Segmented Controls (13A & 10A Seçimi) */
+/* Segmented Controls (13A & 10A & Mod Seçimi) */
 .segmented-control {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -804,22 +828,16 @@ body {
   gap: 12px;
 }
 
-.tariff-type-selector {
-  margin-bottom: 8px;
-}
-
 .rate-choice-row {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin-bottom: 8px;
 }
 
 .custom-rate-input-row {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 8px;
   background: var(--bg-input);
   padding: 8px 12px;
   border-radius: var(--radius-md);
@@ -860,43 +878,7 @@ body {
 
 .highlight-cost .t-val {
   color: #34d399;
-  font-size: 0.95rem;
-}
-
-.savings-note {
-  font-size: 0.78rem;
-  color: #a7f3d0;
-  background: rgba(16, 185, 129, 0.1);
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(16, 185, 129, 0.2);
-}
-
-.tariff-meter {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.meter-bar-label {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.78rem;
-  color: var(--text-secondary);
-}
-
-.meter-track {
-  height: 8px;
-  background: var(--bg-input);
-  border-radius: var(--radius-full);
-  overflow: hidden;
-}
-
-.meter-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #3b82f6 0%, #10b981 100%);
-  border-radius: var(--radius-full);
-  transition: width 0.3s ease;
+  font-size: 1rem;
 }
 
 /* PWA Install Kartı */
@@ -931,7 +913,7 @@ body {
   color: var(--text-secondary);
 }
 
-/* Modallar */
+/* Modallar (Yatay Scroll Tamamen Engellenmiş) */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -943,6 +925,7 @@ body {
   align-items: flex-end;
   justify-content: center;
   padding: 0;
+  overflow: hidden;
 }
 
 @media (min-width: 480px) {
@@ -959,10 +942,12 @@ body {
   max-width: 480px;
   max-height: 85vh;
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  padding: 24px;
+  padding: 20px;
   overflow-y: auto;
+  overflow-x: hidden; /* Sağ scroll engellendi */
   box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
   animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
 }
 
 @media (min-width: 480px) {
@@ -980,11 +965,11 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .modal-header h2 {
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   font-weight: 800;
   color: var(--text-primary);
 }
@@ -1001,18 +986,24 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .modal-body {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
+  overflow-x: hidden;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .setting-item {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .setting-item label {
@@ -1043,48 +1034,20 @@ body {
   background: var(--bg-input);
   border: 1px solid var(--border-color);
   color: var(--text-primary);
-  padding: 12px 14px;
+  padding: 10px 14px;
   border-radius: var(--radius-md);
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-family: inherit;
   outline: none;
-  min-height: 48px;
-}
-
-.tariff-inputs-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  min-height: 46px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .sub-label {
   font-size: 0.72rem;
   color: var(--text-secondary);
   display: block;
-  margin-bottom: 4px;
-}
-
-.tax-toggle-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-
-.checkbox-container {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.82rem;
-  color: var(--text-secondary);
-  cursor: pointer;
-}
-
-.checkbox-container input[type="checkbox"] {
-  accent-color: var(--tesla-red);
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
 }
 
 /* Guide Modalı */

@@ -8,7 +8,7 @@
   <!-- PWA & Mobil Meta Etiketleri -->
   <meta name="theme-color" content="#0a0c10">
   <meta name="color-scheme" content="dark">
-  <meta name="description" content="Ev prizinden (10A-13A) Tesla, Togg, BYD ve tüm elektrikli araçlar için sabah çıkış saatine göre şarj zamanı ve elektrik faturası maliyet hesaplayıcı.">
+  <meta name="description" content="Ev prizinden (10A-13A) Tesla, Togg, BYD ve elektrikli araçlar için şarj süresi ve elektrik faturası hesaplayıcı.">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -67,7 +67,7 @@
         <div class="alert-box warning-alert" id="overdue-warning" style="display: none;">
           <div class="alert-icon">⚠️</div>
           <div class="alert-content">
-            <strong id="overdue-title">Seçilen akımla hedef saate yetişmiyor!</strong>
+            <strong id="overdue-title">Hedef saate yetişmiyor!</strong>
             <p id="overdue-detail">Şu an başlarsanız araç en erken 09:15'te hazır olur.</p>
           </div>
         </div>
@@ -83,15 +83,15 @@
             <span class="stat-value" id="stat-duration">8 sa 30 dk</span>
           </div>
           <div class="stat-item">
-            <span class="stat-name">Priz Gücü</span>
-            <span class="stat-value" id="stat-power">3.0 kW (13A)</span>
+            <span class="stat-name">Güç</span>
+            <span class="stat-value" id="stat-power">2.9 kW (13A)</span>
           </div>
           <div class="stat-item">
             <span class="stat-name">Eklenecek</span>
             <span class="stat-value" id="stat-energy">+42.0 kWh</span>
           </div>
           <div class="stat-item highlight-stat">
-            <span class="stat-name">Fatura Tutarı</span>
+            <span class="stat-name">Maliyet</span>
             <span class="stat-value" id="stat-cost">~161 TL</span>
           </div>
         </div>
@@ -115,34 +115,81 @@
         </div>
       </section>
 
-      <!-- 2. BATARYA GÖRSEL ÇUBUĞU -->
-      <section class="card battery-visual-card">
-        <div class="battery-label-row">
-          <span class="section-title">Şarj Durumu & Menzil</span>
-          <span class="battery-percent-range" id="battery-range-text">30% ➔ 100% (+270 km)</span>
-        </div>
-        <div class="tesla-battery-wrapper">
-          <div class="battery-cap"></div>
-          <div class="battery-bar-outer">
-            <div class="battery-bar-current" id="bar-current" style="width: 30%;">
-              <span class="bar-tag current-tag">%30</span>
+      <!-- 2. PARAMETRE KONTROLLERİ (YENİ SIRALAMA) -->
+      <section class="card controls-card">
+        
+        <!-- 1. SIRA: HESAPLAMA YÖNTEMİ (EN ÜSTTE) -->
+        <div class="control-group">
+          <div class="control-header">
+            <label class="control-label">1. Hesaplama Yöntemi</label>
+          </div>
+
+          <div class="segmented-control mode-segmented">
+            <button class="segment-btn active-segment" id="mode-departure-btn" data-mode="departure">
+              <span class="segment-title">⏰ Çıkış Saatine Göre</span>
+              <span class="segment-desc">Sabah saatine hazırla</span>
+            </button>
+            <button class="segment-btn" id="mode-now-btn" data-mode="now">
+              <span class="segment-title">⚡ Şimdi Şarja Tak</span>
+              <span class="segment-desc">Bitiş saatini hesapla</span>
+            </button>
+          </div>
+
+          <!-- Çıkış Saati Seçimi (Sadece çıkış modu seçiliyken görünür) -->
+          <div class="departure-time-wrapper" id="departure-picker-container">
+            <div class="time-input-row">
+              <label for="input-departure-time" class="time-input-label">Sabah Çıkış Saati:</label>
+              <input type="time" id="input-departure-time" value="07:30" class="time-native-input">
             </div>
-            <div class="battery-bar-target" id="bar-target" style="width: 70%;">
-              <span class="bar-tag target-tag">%100</span>
+            
+            <div class="chip-row time-presets">
+              <button class="chip" data-time="07:00">07:00</button>
+              <button class="chip active-chip" data-time="07:30">07:30</button>
+              <button class="chip" data-time="08:00">08:00</button>
+              <button class="chip" data-time="08:30">08:30</button>
             </div>
           </div>
         </div>
-      </section>
 
-      <!-- 3. PARAMETRE KONTROLLERİ -->
-      <section class="card controls-card">
-        
-        <!-- A. MEVCUT ŞARJ GİRİŞİ -->
+        <div class="divider"></div>
+
+        <!-- 2. SIRA: ŞARJ AKIMI (AMPER) (HEMEN ALTINDA) -->
         <div class="control-group">
           <div class="control-header">
-            <label for="input-current-soc" class="control-label">Mevcut Şarjınız</label>
-            <div class="stepper-value-badge">
-              <input type="number" id="input-current-soc" min="0" max="100" step="1" value="30" inputmode="numeric">
+            <label class="control-label">2. Şarj Akımı (Amper)</label>
+            <span class="helper-info" id="amp-power-label">13A (~2.9 kW)</span>
+          </div>
+
+          <div class="segmented-control amps-segmented">
+            <button class="segment-btn active-segment" id="amp-13-btn" data-amp="13">
+              <span class="segment-title">13A</span>
+              <span class="segment-desc">Varsayılan (~2.9 kW)</span>
+            </button>
+            <button class="segment-btn" id="amp-10-btn" data-amp="10">
+              <span class="segment-title">10A</span>
+              <span class="segment-desc">Gece Güvenlik (~2.2 kW)</span>
+            </button>
+            <button class="segment-btn" id="amp-other-btn" data-amp="other">
+              <span class="segment-title">Diğer</span>
+              <span class="segment-desc">6A - 32A</span>
+            </button>
+          </div>
+
+          <!-- Hassas Slider -->
+          <div class="slider-row custom-amp-container" id="custom-amp-box" style="display: none;">
+            <input type="range" id="range-custom-amp" min="6" max="32" step="1" value="13" class="custom-range" aria-label="Özel Amper Ayarı">
+            <span class="custom-amp-val" id="custom-amp-val">13A</span>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- 3. SIRA: MEVCUT ŞARJINIZ (BÜYÜTÜLMÜŞ VE GENİŞ) -->
+        <div class="control-group">
+          <div class="control-header">
+            <label for="input-current-soc" class="control-label">3. Mevcut Şarjınız</label>
+            <div class="stepper-value-badge large-badge">
+              <input type="number" id="input-current-soc" min="0" max="100" step="1" value="30" inputmode="numeric" maxlength="3">
               <span class="unit">%</span>
             </div>
           </div>
@@ -163,12 +210,12 @@
 
         <div class="divider"></div>
 
-        <!-- B. HEDEF ŞARJ SEÇİMİ -->
+        <!-- 4. SIRA: HEDEF ŞARJ SEÇİMİ -->
         <div class="control-group">
           <div class="control-header">
-            <label for="input-target-soc" class="control-label">Hedef Şarj</label>
-            <div class="stepper-value-badge">
-              <input type="number" id="input-target-soc" min="1" max="100" step="1" value="100" inputmode="numeric">
+            <label for="input-target-soc" class="control-label">4. Hedef Şarj</label>
+            <div class="stepper-value-badge large-badge">
+              <input type="number" id="input-target-soc" min="1" max="100" step="1" value="100" inputmode="numeric" maxlength="3">
               <span class="unit">%</span>
             </div>
           </div>
@@ -189,183 +236,81 @@
           </div>
         </div>
 
-        <div class="divider"></div>
-
-        <!-- C. ŞARJ AKIMI (AMPER) - 13A & 10A -->
-        <div class="control-group">
-          <div class="control-header">
-            <label class="control-label">Şarj Akımı (Amper)</label>
-            <span class="helper-info" id="amp-power-label">13A (~3.0 kW)</span>
-          </div>
-
-          <div class="segmented-control amps-segmented">
-            <button class="segment-btn active-segment" id="amp-13-btn" data-amp="13">
-              <span class="segment-title">13A</span>
-              <span class="segment-desc">Varsayılan (~3.0 kW)</span>
-            </button>
-            <button class="segment-btn" id="amp-10-btn" data-amp="10">
-              <span class="segment-title">10A</span>
-              <span class="segment-desc">Gece Güvenlik (~2.3 kW)</span>
-            </button>
-            <button class="segment-btn" id="amp-other-btn" data-amp="other">
-              <span class="segment-title">Diğer</span>
-              <span class="segment-desc">6A - 32A</span>
-            </button>
-          </div>
-
-          <!-- Hassas Slider -->
-          <div class="slider-row custom-amp-container" id="custom-amp-box" style="display: none;">
-            <input type="range" id="range-custom-amp" min="6" max="32" step="1" value="13" class="custom-range" aria-label="Özel Amper Ayarı">
-            <span class="custom-amp-val" id="custom-amp-val">13A</span>
-          </div>
-        </div>
-
-        <div class="divider"></div>
-
-        <!-- D. HESAPLAMA MODU & ZAMAN -->
-        <div class="control-group">
-          <div class="control-header">
-            <label class="control-label">Hesaplama Yöntemi</label>
-          </div>
-
-          <div class="segmented-control mode-segmented">
-            <button class="segment-btn active-segment" id="mode-departure-btn" data-mode="departure">
-              <span class="segment-title">⏰ Çıkış Saatine Göre</span>
-              <span class="segment-desc">Sabah saatine hazırla</span>
-            </button>
-            <button class="segment-btn" id="mode-now-btn" data-mode="now">
-              <span class="segment-title">⚡ Şimdi Şarja Tak</span>
-              <span class="segment-desc">Bitiş saatini hesapla</span>
-            </button>
-          </div>
-
-          <!-- Çıkış Saati Seçimi -->
-          <div class="departure-time-wrapper" id="departure-picker-container">
-            <div class="time-input-row">
-              <label for="input-departure-time" class="time-input-label">Sabah Çıkış Saati:</label>
-              <input type="time" id="input-departure-time" value="07:30" class="time-native-input">
-            </div>
-            
-            <div class="chip-row time-presets">
-              <button class="chip" data-time="07:00">07:00</button>
-              <button class="chip active-chip" data-time="07:30">07:30</button>
-              <button class="chip" data-time="08:00">08:00</button>
-              <button class="chip" data-time="08:30">08:30</button>
-            </div>
-          </div>
-        </div>
-
       </section>
 
-      <!-- 4. ELEKTRİK FATURASI & MALİYET KARTI -->
+      <!-- 3. BATARYA GÖRSEL ÇUBUĞU -->
+      <section class="card battery-visual-card">
+        <div class="battery-label-row">
+          <span class="section-title">Şarj Durumu & Menzil</span>
+          <span class="battery-percent-range" id="battery-range-text">30% ➔ 100% (+270 km)</span>
+        </div>
+        <div class="tesla-battery-wrapper">
+          <div class="battery-cap"></div>
+          <div class="battery-bar-outer">
+            <div class="battery-bar-current" id="bar-current" style="width: 30%;">
+              <span class="bar-tag current-tag">%30</span>
+            </div>
+            <div class="battery-bar-target" id="bar-target" style="width: 70%;">
+              <span class="bar-tag target-tag">%100</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. SADELEŞTİRİLMİŞ FATURA & MALİYET KARTI -->
       <section class="card tariff-card" id="tariff-card">
         <div class="card-header-collapsible" id="btn-toggle-tariff">
           <div class="card-header-title">
             <span class="icon-tariff">⚡</span>
             <div class="tariff-title-group">
-              <h3>Elektrik Faturası & Şarj Maliyeti</h3>
-              <span class="tariff-sub-text" id="tariff-summary-sub">Standart Tarife (Fatura Bazlı)</span>
+              <h3>Elektrik Faturası Maliyeti</h3>
+              <span class="tariff-sub-text" id="tariff-summary-sub">Birim Fiyat: 3.84 TL/kWh</span>
             </div>
           </div>
           <span class="toggle-arrow">▼</span>
         </div>
 
         <div class="tariff-body" id="tariff-content">
-          <!-- Tarife Tipi Seçimi (Standart vs 3 Zamanlı) -->
-          <div class="segmented-control mode-segmented tariff-type-selector">
-            <button class="segment-btn active-segment" id="tariff-type-standard-btn">
-              <span class="segment-title">🏠 Standart Tarife</span>
-              <span class="segment-desc">Tek Zamanlı (Faturanız)</span>
-            </button>
-            <button class="segment-btn" id="tariff-type-threetier-btn">
-              <span class="segment-title">🌙 3 Zamanlı</span>
-              <span class="segment-desc">Gece İndirimli</span>
-            </button>
-          </div>
-
-          <!-- STANDART TARİFE İÇERİĞİ -->
-          <div id="standard-tariff-view">
-            <div class="rate-choice-row">
-              <label class="sub-label">Fatura Hesaplama Bazı:</label>
-              <div class="chip-row">
-                <button class="chip active-chip" id="rate-mode-avg-btn" title="Faturadaki toplam tutar / toplam kWh ortalaması">
-                  Fatura Ort. (3.84 TL)
-                </button>
-                <button class="chip" id="rate-mode-high-btn" title="Aylık 240 kWh aşıldığı için aracın girdiği yüksek kademe">
-                  Yüksek Kademe (4.99 TL)
-                </button>
-                <button class="chip" id="rate-mode-custom-btn">
-                  Özel Fiyat
-                </button>
-              </div>
-            </div>
-
-            <!-- Özel Fiyat Girişi (İstenirse) -->
-            <div class="custom-rate-input-row" id="custom-rate-input-row" style="display: none;">
-              <label for="input-custom-rate" class="sub-label">Birim Fiyat (TL / kWh):</label>
-              <input type="number" id="input-custom-rate" class="custom-input" step="0.05" min="0.5" value="3.84">
-            </div>
-
-            <div class="tariff-breakdown-grid">
-              <div class="tariff-item">
-                <span class="t-label">Şebekeden Çekilecek Enerji</span>
-                <span class="t-val" id="val-std-grid-kwh">47.7 kWh</span>
-              </div>
-              <div class="tariff-item">
-                <span class="t-label">Uygulanan Birim Fiyat</span>
-                <span class="t-val" id="val-std-rate">3.84 TL / kWh</span>
-              </div>
-              <div class="tariff-item">
-                <span class="t-label">100 km Sürüş Maliyeti</span>
-                <span class="t-val" id="val-std-100km">~60 TL / 100km</span>
-              </div>
-              <div class="tariff-item highlight-cost">
-                <span class="t-label">Bu Şarjın Fatura Bedeli</span>
-                <span class="t-val" id="val-std-total">~161.20 TL</span>
-              </div>
-            </div>
-
-            <div class="savings-note" id="std-savings-note">
-              ⛽ Benzinli bir araca kıyasla (335 TL/100km) <strong>%82 daha ekonomik</strong> sürüyorsunuz!
+          <!-- Sade Seçenekler: 3.84 TL / 4.99 TL / Özel -->
+          <div class="rate-choice-row">
+            <span class="sub-label">Hesaplama Birim Fiyatı:</span>
+            <div class="chip-row">
+              <button class="chip active-chip" id="rate-mode-avg-btn" title="Faturanızdaki ortalama kWh bedeli">
+                3.84 TL (Fatura Ort.)
+              </button>
+              <button class="chip" id="rate-mode-high-btn" title="240 kWh üstü marjinal kademe bedeli">
+                4.99 TL (Yüksek Kademe)
+              </button>
+              <button class="chip" id="rate-mode-custom-btn">
+                Özel Fiyat
+              </button>
             </div>
           </div>
 
-          <!-- 3 ZAMANLI TARİFE İÇERİĞİ -->
-          <div id="threetier-tariff-view" style="display: none;">
-            <div class="tariff-meter">
-              <div class="meter-bar-label">
-                <span>Gece Dilimine Denk Gelen:</span>
-                <strong id="tariff-night-pct">85%</strong>
-              </div>
-              <div class="meter-track">
-                <div class="meter-fill" id="tariff-meter-fill" style="width: 85%;"></div>
-              </div>
-            </div>
-
-            <div class="tariff-breakdown-grid">
-              <div class="tariff-item">
-                <span class="t-label">Gece (22:00-06:00)</span>
-                <span class="t-val" id="val-tariff-night">35.7 kWh</span>
-              </div>
-              <div class="tariff-item">
-                <span class="t-label">Gündüz / Puant</span>
-                <span class="t-val" id="val-tariff-daypeak">12.0 kWh</span>
-              </div>
-              <div class="tariff-item">
-                <span class="t-label">Ortalama Birim</span>
-                <span class="t-val" id="val-tariff-eff-rate">2.10 TL/kWh</span>
-              </div>
-              <div class="tariff-item highlight-cost">
-                <span class="t-label">3 Zamanlı Tutar</span>
-                <span class="t-val" id="val-tariff-total">~105 TL</span>
-              </div>
-            </div>
-            
-            <div class="savings-note" id="tariff-savings-note">
-              💡 3 zamanlı tarifeye geçilirse bu şarjda tahmini <strong>~56 TL</strong> daha tasarruf edilebilir.
-            </div>
+          <!-- Özel Fiyat Girişi (Yalnızca Özel seçilirse) -->
+          <div class="custom-rate-input-row" id="custom-rate-input-row" style="display: none;">
+            <label for="input-custom-rate" class="sub-label">Özel Birim Fiyat (TL/kWh):</label>
+            <input type="number" id="input-custom-rate" class="custom-input" step="0.05" min="0.5" value="3.84">
           </div>
 
+          <div class="tariff-breakdown-grid">
+            <div class="tariff-item">
+              <span class="t-label">Şebekeden Çekilen</span>
+              <span class="t-val" id="val-std-grid-kwh">47.7 kWh</span>
+            </div>
+            <div class="tariff-item">
+              <span class="t-label">Birim Fiyat</span>
+              <span class="t-val" id="val-std-rate">3.84 TL / kWh</span>
+            </div>
+            <div class="tariff-item">
+              <span class="t-label">100 km Sürüş Maliyeti</span>
+              <span class="t-val" id="val-std-100km">~60 TL / 100km</span>
+            </div>
+            <div class="tariff-item highlight-cost">
+              <span class="t-label">Bu Şarjın Tutarı</span>
+              <span class="t-val" id="val-std-total">~183 TL</span>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -383,11 +328,11 @@
 
     </main>
 
-    <!-- AYARLAR & ARAÇ SEÇİMİ MODALI -->
+    <!-- AYARLAR & ARAÇ SEÇİMİ MODALI (Yatay Kaydırma Yapmayan Sadeleştirilmiş Tasarım) -->
     <div class="modal-overlay" id="settings-modal" style="display: none;">
       <div class="modal-card">
         <div class="modal-header">
-          <h2>Araç & Fatura Ayarları</h2>
+          <h2>Araç ve Şarj Ayarları</h2>
           <button class="modal-close" id="btn-close-settings" aria-label="Kapat">&times;</button>
         </div>
 
@@ -440,7 +385,7 @@
                 <option value="mercedes-eqa">Mercedes EQA 250+ (70.5 kWh)</option>
                 <option value="mercedes-eqb">Mercedes EQB 250+ (70.5 kWh)</option>
               </optgroup>
-              <optgroup label="Stellantis (Peugeot / Opel)">
+              <optgroup label="Stellantis">
                 <option value="peugeot-e2008">Peugeot E-2008 (54 kWh)</option>
                 <option value="opel-astra-e">Opel Astra Elektrik (54 kWh)</option>
               </optgroup>
@@ -456,49 +401,31 @@
             <input type="number" id="input-custom-capacity" class="custom-input" min="10" max="150" step="0.5" value="60">
           </div>
 
-          <!-- Voltaj -->
+          <!-- Voltaj (205V - 235V pratik ev aralığı) -->
           <div class="setting-item">
             <div class="setting-label-row">
-              <label for="input-voltage">Priz Şebeke Voltajı (V)</label>
-              <span class="setting-hint" id="voltage-display">230 V</span>
+              <label for="input-voltage">Priz Voltajı</label>
+              <span class="setting-hint" id="voltage-display">220 V</span>
             </div>
-            <input type="range" id="input-voltage" min="200" max="250" step="1" value="230" class="custom-range">
-            <span class="sub-hint">Türkiye ev prizi standardı genellikle 220V - 230V arasındadır.</span>
+            <input type="range" id="input-voltage" min="205" max="235" step="1" value="220" class="custom-range">
+            <span class="sub-hint">Ev tipi prizlerde voltaj genellikle 210V - 220V civarındadır.</span>
           </div>
 
           <!-- AC Şarj Verimliliği -->
           <div class="setting-item">
             <div class="setting-label-row">
-              <label for="input-efficiency">AC Ev Şarjı Verimliliği (%)</label>
+              <label for="input-efficiency">AC Ev Şarjı Verimliliği</label>
               <span class="setting-hint" id="efficiency-display">%88</span>
             </div>
-            <input type="range" id="input-efficiency" min="75" max="98" step="1" value="88" class="custom-range">
-            <span class="sub-hint">10A-13A ev şarjında araç sistemleri açık kaldığı için kayıplar dahil verim ortalama %88'dir.</span>
+            <input type="range" id="input-efficiency" min="80" max="95" step="1" value="88" class="custom-range">
+            <span class="sub-hint">Araç bilgisayarı ve şarj dönüştürücü kayıpları dahil pratik verim %88'dir.</span>
           </div>
 
-          <!-- Fatura & Vergi Parametreleri -->
+          <!-- Sade Fatura Birim Fiyatı Girişi -->
           <div class="setting-item">
-            <label>Fatura ve Vergi Ayarları</label>
-            <div class="tax-toggle-row">
-              <label class="checkbox-container">
-                <input type="checkbox" id="check-tax-inclusive" checked>
-                <span>Birim fiyatlar vergiler dahil (Faturadaki net tutar)</span>
-              </label>
-            </div>
-            <div class="tariff-inputs-grid">
-              <div>
-                <span class="sub-label">Fatura Ortalaması</span>
-                <input type="number" id="input-rate-avg" class="custom-input" step="0.05" value="3.84">
-              </div>
-              <div>
-                <span class="sub-label">Yüksek Kademe</span>
-                <input type="number" id="input-rate-high" class="custom-input" step="0.05" value="4.99">
-              </div>
-              <div>
-                <span class="sub-label">KDV Oranı (%)</span>
-                <input type="number" id="input-rate-kdv" class="custom-input" step="1" value="10">
-              </div>
-            </div>
+            <label for="input-rate-setting">Elektrik Birim Fiyatı (TL / kWh - Vergiler Dahil)</label>
+            <input type="number" id="input-rate-setting" class="custom-input" step="0.05" value="3.84">
+            <span class="sub-hint">Son faturanızın ortalaması 3.84 TL, yüksek kademe ise 4.99 TL'dir.</span>
           </div>
 
           <button id="btn-reset-defaults" class="btn btn-outline btn-full">Varsayılan Ayarlara Dön</button>
@@ -539,7 +466,7 @@
           </div>
 
           <div class="step-tip">
-            💡 <strong>İpucu:</strong> Arabayı akşam prize takıp bırakabilirsiniz. Araç hemen şarj etmez, ayarladığınız saatte otomatik başlayıp sabah 07:30'da hazır olur!
+            💡 <strong>İpucu:</strong> Arabayı akşam prize takıp bırakabilirsiniz. Araç hemen şarj etmez, ayarladığınız saatte otomatik başlayıp sabah hazır olur!
           </div>
         </div>
       </div>

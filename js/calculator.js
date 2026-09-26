@@ -1,17 +1,17 @@
-// js/calculator.js - Şarj, Zaman ve Fatura Maliyet Hesaplama Motoru
+// js/calculator.js - Şarj, Zaman ve Sadeleştirilmiş Fatura Maliyet Hesaplayıcı
 import { VEHICLE_PRESETS } from './storage.js';
 
 /**
- * Verilen parametrelere göre şarj süresini, başlama saatini ve elektrik faturası maliyetlerini hesaplar.
+ * Şarj süresi, başlama saati ve fatura maliyetini hesaplar.
  */
 export function calculateCharging(state, referenceNow = new Date()) {
   const currentSoc = Math.min(100, Math.max(0, Number(state.currentSoc) || 0));
   const targetSoc = Math.min(100, Math.max(0, Number(state.targetSoc) || 100));
   const amperage = Math.max(1, Number(state.amperage) || 13);
-  const voltage = Math.max(100, Number(state.voltage) || 230);
+  const voltage = Math.max(180, Number(state.voltage) || 220);
   const efficiency = Math.min(100, Math.max(50, Number(state.efficiency) || 88)) / 100;
 
-  // Araç bilgileri ve Batarya kapasitesi (kWh)
+  // Araç ve Batarya Bilgileri
   let capacity = 60.0;
   let consumptionWhPerKm = 155;
   let vehicleInfo = VEHICLE_PRESETS[state.vehicleModel];
@@ -24,20 +24,18 @@ export function calculateCharging(state, referenceNow = new Date()) {
     consumptionWhPerKm = vehicleInfo.consumption || 155;
   }
 
-  // Gereken net enerji (kWh)
+  // Net Enerji (kWh)
   const deltaSoc = Math.max(0, targetSoc - currentSoc);
   const neededBatteryKwh = (capacity * deltaSoc) / 100;
 
-  // Güç değerleri (kW)
-  // Şebekeden çekilen güç (Prizden çıkan güç)
+  // Güç Değerleri (kW)
   const gridPowerKw = (voltage * amperage) / 1000;
-  // Araç bataryasına giren efektif net güç
   const batteryPowerKw = gridPowerKw * efficiency;
 
-  // Şebekeden çekilecek toplam enerji (şarj kayıpları dahil kWh)
+  // Şebekeden çekilecek toplam enerji (şarj kayıpları dahil)
   const totalGridKwh = neededBatteryKwh > 0 ? (neededBatteryKwh / efficiency) : 0;
 
-  // Şarj süresi
+  // Şarj Süresi
   let totalMinutes = 0;
   if (deltaSoc > 0 && batteryPowerKw > 0) {
     const hours = neededBatteryKwh / batteryPowerKw;
@@ -47,14 +45,12 @@ export function calculateCharging(state, referenceNow = new Date()) {
   const durationHours = Math.floor(totalMinutes / 60);
   const durationRemainingMinutes = totalMinutes % 60;
 
-  // Menzil ekleme hızı (km/sa)
-  // Tüketim Wh/km -> km/kWh = 1000 / consumptionWhPerKm
+  // Menzil (km/sa ve eklenen km)
   const kmPerKwh = 1000 / consumptionWhPerKm;
   const kmPerHour = batteryPowerKw * kmPerKwh;
-  const percentPerHour = capacity > 0 ? (batteryPowerKw / capacity) * 100 : 0;
   const addedKm = neededBatteryKwh * kmPerKwh;
 
-  // Zaman planı hesaplaması
+  // Zaman Planı
   let startTime = new Date(referenceNow);
   let finishTime = new Date(referenceNow);
   let targetDepartureDate = null;
@@ -64,26 +60,20 @@ export function calculateCharging(state, referenceNow = new Date()) {
   let recommendedAmpsForDeadline = null;
 
   if (state.calcMode === 'departure') {
-    // Çıkış saati: "07:30"
     const [depHours, depMinutes] = (state.departureTime || '07:30').split(':').map(Number);
-    
     targetDepartureDate = new Date(referenceNow);
     targetDepartureDate.setHours(depHours, depMinutes, 0, 0);
 
-    // Eğer hedef çıkış saati şu andan önceyse doğrudan yarına at
     if (targetDepartureDate.getTime() <= referenceNow.getTime()) {
       targetDepartureDate.setDate(targetDepartureDate.getDate() + 1);
     }
 
-    // Başlama zamanı = Hedef Çıkış - Toplam Süre
     startTime = new Date(targetDepartureDate.getTime() - totalMinutes * 60000);
     finishTime = new Date(targetDepartureDate);
 
-    // Başlama saati geçmişte mi kaldı? (Şu an başlansa bile yetişmiyor mu?)
     if (startTime.getTime() < referenceNow.getTime() && deltaSoc > 0) {
       isOverdue = true;
       overdueMinutes = Math.round((referenceNow.getTime() - startTime.getTime()) / 60000);
-      
       const availableHours = (targetDepartureDate.getTime() - referenceNow.getTime()) / 3600000;
       if (availableHours > 0) {
         recommendedAmpsForDeadline = Math.ceil(
@@ -92,21 +82,12 @@ export function calculateCharging(state, referenceNow = new Date()) {
       }
     }
   } else {
-    // Şimdi şarja tak modu
     startTime = new Date(referenceNow);
     finishTime = new Date(referenceNow.getTime() + totalMinutes * 60000);
   }
 
-  // Fatura ve Maliyet Analizi (Tek Zamanlı Standart veya 3 Zamanlı)
-  const tariffCost = calculateCostAnalysis(
-    startTime,
-    totalMinutes,
-    totalGridKwh,
-    gridPowerKw,
-    consumptionWhPerKm,
-    efficiency,
-    state
-  );
+  // Sadeleştirilmiş Fatura Maliyeti (Benzin kıyaslaması olmadan)
+  const costAnalysis = calculateSimpleCost(totalGridKwh, consumptionWhPerKm, efficiency, state);
 
   return {
     currentSoc,
@@ -126,7 +107,6 @@ export function calculateCharging(state, referenceNow = new Date()) {
     durationHours,
     durationMinutes: durationRemainingMinutes,
     kmPerHour,
-    percentPerHour,
     addedKm,
     startTime,
     finishTime,
@@ -135,103 +115,39 @@ export function calculateCharging(state, referenceNow = new Date()) {
     overdueMinutes,
     earliestFinishIfStartNow,
     recommendedAmpsForDeadline,
-    tariffCost
+    costAnalysis
   };
 }
 
 /**
- * Fatura ve elektrik maliyetlerini hesaplar.
+ * Fatura maliyeti hesaplama (Net ve sade)
  */
-function calculateCostAnalysis(startTime, totalMinutes, totalGridKwh, gridPowerKw, consumptionWhPerKm, efficiency, state) {
-  const tariffType = state.tariffType || 'standard';
+function calculateSimpleCost(totalGridKwh, consumptionWhPerKm, efficiency, state) {
+  let effectiveRate = 3.84;
 
-  // 1. TEK ZAMANLI STANDART TARİFE (Kullanıcının faturası gibi)
-  if (tariffType === 'standard') {
-    let effectiveRate = Number(state.standardRate) || 3.84;
-
-    if (state.standardPriceMode === 'high-tier') {
-      effectiveRate = Number(state.highTierRate) || 4.99;
-    } else if (state.standardPriceMode === 'avg-tier') {
-      effectiveRate = Number(state.standardRate) || 3.84;
-    }
-
-    // Eğer vergi hariç girilmişse vergi ekle
-    if (!state.taxInclusive) {
-      const btvRate = (Number(state.taxBtvRate) || 5) / 100;
-      const kdvRate = (Number(state.taxKdvRate) || 10) / 100;
-      effectiveRate = effectiveRate * (1 + btvRate) * (1 + kdvRate);
-    }
-
-    const totalCost = totalGridKwh * effectiveRate;
-    
-    // 100 km maliyeti (TL)
-    // Şebekeden çekilen kWh/100km = (Wh/km * 100 / 1000) / efficiency
-    const kwhPer100Km = (consumptionWhPerKm * 100 / 1000) / efficiency;
-    const costPer100Km = kwhPer100Km * effectiveRate;
-
-    // Benzinli araç kıyaslaması (Örn: 7.5L / 100km ve 45 TL/L benzin = 337.5 TL / 100km)
-    const petrolCostPer100Km = 337.5;
-    const savingsPercentVsPetrol = Math.round(((petrolCostPer100Km - costPer100Km) / petrolCostPer100Km) * 100);
-
-    return {
-      type: 'standard',
-      effectiveRate: Number(effectiveRate.toFixed(2)),
-      totalCost: Number(totalCost.toFixed(2)),
-      costPer100Km: Number(costPer100Km.toFixed(1)),
-      savingsPercentVsPetrol: Math.max(0, savingsPercentVsPetrol),
-      modeName: state.standardPriceMode === 'high-tier' ? 'Yüksek Kademe (4.99 TL)' : 'Fatura Ortalaması (3.84 TL)'
-    };
+  if (state.standardPriceMode === 'high-tier') {
+    effectiveRate = Number(state.highTierRate) || 4.99;
+  } else if (state.standardPriceMode === 'custom') {
+    effectiveRate = Number(state.customRate) || 3.84;
+  } else {
+    effectiveRate = Number(state.standardRate) || 3.84;
   }
 
-  // 2. ÜÇ ZAMANLI GECE TARİFESİ
-  const nightRate = Number(state.tariffNightRate) || 1.67;
-  const dayRate = Number(state.tariffDayRate) || 3.23;
-  const peakRate = Number(state.tariffPeakRate) || 4.97;
-
-  const stepMinutes = 15;
-  const steps = Math.ceil(totalMinutes / stepMinutes);
-  const kwPerStep = (gridPowerKw * (stepMinutes / 60));
-
-  let nightKwh = 0;
-  let dayKwh = 0;
-  let peakKwh = 0;
-
-  let cursor = new Date(startTime);
-
-  for (let i = 0; i < steps; i++) {
-    const hour = cursor.getHours();
-    if (hour >= 22 || hour < 6) {
-      nightKwh += kwPerStep;
-    } else if (hour >= 17 && hour < 22) {
-      peakKwh += kwPerStep;
-    } else {
-      dayKwh += kwPerStep;
-    }
-    cursor.setMinutes(cursor.getMinutes() + stepMinutes);
-  }
-
-  const calculatedTotalKwh = nightKwh + dayKwh + peakKwh;
-  const estimatedTotalCost = (nightKwh * nightRate) + (dayKwh * dayRate) + (peakKwh * peakRate);
-
-  // Standart tek zamanlıya göre fark
-  const comparisonStandardCost = calculatedTotalKwh * (Number(state.standardRate) || 3.84);
-  const savingsVsStandard = comparisonStandardCost - estimatedTotalCost;
-  const nightPercent = calculatedTotalKwh > 0 ? Math.round((nightKwh / calculatedTotalKwh) * 100) : 0;
+  const totalCost = totalGridKwh * effectiveRate;
+  
+  // 100 km sürüş maliyeti
+  const kwhPer100Km = (consumptionWhPerKm * 100 / 1000) / efficiency;
+  const costPer100Km = kwhPer100Km * effectiveRate;
 
   return {
-    type: 'three-tier',
-    nightKwh: Number(nightKwh.toFixed(1)),
-    dayKwh: Number(dayKwh.toFixed(1)),
-    peakKwh: Number(peakKwh.toFixed(1)),
-    nightPercent,
-    totalCost: Number(estimatedTotalCost.toFixed(2)),
-    savingsVsStandard: Number(savingsVsStandard.toFixed(2)),
-    effectiveRate: calculatedTotalKwh > 0 ? Number((estimatedTotalCost / calculatedTotalKwh).toFixed(2)) : nightRate
+    effectiveRate: Number(effectiveRate.toFixed(2)),
+    totalCost: Number(totalCost.toFixed(2)),
+    costPer100Km: Number(costPer100Km.toFixed(1))
   };
 }
 
 /**
- * Tarih ve saati Türkçe biçimlendirir.
+ * Türkçe tarih/saat formatlama
  */
 export function formatFriendlyTime(date, referenceNow = new Date()) {
   if (!date || isNaN(date.getTime())) return { time: '--:--', dayLabel: '', fullText: '--:--' };

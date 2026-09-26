@@ -297,7 +297,7 @@ export const VEHICLE_PRESETS = {
     note: 'Günlük kullanım için %80 önerilir.'
   },
 
-  // STELLANTIS (Peugeot / Opel / Jeep)
+  // STELLANTIS
   'peugeot-e2008': {
     brand: 'Peugeot',
     name: 'Peugeot E-2008 (54 kWh)',
@@ -332,58 +332,39 @@ export const VEHICLE_PRESETS = {
   }
 };
 
-const STORAGE_KEY = 'ev_charging_calculator_v2';
+const STORAGE_KEY = 'ev_charging_calculator_v3';
 
 export const DEFAULT_STATE = {
   currentSoc: 30,             // Mevcut batarya %
-  targetSoc: 100,            // Hedef batarya % (kullanıcının hedefi %100)
+  targetSoc: 100,            // Hedef batarya % (kullanıcı %100 istiyor)
   amperage: 13,              // 13A (kullanıcı en çok 13A şarj ediyor)
   departureTime: '07:30',    // Sabah çıkış saati
   calcMode: 'departure',     // 'departure' (çıkış saatine göre) veya 'now' (şimdi şarja tak)
-  vehicleModel: 'tesla-my-rwd', // KULLANICININ KENDİ ARABASI: Tesla Model Y Standart (60 kWh LFP)
+  vehicleModel: 'tesla-my-rwd', // KULLANICININ ARABASI: Tesla Model Y Standart (60 kWh LFP)
   customCapacity: 60.0,
-  voltage: 230,              // Standart Türkiye/AB priz voltajı (230V)
-  efficiency: 88,            // 10-13A tek faz ev şarjında araç sistemleri açık kaldığı için ~%88 verim
+  voltage: 220,              // 210-220V arası pratik ev voltajı (varsayılan: 220V)
+  efficiency: 88,            // 10-13A ev şarjında ~%88 verim
 
-  // TARİFE & MALİYET AYARLARI (Kullanıcının faturasına göre)
-  // 'standard' (Tek Zamanlı - Faturanız) veya 'three-tier' (3 Zamanlı Gece Tarifesi)
-  tariffType: 'standard',
-  
-  // Standart Tarife Seçenekleri:
-  // 'high-tier' (Yüksek Kademe marjinal EV maliyeti ~4.99 TL/kWh)
-  // 'avg-tier'  (Fatura Ortalaması 1520.30 TL / 395.6 kWh = ~3.84 TL/kWh)
-  // 'custom'    (Kullanıcının girdiği serbest fiyat)
-  standardPriceMode: 'avg-tier',
-  standardRate: 3.84,        // Faturadaki genel ortalama birim fiyat (Vergiler dahil)
-  highTierRate: 4.99,        // Yüksek kademe birim fiyat (4.32 TL + %5 BTV + %10 KDV = ~4.99 TL)
-  lowTierRate: 3.37,         // Düşük kademe birim fiyat (2.92 TL + %5 BTV + %10 KDV = ~3.37 TL)
-  
-  // Vergi oranları (Faturanızdan: %5 Elektrik Tüketim Vergisi, %10 KDV)
-  taxInclusive: true,        // Fiyatlar vergiler dahil mi
-  taxBtvRate: 5.0,           // Elk. Tük. Ver. %5
-  taxKdvRate: 10.0,          // KDV %10
-
-  // 3 Zamanlı Tarife Kullananlar İçin (Vergiler dahil tahmini birim fiyatlar)
-  tariffNightRate: 1.67,     // Gece (22:00-06:00) TL/kWh
-  tariffDayRate: 3.23,       // Gündüz (06:00-17:00) TL/kWh
-  tariffPeakRate: 4.97,      // Puant (17:00-22:00) TL/kWh
-
-  enableTariffCost: true
+  // Sadeleştirilmiş Fatura Ayarları (Vergiler dahil net birim fiyat)
+  tariffType: 'standard',     // 'standard' (Faturanız) veya 'three-tier' (3 Zamanlı)
+  standardPriceMode: 'avg-tier', // 'avg-tier' (3.84 TL), 'high-tier' (4.99 TL), 'custom'
+  standardRate: 3.84,        // Fatura ortalaması (1520 TL / 395 kWh = 3.84 TL/kWh)
+  highTierRate: 4.99,        // Yüksek kademe birim fiyatı (4.32 TL + vergiler = 4.99 TL)
+  customRate: 3.84           // Manuel girilen fiyat
 };
 
 export function loadSettings() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
-      // v1'den geçiş kontrolü
-      const oldRaw = localStorage.getItem('tesla_charging_calculator_v1');
-      if (oldRaw) {
-        const oldParsed = JSON.parse(oldRaw);
-        return { 
-          ...DEFAULT_STATE, 
-          ...oldParsed, 
-          vehicleModel: oldParsed.vehicleModel === 'model-y-rwd' ? 'tesla-my-rwd' : DEFAULT_STATE.vehicleModel 
-        };
+      // Önceki versiyonlardan aktarım
+      const oldKeys = ['ev_charging_calculator_v2', 'tesla_charging_calculator_v1'];
+      for (const k of oldKeys) {
+        const oldRaw = localStorage.getItem(k);
+        if (oldRaw) {
+          const oldParsed = JSON.parse(oldRaw);
+          return { ...DEFAULT_STATE, ...oldParsed };
+        }
       }
       return { ...DEFAULT_STATE };
     }
