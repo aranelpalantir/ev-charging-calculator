@@ -69,10 +69,13 @@ const els = {
   target100Sub: document.getElementById('target-100-sub'),
   targetButtons: document.querySelectorAll('.chip-target[data-target]'),
 
-  // Batarya Görsel Çubuğu
+  // Batarya Görsel Çubuğu & WLTP Göstergeleri
   batteryRangeText: document.getElementById('battery-range-text'),
   barCurrent: document.getElementById('bar-current'),
   barTarget: document.getElementById('bar-target'),
+  valCurrentKm: document.getElementById('val-current-km'),
+  valTargetKm: document.getElementById('val-target-km'),
+  valAddedKm: document.getElementById('val-added-km'),
 
   // Elektrik Faturası & Maliyet Kartı
   btnToggleTariff: document.getElementById('btn-toggle-tariff'),
@@ -89,6 +92,8 @@ const els = {
   selectVehicleModel: document.getElementById('select-vehicle-model'),
   customCapacityGroup: document.getElementById('custom-capacity-group'),
   inputCustomCapacity: document.getElementById('input-custom-capacity'),
+  inputVehicleWltp: document.getElementById('input-vehicle-wltp'),
+  wltpDisplay: document.getElementById('wltp-display'),
   inputEfficiency: document.getElementById('input-efficiency'),
   efficiencyDisplay: document.getElementById('efficiency-display'),
   
@@ -159,16 +164,23 @@ function syncInputsWithState() {
   updateTargetButtons();
 
   // Ayarlar Modal Elemanları
-  els.selectVehicleModel.value = state.vehicleModel || 'tesla-my-rwd';
+  els.selectVehicleModel.value = state.vehicleModel || 'tesla-my-legacy-rwd';
   els.inputCustomCapacity.value = state.customCapacity || 60;
   els.customCapacityGroup.style.display = state.vehicleModel === 'custom' ? 'flex' : 'none';
+
+  if (els.inputVehicleWltp) {
+    els.inputVehicleWltp.value = state.vehicleWltp || 455;
+  }
+  if (els.wltpDisplay) {
+    els.wltpDisplay.textContent = `${state.vehicleWltp || 455} km`;
+  }
 
   els.inputEfficiency.value = state.efficiency || 88;
   els.efficiencyDisplay.textContent = `%${state.efficiency || 88}`;
 
   // Formül & Tarife Alanları
   els.inputBillAmount.value = state.billTotalAmount || 1000.00;
-  els.inputBillKwh.value = state.billTotalKwh || 250.00;
+  els.inputBillKwh.value = state.billTotalKwh || 260.00;
   updateTariffModeUI();
 }
 
@@ -194,7 +206,7 @@ function updateTariffModeUI() {
   if (isFormula) {
     updateFormulaDisplay();
   } else {
-    els.inputRateSetting.value = (Number(state.standardRate) || 3.84).toFixed(2);
+    els.inputRateSetting.value = (Number(state.standardRate) || 3.85).toFixed(2);
   }
 }
 
@@ -251,7 +263,7 @@ function updateTimeChips() {
 function updateFormulaDisplay() {
   const amount = Number(els.inputBillAmount.value) || 0;
   const kwh = Number(els.inputBillKwh.value) || 1;
-  let calcRate = 4.00;
+  let calcRate = 3.85;
   if (kwh > 0 && amount > 0) {
     calcRate = Number((amount / kwh).toFixed(2));
   }
@@ -355,12 +367,16 @@ function recalculateAndRender() {
   const tgtSoc = Math.min(100, Math.max(curSoc, result.targetSoc));
   const delta = tgtSoc - curSoc;
 
-  els.batteryRangeText.textContent = `${curSoc}% ➔ ${tgtSoc}% (+${Math.round(result.addedKm)} km)`;
+  els.batteryRangeText.textContent = `${curSoc}% ➔ ${tgtSoc}% (+${Math.round(result.addedKm)} km WLTP)`;
   els.barCurrent.style.width = `${curSoc}%`;
   els.barCurrent.innerHTML = `<span class="bar-tag current-tag">%${curSoc}</span>`;
 
   els.barTarget.style.width = `${delta}%`;
   els.barTarget.innerHTML = `<span class="bar-tag target-tag">%${tgtSoc}</span>`;
+
+  if (els.valCurrentKm) els.valCurrentKm.textContent = `${Math.round(result.currentKm)} km (WLTP)`;
+  if (els.valTargetKm) els.valTargetKm.textContent = `${Math.round(result.targetKm)} km (WLTP)`;
+  if (els.valAddedKm) els.valAddedKm.textContent = `+${Math.round(result.addedKm)} km`;
 
   // Fatura & Maliyet Değerleri (1 km ve 100 km Birlikte)
   const cost = result.costAnalysis;
@@ -615,6 +631,30 @@ function bindEventListeners() {
   // Araç Modeli Seçimi
   els.selectVehicleModel.addEventListener('change', (e) => {
     state.vehicleModel = e.target.value;
+    const selectedOption = els.selectVehicleModel.options[els.selectVehicleModel.selectedIndex];
+    
+    // Dataset üzerinden batarya ve WLTP oku
+    if (selectedOption) {
+      const optBattery = parseFloat(selectedOption.dataset.battery);
+      const optWltp = parseInt(selectedOption.dataset.wltp, 10);
+      if (!isNaN(optBattery) && optBattery > 0) {
+        state.customCapacity = optBattery;
+        els.inputCustomCapacity.value = optBattery;
+      }
+      if (!isNaN(optWltp) && optWltp > 0) {
+        state.vehicleWltp = optWltp;
+        if (els.inputVehicleWltp) els.inputVehicleWltp.value = optWltp;
+        if (els.wltpDisplay) els.wltpDisplay.textContent = `${optWltp} km`;
+      }
+    } else if (VEHICLE_PRESETS[state.vehicleModel]) {
+      const v = VEHICLE_PRESETS[state.vehicleModel];
+      state.customCapacity = v.capacity;
+      state.vehicleWltp = v.wltp;
+      els.inputCustomCapacity.value = v.capacity;
+      if (els.inputVehicleWltp) els.inputVehicleWltp.value = v.wltp;
+      if (els.wltpDisplay) els.wltpDisplay.textContent = `${v.wltp} km`;
+    }
+
     els.customCapacityGroup.style.display = state.vehicleModel === 'custom' ? 'flex' : 'none';
     recalculateAndRender();
   });
@@ -623,6 +663,18 @@ function bindEventListeners() {
     state.customCapacity = Number(e.target.value) || 60;
     recalculateAndRender();
   });
+
+  // WLTP Menzil Ayarı Dinleyicisi
+  if (els.inputVehicleWltp) {
+    els.inputVehicleWltp.addEventListener('input', (e) => {
+      const wltp = parseInt(e.target.value, 10);
+      if (!isNaN(wltp) && wltp > 0) {
+        state.vehicleWltp = wltp;
+        if (els.wltpDisplay) els.wltpDisplay.textContent = `${wltp} km`;
+        recalculateAndRender();
+      }
+    });
+  }
 
   // Verimlilik
   els.inputEfficiency.addEventListener('input', (e) => {
@@ -643,7 +695,7 @@ function bindEventListeners() {
   if (els.tabTariffManual) {
     els.tabTariffManual.addEventListener('click', () => {
       state.tariffMode = 'manual';
-      state.standardRate = Number(els.inputRateSetting.value) || 4.00;
+      state.standardRate = Number(els.inputRateSetting.value) || 3.85;
       updateTariffModeUI();
       recalculateAndRender();
     });
@@ -673,23 +725,25 @@ function bindEventListeners() {
   // Manuel Birim Fiyat Girişi
   els.inputRateSetting.addEventListener('input', (e) => {
     state.tariffMode = 'manual';
-    state.standardRate = Number(e.target.value) || 3.84;
+    state.standardRate = Number(e.target.value) || 3.85;
     recalculateAndRender();
   });
 
-  // Manuel Birim Fiyat Hazır Çipleri (3.84 TL, 4.99 TL)
-  els.manualRateChips.forEach(chip => {
-    chip.addEventListener('click', () => {
-      const rateVal = Number(chip.getAttribute('data-mrate'));
-      if (rateVal) {
-        state.tariffMode = 'manual';
-        state.standardRate = rateVal;
-        els.inputRateSetting.value = rateVal.toFixed(2);
-        updateTariffModeUI();
-        recalculateAndRender();
-      }
+  // Manuel Birim Fiyat Hazır Çipleri (varsa)
+  if (els.manualRateChips) {
+    els.manualRateChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const rateVal = Number(chip.getAttribute('data-mrate'));
+        if (rateVal) {
+          state.tariffMode = 'manual';
+          state.standardRate = rateVal;
+          els.inputRateSetting.value = rateVal.toFixed(2);
+          updateTariffModeUI();
+          recalculateAndRender();
+        }
+      });
     });
-  });
+  }
 
   // Varsayılanlara Dön
   els.btnResetDefaults.addEventListener('click', () => {

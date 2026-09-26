@@ -279,11 +279,11 @@
 
       </section>
 
-      <!-- 3. BATARYA GÖRSEL ÇUBUĞU -->
+      <!-- 3. BATARYA GÖRSEL ÇUBUĞU VE WLTP MENZİL -->
       <section class="card battery-visual-card">
         <div class="battery-label-row">
-          <span class="section-title">Şarj Durumu & Menzil</span>
-          <span class="battery-percent-range" id="battery-range-text">30% ➔ 100% (+270 km)</span>
+          <span class="section-title">Şarj Durumu & Menzil (WLTP)</span>
+          <span class="battery-percent-range" id="battery-range-text">%30 ➔ %100 (+319 km WLTP)</span>
         </div>
         <div class="tesla-battery-wrapper">
           <div class="battery-cap"></div>
@@ -294,6 +294,21 @@
             <div class="battery-bar-target" id="bar-target" style="width: 70%;">
               <span class="bar-tag target-tag">%100</span>
             </div>
+          </div>
+        </div>
+        <div class="battery-km-row" id="battery-km-row">
+          <div class="km-stat">
+            <span class="km-stat-label">Mevcut Menzil</span>
+            <span class="km-stat-val" id="val-current-km">137 km WLTP</span>
+          </div>
+          <div class="km-stat-arrow">➔</div>
+          <div class="km-stat">
+            <span class="km-stat-label">Hedef Menzil</span>
+            <span class="km-stat-val" id="val-target-km">455 km WLTP</span>
+          </div>
+          <div class="km-stat highlight-km">
+            <span class="km-stat-label">Eklenecek</span>
+            <span class="km-stat-val" id="val-added-km">+319 km</span>
           </div>
         </div>
       </section>
@@ -361,55 +376,72 @@
             <label for="select-vehicle-model">Elektrikli Araç Modeli</label>
             <select id="select-vehicle-model" class="custom-select">
               <optgroup label="Tesla">
-                <option value="tesla-my-rwd" selected>Tesla Model Y RWD (Standart - 60 kWh LFP)</option>
-                <option value="tesla-my-lr">Tesla Model Y Long Range (78.1 kWh NMC)</option>
-                <option value="tesla-my-perf">Tesla Model Y Performance (78.1 kWh NMC)</option>
-                <option value="tesla-m3-rwd">Tesla Model 3 RWD (60 kWh LFP)</option>
-                <option value="tesla-m3-lr">Tesla Model 3 Long Range (78.1 kWh NMC)</option>
-                <option value="tesla-ms-mx">Tesla Model S / Model X (100 kWh)</option>
+                <option value="tesla-my-legacy-rwd" data-battery="60.0" data-wltp="455" data-drivetrain="rwd" selected>Tesla Model Y RWD - Eski Kasa (60 kWh LFP - 455 km WLTP)</option>
+                <option value="tesla-my-legacy-lr-rwd" data-battery="78.1" data-wltp="600" data-drivetrain="rwd">Tesla Model Y Long Range RWD - Eski Kasa (78.1 kWh NMC - 600 km WLTP)</option>
+                <option value="tesla-my-legacy-lr-awd" data-battery="78.1" data-wltp="533" data-drivetrain="awd">Tesla Model Y Long Range - Eski Kasa (78.1 kWh NMC - 533 km WLTP)</option>
+                <option value="tesla-my-legacy-perf" data-battery="78.1" data-wltp="514" data-drivetrain="awd">Tesla Model Y Performance - Eski Kasa (78.1 kWh NMC - 514 km WLTP)</option>
+                <option value="tesla-my-juniper-rwd" data-battery="60.0" data-wltp="480" data-drivetrain="rwd">Tesla Model Y RWD - Juniper (60 kWh LFP - 480 km WLTP)</option>
+                <option value="tesla-my-juniper-lr-rwd" data-battery="79.0" data-wltp="600" data-drivetrain="rwd">Tesla Model Y Long Range RWD - Juniper (79 kWh NMC - 600 km WLTP)</option>
+                <option value="tesla-my-juniper-lr-awd" data-battery="79.0" data-wltp="560" data-drivetrain="awd">Tesla Model Y Long Range AWD - Juniper (79 kWh NMC - 560 km WLTP)</option>
+                <option value="tesla-m3-legacy-rwd" data-battery="60.0" data-wltp="491" data-drivetrain="rwd">Tesla Model 3 RWD - Eski Kasa (60 kWh LFP - 491 km WLTP)</option>
+                <option value="tesla-m3-highland-rwd" data-battery="60.0" data-wltp="513" data-drivetrain="rwd">Tesla Model 3 RWD - Highland (60 kWh LFP - 513 km WLTP)</option>
+                <option value="tesla-m3-highland-lr-awd" data-battery="78.1" data-wltp="629" data-drivetrain="awd">Tesla Model 3 Long Range AWD - Highland (78.1 kWh NMC - 629 km WLTP)</option>
+                <option value="tesla-m3-highland-perf" data-battery="78.1" data-wltp="528" data-drivetrain="awd">Tesla Model 3 Performance AWD - Highland (78.1 kWh NMC - 528 km WLTP)</option>
               </optgroup>
               <optgroup label="Togg">
-                <option value="togg-t10x-v1">Togg T10X Standart Menzil (52.4 kWh)</option>
-                <option value="togg-t10x-v2">Togg T10X Uzun Menzil (88.5 kWh)</option>
+                <option value="togg-t10x-v1" data-battery="52.4" data-wltp="314" data-drivetrain="rwd">Togg T10X Standart Menzil (52.4 kWh NMC - 314 km WLTP)</option>
+                <option value="togg-t10x-v2" data-battery="88.5" data-wltp="523" data-drivetrain="rwd">Togg T10X Uzun Menzil (88.5 kWh NMC - 523 km WLTP)</option>
               </optgroup>
-              <optgroup label="BYD">
-                <option value="byd-atto3">BYD Atto 3 (60.5 kWh LFP)</option>
-                <option value="byd-seal">BYD Seal (82.5 kWh LFP)</option>
-                <option value="byd-dolphin">BYD Dolphin (60.4 kWh LFP)</option>
-                <option value="byd-seal-u">BYD Seal U EV (71.8 kWh LFP)</option>
+              <optgroup label="BYD & Chery">
+                <option value="byd-atto3" data-battery="60.5" data-wltp="420" data-drivetrain="fwd">BYD Atto 3 (60.5 kWh LFP - 420 km WLTP)</option>
+                <option value="byd-seal-u" data-battery="71.8" data-wltp="500" data-drivetrain="fwd">BYD Seal U EV (71.8 kWh LFP - 500 km WLTP)</option>
+                <option value="byd-seal-rwd" data-battery="82.5" data-wltp="570" data-drivetrain="rwd">BYD Seal Design RWD (82.5 kWh LFP - 570 km WLTP)</option>
+                <option value="byd-seal-awd" data-battery="82.5" data-wltp="520" data-drivetrain="awd">BYD Seal AWD (82.5 kWh LFP - 520 km WLTP)</option>
+                <option value="byd-dolphin" data-battery="60.4" data-wltp="427" data-drivetrain="fwd">BYD Dolphin (60.4 kWh LFP - 427 km WLTP)</option>
+                <option value="chery-omoda5-ev" data-battery="61.0" data-wltp="430" data-drivetrain="fwd">Omoda 5 EV (61 kWh LFP - 430 km WLTP)</option>
               </optgroup>
-              <optgroup label="Renault">
-                <option value="renault-megane">Renault Megane E-Tech (60 kWh)</option>
-                <option value="renault-scenic">Renault Scenic E-Tech (87 kWh)</option>
-                <option value="renault-zoe">Renault Zoe (52 kWh)</option>
+              <optgroup label="KGM & Skywell">
+                <option value="kgm-torres-evx" data-battery="73.4" data-wltp="462" data-drivetrain="fwd">KGM Torres EVX (73.4 kWh LFP - 462 km WLTP)</option>
+                <option value="skywell-et5" data-battery="86.0" data-wltp="490" data-drivetrain="fwd">Skywell ET5 (86 kWh NMC - 490 km WLTP)</option>
+              </optgroup>
+              <optgroup label="Renault & Dacia">
+                <option value="renault-megane" data-battery="60.0" data-wltp="450" data-drivetrain="fwd">Renault Megane E-Tech (60 kWh NMC - 450 km WLTP)</option>
+                <option value="renault-scenic" data-battery="87.0" data-wltp="625" data-drivetrain="fwd">Renault Scenic E-Tech (87 kWh NMC - 625 km WLTP)</option>
+                <option value="renault-zoe" data-battery="52.0" data-wltp="395" data-drivetrain="fwd">Renault Zoe (52 kWh NMC - 395 km WLTP)</option>
+                <option value="dacia-spring" data-battery="26.8" data-wltp="230" data-drivetrain="fwd">Dacia Spring (26.8 kWh LFP - 230 km WLTP)</option>
               </optgroup>
               <optgroup label="Hyundai & Kia">
-                <option value="hyundai-ioniq5">Hyundai Ioniq 5 (77.4 kWh)</option>
-                <option value="hyundai-ioniq6">Hyundai Ioniq 6 (77.4 kWh)</option>
-                <option value="kia-ev6">Kia EV6 (77.4 kWh)</option>
-                <option value="kia-ev9">Kia EV9 (99.8 kWh)</option>
+                <option value="hyundai-ioniq5-awd" data-battery="77.4" data-wltp="481" data-drivetrain="awd">Hyundai Ioniq 5 AWD (77.4 kWh NMC - 481 km WLTP)</option>
+                <option value="hyundai-ioniq6-rwd" data-battery="77.4" data-wltp="614" data-drivetrain="rwd">Hyundai Ioniq 6 RWD (77.4 kWh NMC - 614 km WLTP)</option>
+                <option value="hyundai-kona-ev" data-battery="65.4" data-wltp="514" data-drivetrain="fwd">Hyundai Kona Elektrik (65.4 kWh NMC - 514 km WLTP)</option>
+                <option value="kia-ev6-rwd" data-battery="77.4" data-wltp="528" data-drivetrain="rwd">Kia EV6 RWD (77.4 kWh NMC - 528 km WLTP)</option>
+                <option value="kia-ev9-awd" data-battery="99.8" data-wltp="505" data-drivetrain="awd">Kia EV9 AWD (99.8 kWh NMC - 505 km WLTP)</option>
+                <option value="kia-ev3" data-battery="81.4" data-wltp="605" data-drivetrain="fwd">Kia EV3 Long Range (81.4 kWh NMC - 605 km WLTP)</option>
               </optgroup>
               <optgroup label="MG">
-                <option value="mg-mg4-std">MG4 Comfort (51 kWh LFP)</option>
-                <option value="mg-mg4-lux">MG4 Luxury (64 kWh NMC)</option>
-                <option value="mg-zs-ev">MG ZS EV (51.1 kWh)</option>
+                <option value="mg-mg4-std" data-battery="51.0" data-wltp="350" data-drivetrain="rwd">MG4 Comfort (51 kWh LFP - 350 km WLTP)</option>
+                <option value="mg-mg4-lux" data-battery="64.0" data-wltp="435" data-drivetrain="rwd">MG4 Luxury (64 kWh NMC - 435 km WLTP)</option>
+                <option value="mg-zs-ev-lr" data-battery="72.6" data-wltp="440" data-drivetrain="fwd">MG ZS EV Long Range (72.6 kWh NMC - 440 km WLTP)</option>
               </optgroup>
               <optgroup label="Volvo">
-                <option value="volvo-ex30-std">Volvo EX30 Core (51 kWh LFP)</option>
-                <option value="volvo-ex30-er">Volvo EX30 Ultra (69 kWh NMC)</option>
+                <option value="volvo-ex30-std" data-battery="51.0" data-wltp="344" data-drivetrain="rwd">Volvo EX30 Core (51 kWh LFP - 344 km WLTP)</option>
+                <option value="volvo-ex30-er" data-battery="69.0" data-wltp="476" data-drivetrain="rwd">Volvo EX30 Ultra (69 kWh NMC - 476 km WLTP)</option>
               </optgroup>
               <optgroup label="BMW & Mercedes">
-                <option value="bmw-ix1">BMW iX1 eDrive20 (64.7 kWh)</option>
-                <option value="bmw-i4">BMW i4 eDrive40 (80.7 kWh)</option>
-                <option value="mercedes-eqa">Mercedes EQA 250+ (70.5 kWh)</option>
-                <option value="mercedes-eqb">Mercedes EQB 250+ (70.5 kWh)</option>
+                <option value="bmw-ix1" data-battery="64.7" data-wltp="475" data-drivetrain="fwd">BMW iX1 eDrive20 (64.7 kWh NMC - 475 km WLTP)</option>
+                <option value="bmw-i4" data-battery="80.7" data-wltp="590" data-drivetrain="rwd">BMW i4 eDrive40 (80.7 kWh NMC - 590 km WLTP)</option>
+                <option value="mercedes-eqa" data-battery="70.5" data-wltp="528" data-drivetrain="fwd">Mercedes EQA 250+ (70.5 kWh NMC - 528 km WLTP)</option>
+                <option value="mercedes-eqb" data-battery="70.5" data-wltp="507" data-drivetrain="fwd">Mercedes EQB 250+ (70.5 kWh NMC - 507 km WLTP)</option>
               </optgroup>
               <optgroup label="Stellantis">
-                <option value="peugeot-e2008">Peugeot E-2008 (54 kWh)</option>
-                <option value="opel-astra-e">Opel Astra Elektrik (54 kWh)</option>
+                <option value="peugeot-e2008" data-battery="54.0" data-wltp="406" data-drivetrain="fwd">Peugeot E-2008 (54 kWh NMC - 406 km WLTP)</option>
+                <option value="peugeot-e3008" data-battery="73.0" data-wltp="527" data-drivetrain="fwd">Peugeot E-3008 (73 kWh NMC - 527 km WLTP)</option>
+                <option value="opel-astra-e" data-battery="54.0" data-wltp="418" data-drivetrain="fwd">Opel Astra Elektrik (54 kWh NMC - 418 km WLTP)</option>
+                <option value="opel-mokka-e" data-battery="54.0" data-wltp="406" data-drivetrain="fwd">Opel Mokka Elektrik (54 kWh NMC - 406 km WLTP)</option>
+                <option value="citroen-e-c4" data-battery="54.0" data-wltp="420" data-drivetrain="fwd">Citroën ë-C4 (54 kWh NMC - 420 km WLTP)</option>
               </optgroup>
               <optgroup label="Özel">
-                <option value="custom">Özel Araç (Manuel Batarya Girişi)</option>
+                <option value="custom" data-battery="60.0" data-wltp="400" data-drivetrain="custom">Özel Araç (Manuel Batarya Girişi)</option>
               </optgroup>
             </select>
           </div>
@@ -418,6 +450,16 @@
           <div class="setting-item" id="custom-capacity-group" style="display: none;">
             <label for="input-custom-capacity">Özel Batarya Kapasitesi (kWh)</label>
             <input type="number" id="input-custom-capacity" class="custom-input" min="10" max="150" step="0.5" value="60">
+          </div>
+
+          <!-- WLTP Fabrika Menzili Ayarı -->
+          <div class="setting-item" id="wltp-range-group">
+            <div class="setting-label-row">
+              <label for="input-vehicle-wltp">WLTP Resmi Menzili (km)</label>
+              <span class="setting-hint" id="wltp-display">455 km</span>
+            </div>
+            <input type="number" id="input-vehicle-wltp" class="custom-input" min="100" max="1000" step="1" value="455">
+            <span class="sub-hint">Menzil ve tüketim hesaplamaları resmi WLTP test verisi üzerinden yapılır.</span>
           </div>
 
           <!-- AC Şarj Verimliliği -->
@@ -456,13 +498,13 @@
                 </div>
                 <div>
                   <span class="sub-label">Toplam Tüketim (kWh)</span>
-                  <input type="number" id="input-bill-kwh" class="custom-input" step="10" value="250" placeholder="Örn: 250">
+                  <input type="number" id="input-bill-kwh" class="custom-input" step="10" value="260" placeholder="Örn: 260">
                 </div>
               </div>
 
               <div class="formula-result-row">
                 <span>Hesaplanan Birim Fiyat:</span>
-                <strong id="formula-rate-display">4.00 TL / kWh</strong>
+                <strong id="formula-rate-display">3.85 TL / kWh</strong>
               </div>
             </div>
 
@@ -470,11 +512,7 @@
             <div id="section-tariff-manual" style="display: none;">
               <div class="formula-manual-row">
                 <label for="input-rate-setting" class="sub-label">Birim Fiyat (TL / kWh):</label>
-                <input type="number" id="input-rate-setting" class="custom-input" step="0.05" value="4.00" placeholder="Örn: 4.00">
-              </div>
-              <div class="chip-row manual-rate-presets">
-                <button class="chip" data-mrate="4.00">4.00 TL (Standart)</button>
-                <button class="chip" data-mrate="4.99">4.99 TL (Yüksek Kademe)</button>
+                <input type="number" id="input-rate-setting" class="custom-input" step="0.05" value="3.85" placeholder="Örn: 3.85">
               </div>
             </div>
           </div>

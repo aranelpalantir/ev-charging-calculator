@@ -13,15 +13,13 @@ export function calculateCharging(state, referenceNow = new Date()) {
 
   // Araç ve Batarya Bilgileri
   let capacity = 60.0;
-  let consumptionWhPerKm = 155;
   let vehicleInfo = VEHICLE_PRESETS[state.vehicleModel];
+  let wltpRange = Number(state.vehicleWltp) || (vehicleInfo ? vehicleInfo.wltp : 455);
 
   if (state.vehicleModel === 'custom') {
     capacity = Number(state.customCapacity) || 60.0;
-    consumptionWhPerKm = 160;
   } else if (vehicleInfo) {
     capacity = vehicleInfo.capacity;
-    consumptionWhPerKm = vehicleInfo.consumption || 155;
   }
 
   // Net Enerji (kWh)
@@ -148,16 +146,19 @@ export function calculateCharging(state, referenceNow = new Date()) {
   const durationHours = Math.floor(totalMinutes / 60);
   const durationRemainingMinutes = totalMinutes % 60;
 
-  // Menzil hesapları
-  const kmPerKwh = 1000 / consumptionWhPerKm;
-  const kmPerHour = initialBatKw * kmPerKwh;
-  const addedKm = neededBatteryKwh * kmPerKwh;
+  // WLTP Doğrudan Menzil Hesaplamaları
+  const addedKm = (wltpRange * deltaSoc) / 100;
+  const currentKm = (wltpRange * currentSoc) / 100;
+  const targetKm = (wltpRange * targetSoc) / 100;
+  const kmPerHour = (wltpRange / capacity) * initialBatKw;
+  const consumptionWhPerKm = Math.round((capacity * 1000) / wltpRange);
 
   // Fatura Maliyeti
-  const rate = Number(state.standardRate) || 3.84;
+  const rate = Number(state.standardRate) || 3.85;
   const totalCost = totalGridKwh * rate;
-  const kwhPer100Km = (consumptionWhPerKm * 100 / 1000) / efficiency;
-  const costPer100Km = kwhPer100Km * rate;
+  // Şebekeden çekilen kWh bazlı 100 km ve 1 km maliyeti
+  const gridKwhPer100Km = ((capacity / wltpRange) * 100) / efficiency;
+  const costPer100Km = gridKwhPer100Km * rate;
   const costPerKm = costPer100Km / 100;
 
   return {
@@ -165,6 +166,7 @@ export function calculateCharging(state, referenceNow = new Date()) {
     targetSoc,
     deltaSoc,
     capacity,
+    wltpRange,
     vehicleInfo,
     consumptionWhPerKm,
     amperage: initialAmps,
@@ -178,6 +180,8 @@ export function calculateCharging(state, referenceNow = new Date()) {
     durationHours,
     durationMinutes: durationRemainingMinutes,
     kmPerHour,
+    currentKm,
+    targetKm,
     addedKm,
     startTime,
     finishTime,
