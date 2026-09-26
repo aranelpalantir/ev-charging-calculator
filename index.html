@@ -282,7 +282,7 @@
       <!-- 3. BATARYA GÖRSEL ÇUBUĞU VE WLTP MENZİL -->
       <section class="card battery-visual-card">
         <div class="battery-label-row">
-          <span class="section-title">Şarj Durumu & Menzil (WLTP)</span>
+          <span class="section-title">Şarj Durumu & Menzil</span>
           <span class="battery-percent-range" id="battery-range-text">%30 ➔ %100</span>
         </div>
         <div class="tesla-battery-wrapper">
@@ -353,11 +353,14 @@
         <div class="install-info">
           <span class="install-icon">📲</span>
           <div>
-            <strong>Uygulama Olarak Ekleyin</strong>
-            <p>Ana ekrana ekleyerek internet olmadan da hızlıca açabilirsiniz.</p>
+            <strong id="install-title">Uygulama Olarak Ekleyin</strong>
+            <p id="install-desc">Ana ekrana ekleyerek internet olmadan da hızlıca açabilirsiniz.</p>
           </div>
         </div>
-        <button id="btn-install-pwa" class="btn btn-primary btn-sm">Ana Ekrana Ekle</button>
+        <div class="install-actions">
+          <button id="btn-install-pwa" class="btn btn-primary btn-sm">Ana Ekrana Ekle</button>
+          <button id="btn-dismiss-install" class="btn-icon-dismiss" aria-label="Kapat" title="Kapat">&times;</button>
+        </div>
       </section>
 
     </main>
@@ -2215,6 +2218,55 @@
           <div class="step-tip">
             💡 <strong>İpucu:</strong> Arabayı akşam prize takıp bırakabilirsiniz. Araç hemen şarj etmez, ayarladığınız saatte otomatik başlayıp sabah hazır olur!
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- iOS SAFARI ANA EKRANA EKLE REHBERİ MODALI -->
+    <div class="modal-overlay" id="ios-guide-modal" style="display: none;">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h2>iPhone'da Ana Ekrana Ekleme</h2>
+          <button class="modal-close" id="btn-close-ios-guide" aria-label="Kapat">&times;</button>
+        </div>
+        <div class="modal-body guide-steps">
+          <div class="step-card">
+            <span class="step-num">1</span>
+            <div class="step-text">
+              <strong>Safari Tarayıcısında Açın</strong>
+              <p>Bu sayfayı Apple Safari tarayıcısında görüntülediğinizden emin olun.</p>
+            </div>
+          </div>
+
+          <div class="step-card highlight-step">
+            <span class="step-num">2</span>
+            <div class="step-text">
+              <strong>Paylaş Simgesine Dokunun</strong>
+              <p>Ekranın en altındaki çubukta bulunan <strong>Paylaş</strong> simgesine dokunun: <span class="share-icon-badge"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></span> (Kare içinde yukarı ok).</p>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <span class="step-num">3</span>
+            <div class="step-text">
+              <strong>"Ana Ekrana Ekle" Seçeneğini Seçin</strong>
+              <p>Açılan menüyü hafifçe aşağı kaydırıp <strong>"Ana Ekrana Ekle"</strong> (+ simgesi) satırına tıklayın.</p>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <span class="step-num">4</span>
+            <div class="step-text">
+              <strong>"Ekle" Butonuna Basın</strong>
+              <p>Sağ üst köşedeki mavi <strong>"Ekle"</strong> düğmesine basın. Artık ana ekranınızda bağımsız bir uygulama olarak yer alacaktır.</p>
+            </div>
+          </div>
+
+          <div class="step-tip">
+            ✨ <strong>Fayda:</strong> Ana ekrandan başlattığınızda tarayıcı çubukları gizlenir, tam ekran deneyimi sunar ve internetiniz olmasa bile anında açılır!
+          </div>
+
+          <button id="btn-dismiss-ios-guide" class="btn btn-primary btn-full" style="margin-top: 8px;">Anladım, Harika!</button>
         </div>
       </div>
     </div>

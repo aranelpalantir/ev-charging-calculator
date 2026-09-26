@@ -120,9 +120,15 @@ const els = {
   guideTargetTime: document.getElementById('guide-target-time'),
   guideTargetAmp: document.getElementById('guide-target-amp'),
 
-  // PWA & Toast
+  // PWA & Toast & iOS Kurulum
   installCard: document.getElementById('install-card'),
+  installTitle: document.getElementById('install-title'),
+  installDesc: document.getElementById('install-desc'),
   btnInstallPwa: document.getElementById('btn-install-pwa'),
+  btnDismissInstall: document.getElementById('btn-dismiss-install'),
+  iosGuideModal: document.getElementById('ios-guide-modal'),
+  btnCloseIosGuide: document.getElementById('btn-close-ios-guide'),
+  btnDismissIosGuide: document.getElementById('btn-dismiss-ios-guide'),
   toastMsg: document.getElementById('toast-msg')
 };
 
@@ -888,10 +894,63 @@ function showToast(message) {
 
 // PWA Kurulum Yönetimi
 function handlePwaInstallPrompt() {
+  // Cihaz ve ortam tespiti
+  const ua = (navigator.userAgent || '').toLowerCase();
+  const isIos = /iphone|ipad|ipod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+  const isDismissed = sessionStorage.getItem('dismissed_install_card') === '1';
+
+  // Kartı kapatma butonu
+  if (els.btnDismissInstall) {
+    els.btnDismissInstall.addEventListener('click', () => {
+      if (els.installCard) els.installCard.style.display = 'none';
+      sessionStorage.setItem('dismissed_install_card', '1');
+    });
+  }
+
+  // iOS Rehber Modalı Kapatma Olayları
+  if (els.btnCloseIosGuide) {
+    els.btnCloseIosGuide.addEventListener('click', () => {
+      if (els.iosGuideModal) els.iosGuideModal.style.display = 'none';
+    });
+  }
+  if (els.btnDismissIosGuide) {
+    els.btnDismissIosGuide.addEventListener('click', () => {
+      if (els.iosGuideModal) els.iosGuideModal.style.display = 'none';
+    });
+  }
+  if (els.iosGuideModal) {
+    els.iosGuideModal.addEventListener('click', (e) => {
+      if (e.target === els.iosGuideModal) {
+        els.iosGuideModal.style.display = 'none';
+      }
+    });
+  }
+
+  // iOS Safari için özel kurulum kartı
+  if (isIos && !isStandalone && !isDismissed && els.installCard) {
+    if (els.installTitle) els.installTitle.textContent = "iPhone'a Yükleyin";
+    if (els.installDesc) els.installDesc.textContent = "Safari'den Ana Ekrana Ekleyerek uygulama gibi tam ekran kullanın.";
+    if (els.btnInstallPwa) els.btnInstallPwa.textContent = "Nasıl Yapılır? 📲";
+
+    els.installCard.style.display = 'flex';
+
+    els.btnInstallPwa.addEventListener('click', () => {
+      if (els.iosGuideModal) els.iosGuideModal.style.display = 'flex';
+    });
+    return;
+  }
+
+  // Chromium / Android standart beforeinstallprompt desteği
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredInstallPrompt = e;
-    els.installCard.style.display = 'flex';
+    if (!isDismissed && els.installCard) {
+      if (els.installTitle) els.installTitle.textContent = "Uygulama Olarak Ekleyin";
+      if (els.installDesc) els.installDesc.textContent = "Ana ekrana ekleyerek internet olmadan da hızlıca açabilirsiniz.";
+      if (els.btnInstallPwa) els.btnInstallPwa.textContent = "Ana Ekrana Ekle";
+      els.installCard.style.display = 'flex';
+    }
   });
 
   els.btnInstallPwa.addEventListener('click', async () => {
@@ -902,12 +961,12 @@ function handlePwaInstallPrompt() {
       showToast('Uygulama başarıyla kuruldu! 🎉');
     }
     deferredInstallPrompt = null;
-    els.installCard.style.display = 'none';
+    if (els.installCard) els.installCard.style.display = 'none';
   });
 
   window.addEventListener('appinstalled', () => {
     deferredInstallPrompt = null;
-    els.installCard.style.display = 'none';
+    if (els.installCard) els.installCard.style.display = 'none';
   });
 }
 
