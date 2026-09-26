@@ -29,7 +29,6 @@ const els = {
   statEnergy: document.getElementById('stat-energy'),
   statCost: document.getElementById('stat-cost'),
   btnTeslaGuide: document.getElementById('btn-tesla-guide'),
-  btnCopyResult: document.getElementById('btn-copy-result'),
 
   // 1. Sıra: Hesaplama Modu ve Çıkış Saati
   modeDepartureBtn: document.getElementById('mode-departure-btn'),
@@ -39,15 +38,17 @@ const els = {
   timeChips: document.querySelectorAll('.chip[data-time]'),
 
   // 2. Sıra: Amper ve Voltaj Göstergesi
-  mainVoltageChip: document.getElementById('main-voltage-chip'),
   ampPowerLabel: document.getElementById('amp-power-label'),
-  mainVoltageTag: document.getElementById('main-voltage-tag'),
   amp13Btn: document.getElementById('amp-13-btn'),
   amp10Btn: document.getElementById('amp-10-btn'),
   ampOtherBtn: document.getElementById('amp-other-btn'),
   customAmpBox: document.getElementById('custom-amp-box'),
   rangeCustomAmp: document.getElementById('range-custom-amp'),
   customAmpVal: document.getElementById('custom-amp-val'),
+
+  // Ana Sayfa Şebeke Voltajı Çipleri
+  mainVoltageReadout: document.getElementById('main-voltage-readout'),
+  voltageChips: document.querySelectorAll('.voltage-chip[data-voltage]'),
 
   // Gece Güvenlik Akımı Planı
   checkEnableNightDrop: document.getElementById('check-enable-night-drop'),
@@ -78,7 +79,7 @@ const els = {
   tariffSummarySub: document.getElementById('tariff-summary-sub'),
   valStdGridKwh: document.getElementById('val-std-grid-kwh'),
   valStdRate: document.getElementById('val-std-rate'),
-  valStd100km: document.getElementById('val-std-100km'),
+  valStdKmCosts: document.getElementById('val-std-km-costs'),
   valStdTotal: document.getElementById('val-std-total'),
 
   // Ayarlar Modalı
@@ -92,11 +93,16 @@ const els = {
   inputEfficiency: document.getElementById('input-efficiency'),
   efficiencyDisplay: document.getElementById('efficiency-display'),
   
-  // Parametrik Fatura Formül Elemanları
+  // Parametrik Fatura Formül ve Mod Elemanları
+  tabTariffFormula: document.getElementById('tab-tariff-formula'),
+  tabTariffManual: document.getElementById('tab-tariff-manual'),
+  sectionTariffFormula: document.getElementById('section-tariff-formula'),
+  sectionTariffManual: document.getElementById('section-tariff-manual'),
   inputBillAmount: document.getElementById('input-bill-amount'),
   inputBillKwh: document.getElementById('input-bill-kwh'),
   formulaRateDisplay: document.getElementById('formula-rate-display'),
   inputRateSetting: document.getElementById('input-rate-setting'),
+  manualRateChips: document.querySelectorAll('.manual-rate-presets button[data-mrate]'),
   btnResetDefaults: document.getElementById('btn-reset-defaults'),
 
   // Rehber Modalı
@@ -133,8 +139,14 @@ function syncInputsWithState() {
   els.inputDepartureTime.value = state.departureTime || '07:30';
   updateTimeChips();
 
-  // 2. Amper & Gece Düşürme Planı
+  // 2. Amper & Voltaj & Gece Düşürme Planı
+  const v = Math.min(235, Math.max(205, Number(state.voltage) || 220));
+  state.voltage = v;
+  els.inputVoltage.value = v;
+  els.voltageDisplay.textContent = `${v} V`;
+  updateVoltageChips();
   updateAmperageUI();
+
   els.checkEnableNightDrop.checked = Boolean(state.enableNightDrop);
   els.nightDropInputs.style.display = state.enableNightDrop ? 'flex' : 'none';
   els.inputNightDropTime.value = state.nightDropTime || '00:00';
@@ -154,19 +166,39 @@ function syncInputsWithState() {
   els.inputCustomCapacity.value = state.customCapacity || 60;
   els.customCapacityGroup.style.display = state.vehicleModel === 'custom' ? 'flex' : 'none';
 
-  const v = Math.min(235, Math.max(205, Number(state.voltage) || 220));
-  state.voltage = v;
-  els.inputVoltage.value = v;
-  els.voltageDisplay.textContent = `${v} V`;
-  els.mainVoltageTag.textContent = `• ${v}V`;
-
   els.inputEfficiency.value = state.efficiency || 88;
   els.efficiencyDisplay.textContent = `%${state.efficiency || 88}`;
 
-  // Formül alanları
+  // Formül & Tarife Alanları
   els.inputBillAmount.value = state.billTotalAmount || 1520.30;
   els.inputBillKwh.value = state.billTotalKwh || 395.68;
-  updateFormulaDisplay();
+  updateTariffModeUI();
+}
+
+// Ana Ekran ve Modal Voltaj Çipleri
+function updateVoltageChips() {
+  if (els.mainVoltageReadout) {
+    els.mainVoltageReadout.textContent = `${state.voltage || 220} V`;
+  }
+  els.voltageChips.forEach(chip => {
+    const chipV = Number(chip.getAttribute('data-voltage'));
+    chip.classList.toggle('active-chip', chipV === Number(state.voltage));
+  });
+}
+
+// Tarife Modunu Değiştir (Faturadan Hesapla vs Doğrudan Manuel Gir)
+function updateTariffModeUI() {
+  const isFormula = (state.tariffMode || 'formula') === 'formula';
+  if (els.tabTariffFormula) els.tabTariffFormula.classList.toggle('active-segment', isFormula);
+  if (els.tabTariffManual) els.tabTariffManual.classList.toggle('active-segment', !isFormula);
+  if (els.sectionTariffFormula) els.sectionTariffFormula.style.display = isFormula ? 'block' : 'none';
+  if (els.sectionTariffManual) els.sectionTariffManual.style.display = isFormula ? 'none' : 'block';
+
+  if (isFormula) {
+    updateFormulaDisplay();
+  } else {
+    els.inputRateSetting.value = (Number(state.standardRate) || 3.84).toFixed(2);
+  }
 }
 
 // Amper ve Güç Göstergesi
@@ -174,7 +206,6 @@ function updateAmperageUI() {
   const amp = Number(state.amperage) || 13;
   const kw = ((state.voltage * amp) / 1000).toFixed(1);
   els.ampPowerLabel.textContent = `${amp}A (~${kw} kW)`;
-  els.mainVoltageTag.textContent = `• ${state.voltage || 220}V`;
 
   els.amp13Btn.classList.toggle('active-segment', amp === 13);
   els.amp10Btn.classList.toggle('active-segment', amp === 10);
@@ -231,8 +262,10 @@ function updateFormulaDisplay() {
     calcRate = Number((amount / kwh).toFixed(2));
   }
   els.formulaRateDisplay.textContent = `${calcRate.toFixed(2)} TL / kWh`;
-  els.inputRateSetting.value = calcRate.toFixed(2);
-  state.standardRate = calcRate;
+  if ((state.tariffMode || 'formula') === 'formula') {
+    state.standardRate = calcRate;
+    els.inputRateSetting.value = calcRate.toFixed(2);
+  }
 }
 
 // Hesapla ve Ekrana Bas
@@ -281,7 +314,7 @@ function recalculateAndRender() {
     els.nightDropNote.style.display = 'none';
   }
 
-  // Yetişmeme Durumu Kontrolü (Departure Modunda)
+  // Yetişmeme Durumu Kontrolü (Departure Modunda - Sade ve Net)
   if (isDeparture && result.isOverdue) {
     els.overdueWarning.style.display = 'flex';
     const earliestTime = formatFriendlyTime(result.earliestFinishIfStartNow, new Date());
@@ -290,11 +323,7 @@ function recalculateAndRender() {
     const diffStr = overdueHrs > 0 ? `${overdueHrs} sa ${overdueMins} dk` : `${overdueMins} dakika`;
 
     els.overdueTitle.textContent = 'Hedef saate yetişmiyor!';
-    let detailText = `Şu an hemen başlasanız dahi araç en erken ${earliestTime.fullText}'da hazır olur (${diffStr} gecikme).`;
-    if (result.recommendedAmpsForDeadline && result.recommendedAmpsForDeadline <= 32) {
-      detailText += ` Yetişmek için akımı en az ${result.recommendedAmpsForDeadline}A yapmalısınız.`;
-    }
-    els.overdueDetail.textContent = detailText;
+    els.overdueDetail.textContent = `Şu an hemen başlasanız dahi araç en erken ${earliestTime.fullText}'da hazır olur (${diffStr} gecikme).`;
   } else {
     els.overdueWarning.style.display = 'none';
   }
@@ -339,11 +368,13 @@ function recalculateAndRender() {
   els.barTarget.style.width = `${delta}%`;
   els.barTarget.innerHTML = `<span class="bar-tag target-tag">%${tgtSoc}</span>`;
 
-  // Fatura & Maliyet Değerleri (Sade)
+  // Fatura & Maliyet Değerleri (1 km ve 100 km Birlikte)
   const cost = result.costAnalysis;
   els.valStdGridKwh.textContent = `${result.totalGridKwh.toFixed(1)} kWh`;
   els.valStdRate.textContent = `${cost.effectiveRate.toFixed(2)} TL / kWh`;
-  els.valStd100km.textContent = `~${cost.costPer100Km} TL / 100km`;
+  if (els.valStdKmCosts) {
+    els.valStdKmCosts.innerHTML = `${cost.costPerKm.toFixed(2)} TL/km <small style="font-size:0.75rem; color:var(--text-muted); font-weight: normal;">(${cost.costPer100Km.toFixed(1)} TL/100km)</small>`;
+  }
   els.valStdTotal.textContent = `~${cost.totalCost.toFixed(2)} TL`;
   els.tariffSummarySub.textContent = `Birim Fiyat: ${cost.effectiveRate.toFixed(2)} TL / kWh`;
 
@@ -362,9 +393,19 @@ function bindEventListeners() {
     els.settingsModal.style.display = 'flex';
   });
 
-  // Voltaj etiketine tıklandığında ayarları aç
-  els.mainVoltageChip.addEventListener('click', () => {
-    els.settingsModal.style.display = 'flex';
+  // Ana Ekrandan Hızlı Voltaj Çipleri
+  els.voltageChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const v = Number(chip.getAttribute('data-voltage'));
+      if (v) {
+        state.voltage = v;
+        els.inputVoltage.value = v;
+        els.voltageDisplay.textContent = `${v} V`;
+        updateVoltageChips();
+        updateAmperageUI();
+        recalculateAndRender();
+      }
+    });
   });
 
   // 1. HESAPLAMA MODU & ZAMAN
@@ -579,11 +620,11 @@ function bindEventListeners() {
     recalculateAndRender();
   });
 
-  // Voltaj (205V - 235V)
+  // Voltaj (205V - 235V Slider)
   els.inputVoltage.addEventListener('input', (e) => {
     state.voltage = Number(e.target.value);
     els.voltageDisplay.textContent = `${state.voltage} V`;
-    els.mainVoltageTag.textContent = `• ${state.voltage}V`;
+    updateVoltageChips();
     updateAmperageUI();
     recalculateAndRender();
   });
@@ -595,23 +636,64 @@ function bindEventListeners() {
     recalculateAndRender();
   });
 
+  // Tarife Modu Sekmeleri (Formül vs Manuel)
+  if (els.tabTariffFormula) {
+    els.tabTariffFormula.addEventListener('click', () => {
+      state.tariffMode = 'formula';
+      updateTariffModeUI();
+      recalculateAndRender();
+    });
+  }
+
+  if (els.tabTariffManual) {
+    els.tabTariffManual.addEventListener('click', () => {
+      state.tariffMode = 'manual';
+      state.standardRate = Number(els.inputRateSetting.value) || 3.84;
+      updateTariffModeUI();
+      recalculateAndRender();
+    });
+  }
+
   // Fatura Formül Alanları Dinleyicisi
   els.inputBillAmount.addEventListener('input', () => {
     state.billTotalAmount = Number(els.inputBillAmount.value) || 0;
-    updateFormulaDisplay();
-    recalculateAndRender();
+    if ((state.tariffMode || 'formula') === 'formula') {
+      updateFormulaDisplay();
+      recalculateAndRender();
+    } else {
+      updateFormulaDisplay();
+    }
   });
 
   els.inputBillKwh.addEventListener('input', () => {
     state.billTotalKwh = Number(els.inputBillKwh.value) || 1;
-    updateFormulaDisplay();
+    if ((state.tariffMode || 'formula') === 'formula') {
+      updateFormulaDisplay();
+      recalculateAndRender();
+    } else {
+      updateFormulaDisplay();
+    }
+  });
+
+  // Manuel Birim Fiyat Girişi
+  els.inputRateSetting.addEventListener('input', (e) => {
+    state.tariffMode = 'manual';
+    state.standardRate = Number(e.target.value) || 3.84;
     recalculateAndRender();
   });
 
-  els.inputRateSetting.addEventListener('input', (e) => {
-    state.standardRate = Number(e.target.value) || 3.84;
-    els.formulaRateDisplay.textContent = `${state.standardRate.toFixed(2)} TL / kWh`;
-    recalculateAndRender();
+  // Manuel Birim Fiyat Hazır Çipleri (3.84 TL, 4.99 TL)
+  els.manualRateChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const rateVal = Number(chip.getAttribute('data-mrate'));
+      if (rateVal) {
+        state.tariffMode = 'manual';
+        state.standardRate = rateVal;
+        els.inputRateSetting.value = rateVal.toFixed(2);
+        updateTariffModeUI();
+        recalculateAndRender();
+      }
+    });
   });
 
   // Varsayılanlara Dön
@@ -638,39 +720,6 @@ function bindEventListeners() {
       els.guideModal.style.display = 'none';
     }
   });
-
-  // Kopyalama Butonu
-  els.btnCopyResult.addEventListener('click', () => {
-    const isDeparture = state.calcMode === 'departure';
-    const vehicleName = VEHICLE_PRESETS[state.vehicleModel] ? VEHICLE_PRESETS[state.vehicleModel].name : 'Araç';
-    const textToCopy = isDeparture
-      ? `${vehicleName} Şarj Planı: Sabah ${state.departureTime}'da %${state.targetSoc} olması için saat ${els.startTimeVal.textContent}'de (${els.resultDayBadge.textContent.toLowerCase()}) ${state.amperage}A ile şarja başlatmalısınız.`
-      : `${vehicleName} Şarj: Şu an ${state.amperage}A ile şarja başlarsanız saat ${els.startTimeVal.textContent}'de %${state.targetSoc} dolmuş olur.`;
-
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(textToCopy).then(() => {
-        showToast('Şarj planı panoya kopyalandı! 📋');
-      }).catch(() => {
-        fallbackCopyText(textToCopy);
-      });
-    } else {
-      fallbackCopyText(textToCopy);
-    }
-  });
-}
-
-function fallbackCopyText(text) {
-  const textArea = document.createElement('textarea');
-  textArea.value = text;
-  document.body.appendChild(textArea);
-  textArea.select();
-  try {
-    document.execCommand('copy');
-    showToast('Şarj planı panoya kopyalandı! 📋');
-  } catch (err) {
-    showToast('Kopyalama başarısız oldu.');
-  }
-  document.body.removeChild(textArea);
 }
 
 // Toast Gösterici

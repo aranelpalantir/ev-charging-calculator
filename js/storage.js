@@ -332,7 +332,7 @@ export const VEHICLE_PRESETS = {
   }
 };
 
-const STORAGE_KEY = 'ev_charging_calculator_v4';
+const STORAGE_KEY = 'ev_charging_calculator_v5';
 
 export const DEFAULT_STATE = {
   currentSoc: 30,             // Mevcut batarya %
@@ -345,22 +345,23 @@ export const DEFAULT_STATE = {
   voltage: 220,              // Kullanıcının ortalaması: 220V
   efficiency: 88,            // 10-13A ev şarjında ortalama %88 verim
 
-  // Gece Güvenlik Akımı Planı (10A Gece Düşürme)
+  // Gece Güvenlik Akımı Planı (Uyurken 10A Düşürme)
   enableNightDrop: false,    // Gece akımı düşürülsün mü?
-  nightDropTime: '00:00',    // Gece akımın düşeceği saat (örn: 00:00)
-  nightDropAmps: 10,         // Gece güvenli akım (örn: 10A)
+  nightDropTime: '00:00',    // Akımın düşeceği saat (örn: 00:00)
+  nightDropAmps: 10,         // Güvenli gece akımı (örn: 10A)
 
-  // Parametrik Fatura Hesaplayıcı (Fatura Tutarı ÷ kWh)
-  billTotalAmount: 1520.30,  // Son fatura ödenecek tutar (TL)
-  billTotalKwh: 395.68,      // Son fatura toplam tüketim (kWh)
-  standardRate: 3.84         // Hesaplanmış veya manuel girilen birim fiyat (TL/kWh)
+  // Fatura Birim Fiyat Modu: 'formula' (TL ÷ kWh) veya 'manual' (Doğrudan Giriş)
+  tariffMode: 'formula',     // 'formula' | 'manual'
+  billTotalAmount: 1520.30,  // Fatura Tutarı (TL)
+  billTotalKwh: 395.68,      // Toplam Tüketim (kWh)
+  standardRate: 3.84         // Geçerli birim fiyat (TL/kWh)
 };
 
 export function loadSettings() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
-      const oldKeys = ['ev_charging_calculator_v3', 'ev_charging_calculator_v2', 'tesla_charging_calculator_v1'];
+      const oldKeys = ['ev_charging_calculator_v4', 'ev_charging_calculator_v3', 'ev_charging_calculator_v2', 'tesla_charging_calculator_v1'];
       for (const k of oldKeys) {
         const oldRaw = localStorage.getItem(k);
         if (oldRaw) {

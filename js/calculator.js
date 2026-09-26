@@ -3,7 +3,6 @@ import { VEHICLE_PRESETS } from './storage.js';
 
 /**
  * Şarj süresi, başlama saati ve fatura maliyetini hesaplar.
- * İsteğe bağlı gece akım düşürme (örn: 13A ile başlayıp gece 00:00'da 10A'e geçiş) planını destekler.
  */
 export function calculateCharging(state, referenceNow = new Date()) {
   const currentSoc = Math.min(100, Math.max(0, Number(state.currentSoc) || 0));
@@ -34,7 +33,7 @@ export function calculateCharging(state, referenceNow = new Date()) {
   const initialGridKw = (voltage * initialAmps) / 1000;
   const initialBatKw = initialGridKw * efficiency;
 
-  // Gece Akım Düşürme Planı kontrolü
+  // Gece Güvenlik Akımı Planı kontrolü (10A düşürme)
   const enableNightDrop = Boolean(state.enableNightDrop && state.nightDropTime && state.nightDropAmps);
   const nightDropAmps = Math.max(1, Number(state.nightDropAmps) || 10);
   const nightGridKw = (voltage * nightDropAmps) / 1000;
@@ -47,7 +46,6 @@ export function calculateCharging(state, referenceNow = new Date()) {
   let isOverdue = false;
   let earliestFinishIfStartNow = new Date(referenceNow);
   let overdueMinutes = 0;
-  let recommendedAmpsForDeadline = null;
   let scheduleNote = '';
 
   if (state.calcMode === 'departure') {
@@ -64,18 +62,18 @@ export function calculateCharging(state, referenceNow = new Date()) {
       startTime = new Date(targetDepartureDate);
       finishTime = new Date(targetDepartureDate);
     } else if (!enableNightDrop) {
-      // Standart Tek Fazlı Şarj
+      // Standart Tek Akım Seviyesi ile Şarj
       const durationHours = neededBatteryKwh / initialBatKw;
       totalMinutes = Math.round(durationHours * 60);
       startTime = new Date(targetDepartureDate.getTime() - totalMinutes * 60000);
       finishTime = new Date(targetDepartureDate);
     } else {
-      // İKİ FAZLI ŞARJ (Örn: 13A ile başlayıp gece saat 00:00'da 10A'e düşürme)
+      // İKİ FAZLI ŞARJ (Örn: Akşam 13A, gece 00:00'dan sonra 10A)
       const [dropHours, dropMinutes] = (state.nightDropTime || '00:00').split(':').map(Number);
       let nightDropDate = new Date(targetDepartureDate);
       nightDropDate.setHours(dropHours, dropMinutes, 0, 0);
 
-      // Drop saati çıkış saatinden önce olmalıdır. Eğer drop saati >= çıkış saati ise önceki gündür.
+      // Drop saati çıkış saatinden önce olmalıdır.
       if (nightDropDate.getTime() >= targetDepartureDate.getTime()) {
         nightDropDate.setDate(nightDropDate.getDate() - 1);
       }
@@ -90,7 +88,7 @@ export function calculateCharging(state, referenceNow = new Date()) {
         totalMinutes = Math.round(durHours * 60);
         startTime = new Date(targetDepartureDate.getTime() - totalMinutes * 60000);
         finishTime = new Date(targetDepartureDate);
-        scheduleNote = `Tüm şarj gece ${nightDropAmps}A ile gerçekleşecek.`;
+        scheduleNote = `Tüm şarj gece ${nightDropAmps}A ile tamamlanacak.`;
       } else {
         // İki faz da devrede: 2. fazda phase2MaxKwh dolar, kalanı 1. fazda (13A) tamamlanır
         const phase1KwhNeeded = neededBatteryKwh - phase2MaxKwh;
@@ -102,7 +100,7 @@ export function calculateCharging(state, referenceNow = new Date()) {
         finishTime = new Date(targetDepartureDate);
 
         const dropTimeFormatted = state.nightDropTime || '00:00';
-        scheduleNote = `Saat ${dropTimeFormatted}'a kadar ${initialAmps}A, sonrasında ${nightDropAmps}A ile şarj edilir.`;
+        scheduleNote = `Saat ${dropTimeFormatted}'a kadar ${initialAmps}A, ardından ${nightDropAmps}A ile şarj edilir.`;
       }
     }
 
@@ -111,12 +109,6 @@ export function calculateCharging(state, referenceNow = new Date()) {
       isOverdue = true;
       overdueMinutes = Math.round((referenceNow.getTime() - startTime.getTime()) / 60000);
       earliestFinishIfStartNow = new Date(referenceNow.getTime() + totalMinutes * 60000);
-      const availableHours = (targetDepartureDate.getTime() - referenceNow.getTime()) / 3600000;
-      if (availableHours > 0) {
-        recommendedAmpsForDeadline = Math.ceil(
-          (neededBatteryKwh / availableHours) / ((voltage * efficiency) / 1000)
-        );
-      }
     }
   } else {
     // 2. ŞİMDİ ŞARJA TAK MODU (İleriye Hesaplama)
@@ -128,7 +120,6 @@ export function calculateCharging(state, referenceNow = new Date()) {
       totalMinutes = Math.round(durationHours * 60);
       finishTime = new Date(referenceNow.getTime() + totalMinutes * 60000);
     } else {
-      // Şimdi başla + gece düşür
       const [dropHours, dropMinutes] = (state.nightDropTime || '00:00').split(':').map(Number);
       let nightDropDate = new Date(referenceNow);
       nightDropDate.setHours(dropHours, dropMinutes, 0, 0);
@@ -140,7 +131,6 @@ export function calculateCharging(state, referenceNow = new Date()) {
       const kwhBeforeDrop = hoursUntilDrop * initialBatKw;
 
       if (kwhBeforeDrop >= neededBatteryKwh) {
-        // Gece düşme saatine gelmeden biter
         const durHours = neededBatteryKwh / initialBatKw;
         totalMinutes = Math.round(durHours * 60);
         finishTime = new Date(referenceNow.getTime() + totalMinutes * 60000);
@@ -168,6 +158,7 @@ export function calculateCharging(state, referenceNow = new Date()) {
   const totalCost = totalGridKwh * rate;
   const kwhPer100Km = (consumptionWhPerKm * 100 / 1000) / efficiency;
   const costPer100Km = kwhPer100Km * rate;
+  const costPerKm = costPer100Km / 100;
 
   return {
     currentSoc,
@@ -194,7 +185,6 @@ export function calculateCharging(state, referenceNow = new Date()) {
     isOverdue,
     overdueMinutes,
     earliestFinishIfStartNow,
-    recommendedAmpsForDeadline,
     enableNightDrop,
     nightDropAmps,
     nightDropTime: state.nightDropTime || '00:00',
@@ -202,7 +192,8 @@ export function calculateCharging(state, referenceNow = new Date()) {
     costAnalysis: {
       effectiveRate: Number(rate.toFixed(2)),
       totalCost: Number(totalCost.toFixed(2)),
-      costPer100Km: Number(costPer100Km.toFixed(1))
+      costPer100Km: Number(costPer100Km.toFixed(1)),
+      costPerKm: Number(costPerKm.toFixed(2))
     }
   };
 }
