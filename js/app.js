@@ -453,15 +453,17 @@ function recalculateAndRender() {
     }
   }
 
-  // Hızlı İstatistik Matrisi (Ana ekranda Voltajı da gösterir)
+  // Hızlı İstatistik Matrisi (Kompakt ve Dengeli Dashboard)
   if (result.deltaSoc === 0) {
     els.statDuration.textContent = '0 dk';
-    els.statPower.textContent = `${result.gridPowerKw.toFixed(1)} kW (${result.voltage}V)`;
+    els.statPower.textContent = `${result.gridPowerKw.toFixed(1)} kW`;
+    els.statPower.title = `${result.voltage}V Şebeke Gerilimi`;
     els.statEnergy.textContent = '0.0 kWh';
     els.statCost.textContent = '0 TL';
   } else {
     els.statDuration.textContent = `${result.durationHours} sa ${result.durationMinutes} dk`;
-    els.statPower.textContent = `${result.gridPowerKw.toFixed(1)} kW (${result.voltage}V)`;
+    els.statPower.textContent = `${result.gridPowerKw.toFixed(1)} kW`;
+    els.statPower.title = `${result.voltage}V Şebeke Gerilimi`;
     els.statEnergy.textContent = `+${result.neededBatteryKwh.toFixed(1)} kWh`;
     els.statCost.textContent = `~${Math.round(result.costAnalysis.totalCost)} TL`;
   }

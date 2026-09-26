@@ -289,33 +289,45 @@ body {
 /* Hızlı İstatistik Matrisi */
 .quick-stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 12px 8px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 12px 10px;
   border-radius: var(--radius-md);
   margin-bottom: 16px;
   border: 1px solid var(--border-color);
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .stat-item {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  text-align: center;
+  gap: 3px;
+  min-width: 0;
 }
 
 .stat-name {
   font-size: 0.68rem;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 }
 
 .stat-value {
-  font-size: 0.85rem;
+  font-size: 0.86rem;
   font-weight: 700;
   color: var(--text-primary);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 }
 
 .highlight-stat .stat-value {
@@ -1207,6 +1219,26 @@ body {
   color: var(--electric-cyan);
 }
 
+@media (max-width: 480px) {
+  .app-container {
+    padding: calc(env(safe-area-inset-top, 0px) + 12px) 12px calc(env(safe-area-inset-bottom, 0px) + 20px) 12px;
+  }
+  .card {
+    padding: 16px 14px;
+  }
+  .quick-stats-grid {
+    padding: 10px 6px;
+    gap: 4px;
+  }
+  .stat-name {
+    font-size: 0.62rem;
+    letter-spacing: 0.2px;
+  }
+  .stat-value {
+    font-size: 0.80rem;
+  }
+}
+
 @media (max-width: 440px) {
   .install-card {
     flex-direction: column;
@@ -1220,6 +1252,19 @@ body {
   .install-actions .btn {
     flex: 1;
     justify-content: center;
+  }
+}
+
+@media (max-width: 360px) {
+  .quick-stats-grid {
+    padding: 8px 3px;
+    gap: 2px;
+  }
+  .stat-name {
+    font-size: 0.58rem;
+  }
+  .stat-value {
+    font-size: 0.74rem;
   }
 }
 
