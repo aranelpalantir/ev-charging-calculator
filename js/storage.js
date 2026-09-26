@@ -332,7 +332,7 @@ export const VEHICLE_PRESETS = {
   }
 };
 
-const STORAGE_KEY = 'ev_charging_calculator_v5';
+const STORAGE_KEY = 'ev_charging_calculator_v6';
 
 export const DEFAULT_STATE = {
   currentSoc: 30,             // Mevcut batarya %
@@ -340,9 +340,9 @@ export const DEFAULT_STATE = {
   amperage: 13,              // 13A (varsayılan başlama akımı)
   departureTime: '07:30',    // Sabah çıkış saati
   calcMode: 'departure',     // 'departure' (çıkış saatine göre) veya 'now' (şimdi şarja tak)
-  vehicleModel: 'tesla-my-rwd', // KULLANICININ ARABASI: Tesla Model Y Standart (60 kWh LFP)
+  vehicleModel: 'tesla-my-rwd', // Varsayılan araç: Tesla Model Y Standart (60 kWh LFP)
   customCapacity: 60.0,
-  voltage: 220,              // Kullanıcının ortalaması: 220V
+  voltage: 220,              // 220V
   efficiency: 88,            // 10-13A ev şarjında ortalama %88 verim
 
   // Gece Güvenlik Akımı Planı (Uyurken 10A Düşürme)
@@ -352,26 +352,37 @@ export const DEFAULT_STATE = {
 
   // Fatura Birim Fiyat Modu: 'formula' (TL ÷ kWh) veya 'manual' (Doğrudan Giriş)
   tariffMode: 'formula',     // 'formula' | 'manual'
-  billTotalAmount: 1520.30,  // Fatura Tutarı (TL)
-  billTotalKwh: 395.68,      // Toplam Tüketim (kWh)
-  standardRate: 3.84         // Geçerli birim fiyat (TL/kWh)
+  billTotalAmount: 1000.00,  // Örnek fatura tutarı (TL)
+  billTotalKwh: 250.00,      // Örnek toplam tüketim (kWh)
+  standardRate: 4.00         // Geçerli birim fiyat (TL/kWh)
 };
 
 export function loadSettings() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
-      const oldKeys = ['ev_charging_calculator_v4', 'ev_charging_calculator_v3', 'ev_charging_calculator_v2', 'tesla_charging_calculator_v1'];
+      const oldKeys = ['ev_charging_calculator_v5', 'ev_charging_calculator_v4', 'ev_charging_calculator_v3', 'ev_charging_calculator_v2', 'tesla_charging_calculator_v1'];
       for (const k of oldKeys) {
         const oldRaw = localStorage.getItem(k);
         if (oldRaw) {
           const oldParsed = JSON.parse(oldRaw);
+          // Eski kişisel fatura değerlerini temizle
+          if (oldParsed.billTotalAmount === 1520.30 || oldParsed.billTotalKwh === 395.68) {
+            delete oldParsed.billTotalAmount;
+            delete oldParsed.billTotalKwh;
+            delete oldParsed.standardRate;
+          }
           return { ...DEFAULT_STATE, ...oldParsed };
         }
       }
       return { ...DEFAULT_STATE };
     }
     const parsed = JSON.parse(raw);
+    if (parsed.billTotalAmount === 1520.30 || parsed.billTotalKwh === 395.68) {
+      parsed.billTotalAmount = 1000.00;
+      parsed.billTotalKwh = 250.00;
+      parsed.standardRate = 4.00;
+    }
     return { ...DEFAULT_STATE, ...parsed };
   } catch (e) {
     console.warn('Ayarlar yüklenemedi, varsayılanlar kullanılıyor:', e);

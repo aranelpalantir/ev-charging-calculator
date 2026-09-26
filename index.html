@@ -42,7 +42,7 @@
         <button id="btn-open-settings" class="icon-btn" aria-label="Ayarlar" title="Fatura ve Araç Parametreleri">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
           </svg>
         </button>
       </div>
@@ -420,16 +420,6 @@
             <input type="number" id="input-custom-capacity" class="custom-input" min="10" max="150" step="0.5" value="60">
           </div>
 
-          <!-- Voltaj Slider (205V - 235V) -->
-          <div class="setting-item">
-            <div class="setting-label-row">
-              <label for="input-voltage">Priz Şebeke Voltajı</label>
-              <span class="setting-hint" id="voltage-display">220 V</span>
-            </div>
-            <input type="range" id="input-voltage" min="205" max="235" step="1" value="220" class="custom-range">
-            <span class="sub-hint">Ev tipi prizlerde voltaj genellikle 210V - 220V civarındadır.</span>
-          </div>
-
           <!-- AC Şarj Verimliliği -->
           <div class="setting-item">
             <div class="setting-label-row">
@@ -462,17 +452,17 @@
               <div class="formula-inputs-grid">
                 <div>
                   <span class="sub-label">Fatura Tutarı (TL)</span>
-                  <input type="number" id="input-bill-amount" class="custom-input" step="0.1" value="1520.30">
+                  <input type="number" id="input-bill-amount" class="custom-input" step="10" value="1000" placeholder="Örn: 1000">
                 </div>
                 <div>
                   <span class="sub-label">Toplam Tüketim (kWh)</span>
-                  <input type="number" id="input-bill-kwh" class="custom-input" step="0.1" value="395.68">
+                  <input type="number" id="input-bill-kwh" class="custom-input" step="10" value="250" placeholder="Örn: 250">
                 </div>
               </div>
 
               <div class="formula-result-row">
                 <span>Hesaplanan Birim Fiyat:</span>
-                <strong id="formula-rate-display">3.84 TL / kWh</strong>
+                <strong id="formula-rate-display">4.00 TL / kWh</strong>
               </div>
             </div>
 
@@ -480,10 +470,10 @@
             <div id="section-tariff-manual" style="display: none;">
               <div class="formula-manual-row">
                 <label for="input-rate-setting" class="sub-label">Birim Fiyat (TL / kWh):</label>
-                <input type="number" id="input-rate-setting" class="custom-input" step="0.05" value="3.84">
+                <input type="number" id="input-rate-setting" class="custom-input" step="0.05" value="4.00" placeholder="Örn: 4.00">
               </div>
               <div class="chip-row manual-rate-presets">
-                <button class="chip" data-mrate="3.84">3.84 TL (Ortalama)</button>
+                <button class="chip" data-mrate="4.00">4.00 TL (Standart)</button>
                 <button class="chip" data-mrate="4.99">4.99 TL (Yüksek Kademe)</button>
               </div>
             </div>

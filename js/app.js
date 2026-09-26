@@ -28,6 +28,7 @@ const els = {
   statPower: document.getElementById('stat-power'),
   statEnergy: document.getElementById('stat-energy'),
   statCost: document.getElementById('stat-cost'),
+  resultActionsRow: document.getElementById('result-actions-row'),
   btnTeslaGuide: document.getElementById('btn-tesla-guide'),
 
   // 1. Sıra: Hesaplama Modu ve Çıkış Saati
@@ -88,8 +89,6 @@ const els = {
   selectVehicleModel: document.getElementById('select-vehicle-model'),
   customCapacityGroup: document.getElementById('custom-capacity-group'),
   inputCustomCapacity: document.getElementById('input-custom-capacity'),
-  inputVoltage: document.getElementById('input-voltage'),
-  voltageDisplay: document.getElementById('voltage-display'),
   inputEfficiency: document.getElementById('input-efficiency'),
   efficiencyDisplay: document.getElementById('efficiency-display'),
   
@@ -142,8 +141,6 @@ function syncInputsWithState() {
   // 2. Amper & Voltaj & Gece Düşürme Planı
   const v = Math.min(235, Math.max(205, Number(state.voltage) || 220));
   state.voltage = v;
-  els.inputVoltage.value = v;
-  els.voltageDisplay.textContent = `${v} V`;
   updateVoltageChips();
   updateAmperageUI();
 
@@ -170,8 +167,8 @@ function syncInputsWithState() {
   els.efficiencyDisplay.textContent = `%${state.efficiency || 88}`;
 
   // Formül & Tarife Alanları
-  els.inputBillAmount.value = state.billTotalAmount || 1520.30;
-  els.inputBillKwh.value = state.billTotalKwh || 395.68;
+  els.inputBillAmount.value = state.billTotalAmount || 1000.00;
+  els.inputBillKwh.value = state.billTotalKwh || 250.00;
   updateTariffModeUI();
 }
 
@@ -220,16 +217,13 @@ function updateAmperageUI() {
   }
 }
 
-// Hesaplama Modu ve Rehber Butonu Görünürlüğü
+// Hesaplama Modu
 function updateModeUI() {
   const isDeparture = state.calcMode === 'departure';
   els.modeDepartureBtn.classList.toggle('active-segment', isDeparture);
   els.modeNowBtn.classList.toggle('active-segment', !isDeparture);
   els.departurePickerContainer.style.display = isDeparture ? 'flex' : 'none';
   els.resultModeLabel.textContent = isDeparture ? 'ŞARJA BAŞLAMA SAATİ' : 'ŞARJIN BİTİŞ SAATİ';
-
-  // Zamanlama ayarı rehber butonu yalnızca çıkış saatine göre modunda anlamlıdır
-  els.btnTeslaGuide.style.display = isDeparture ? 'inline-flex' : 'none';
 }
 
 function updateCurrentSocChips() {
@@ -257,7 +251,7 @@ function updateTimeChips() {
 function updateFormulaDisplay() {
   const amount = Number(els.inputBillAmount.value) || 0;
   const kwh = Number(els.inputBillKwh.value) || 1;
-  let calcRate = 3.84;
+  let calcRate = 4.00;
   if (kwh > 0 && amount > 0) {
     calcRate = Number((amount / kwh).toFixed(2));
   }
@@ -382,6 +376,18 @@ function recalculateAndRender() {
   els.guideTargetTime.textContent = friendly.time;
   els.guideTargetAmp.textContent = `${result.amperage}A`;
 
+  // Zamanlama ayarı rehber butonu:
+  // Sadece çıkış saatine göre modundaysa, hedef saate YETİŞİYORSA (!result.isOverdue)
+  // ve şarj gerekiyorsa (result.deltaSoc > 0) anlamlıdır.
+  // Hedef saate yetişmiyorsa araç hemen prize takılmalıdır; geçmiş saate zamanlama kurulamaz.
+  const canScheduleInApp = isDeparture && !result.isOverdue && result.deltaSoc > 0;
+  if (els.resultActionsRow) {
+    els.resultActionsRow.style.display = canScheduleInApp ? 'block' : 'none';
+  }
+  if (els.btnTeslaGuide) {
+    els.btnTeslaGuide.style.display = canScheduleInApp ? 'inline-flex' : 'none';
+  }
+
   // Değerleri kaydet
   saveSettings(state);
 }
@@ -399,8 +405,6 @@ function bindEventListeners() {
       const v = Number(chip.getAttribute('data-voltage'));
       if (v) {
         state.voltage = v;
-        els.inputVoltage.value = v;
-        els.voltageDisplay.textContent = `${v} V`;
         updateVoltageChips();
         updateAmperageUI();
         recalculateAndRender();
@@ -620,15 +624,6 @@ function bindEventListeners() {
     recalculateAndRender();
   });
 
-  // Voltaj (205V - 235V Slider)
-  els.inputVoltage.addEventListener('input', (e) => {
-    state.voltage = Number(e.target.value);
-    els.voltageDisplay.textContent = `${state.voltage} V`;
-    updateVoltageChips();
-    updateAmperageUI();
-    recalculateAndRender();
-  });
-
   // Verimlilik
   els.inputEfficiency.addEventListener('input', (e) => {
     state.efficiency = Number(e.target.value);
@@ -648,7 +643,7 @@ function bindEventListeners() {
   if (els.tabTariffManual) {
     els.tabTariffManual.addEventListener('click', () => {
       state.tariffMode = 'manual';
-      state.standardRate = Number(els.inputRateSetting.value) || 3.84;
+      state.standardRate = Number(els.inputRateSetting.value) || 4.00;
       updateTariffModeUI();
       recalculateAndRender();
     });
