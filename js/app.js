@@ -40,7 +40,7 @@ const els = {
 
   // 2. Sıra: Şarj Gücü & Cihaz Seçimi
   ampPowerLabel: document.getElementById('amp-power-label'),
-  powerPresetButtons: document.querySelectorAll('.segment-btn[data-pwr-preset]'),
+  powerPresetButtons: document.querySelectorAll('.segment-btn[data-preset]'),
   btnToggleCustomAmp: document.getElementById('btn-toggle-custom-amp'),
   customAmpBox: document.getElementById('custom-amp-box'),
   btnPhase1: document.getElementById('btn-phase-1'),
@@ -286,9 +286,21 @@ function updateAmperageUI() {
 
   // Başlık etiketi güncellemesi
   if (phases === 3) {
-    els.ampPowerLabel.textContent = `⚡ ${kw} kW • 3x${amp}A (Trifaze)`;
+    if (amp === 16) {
+      els.ampPowerLabel.textContent = `⚡ ${kw} kW • 3x16A (Trifaze Wallbox)`;
+    } else if (amp === 32) {
+      els.ampPowerLabel.textContent = `⚡ ${kw} kW • 3x32A (Hızlı Trifaze AC)`;
+    } else {
+      els.ampPowerLabel.textContent = `⚡ ${kw} kW • 3x${amp}A (Trifaze)`;
+    }
   } else if (amp === 32) {
-    els.ampPowerLabel.textContent = `⚡ ${kw} kW • 32A (Monofaze)`;
+    els.ampPowerLabel.textContent = `⚡ ${kw} kW • 32A (32A Mavi Priz / WB)`;
+  } else if (amp === 16) {
+    els.ampPowerLabel.textContent = `🔌 16A • ~${kw} kW (16A Mavi Priz)`;
+  } else if (amp === 13) {
+    els.ampPowerLabel.textContent = `🔌 13A • ~${kw} kW (Standart Ev Prizi)`;
+  } else if (amp === 10) {
+    els.ampPowerLabel.textContent = `🔌 10A • ~${kw} kW (Güvenli Priz)`;
   } else {
     els.ampPowerLabel.textContent = `🔌 ${amp}A • ~${kw} kW (1 Faz)`;
   }
@@ -504,7 +516,9 @@ function recalculateAndRender() {
     if (result.phases === 3) {
       els.guideTargetAmp.textContent = `${result.amperage}A (3 Faz / ~${result.gridPowerKw.toFixed(0)} kW)`;
     } else if (result.amperage === 32) {
-      els.guideTargetAmp.textContent = `32A (~7.4 kW Wallbox)`;
+      els.guideTargetAmp.textContent = `32A (~7.4 kW • 32A Mavi Priz / Wallbox)`;
+    } else if (result.amperage === 16) {
+      els.guideTargetAmp.textContent = `16A (~3.7 kW • 16A Mavi Priz)`;
     } else {
       els.guideTargetAmp.textContent = `${result.amperage}A`;
     }
