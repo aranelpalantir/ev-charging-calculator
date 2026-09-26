@@ -11,16 +11,24 @@ export function calculateCharging(state, referenceNow = new Date()) {
   const voltage = Math.max(180, Number(state.voltage) || 220);
   const efficiency = Math.min(100, Math.max(50, Number(state.efficiency) || 88)) / 100;
 
-  // Araç ve Batarya Bilgileri
+  // Araç ve Batarya Bilgileri (Kullanılabilir Net Batarya)
   let capacity = 60.0;
-  let vehicleInfo = VEHICLE_PRESETS[state.vehicleModel];
-  let wltpRange = Number(state.vehicleWltp) || (vehicleInfo ? vehicleInfo.wltp : 455);
-
   if (state.vehicleModel === 'custom') {
     capacity = Number(state.customCapacity) || 60.0;
-  } else if (vehicleInfo) {
-    capacity = vehicleInfo.capacity;
+  } else {
+    const uCap = Number(state.usableCapacity);
+    const bCap = Number(state.batteryCapacity);
+    capacity = (uCap > 0 ? uCap : (bCap > 0 ? bCap : (Number(state.customCapacity) || 60.0)));
   }
+
+  // Katalog WLTP Menzili (km)
+  const wltpRange = Number(state.vehicleWltp) || 0;
+
+  // Gerçek Yol Tüketimi (kWh / 100 km)
+  const realConsumption = Math.max(5, Number(state.realConsumption) || 20.0);
+
+  // Katalog Tüketimi (kWh / 100 km)
+  const catalogConsumption = Number(state.catalogConsumption) || (wltpRange > 0 ? (capacity * 100) / wltpRange : 0);
 
   // Net Enerji (kWh)
   const deltaSoc = Math.max(0, targetSoc - currentSoc);
@@ -146,18 +154,25 @@ export function calculateCharging(state, referenceNow = new Date()) {
   const durationHours = Math.floor(totalMinutes / 60);
   const durationRemainingMinutes = totalMinutes % 60;
 
-  // WLTP Doğrudan Menzil Hesaplamaları
-  const addedKm = (wltpRange * deltaSoc) / 100;
-  const currentKm = (wltpRange * currentSoc) / 100;
-  const targetKm = (wltpRange * targetSoc) / 100;
-  const kmPerHour = (wltpRange / capacity) * initialBatKw;
-  const consumptionWhPerKm = Math.round((capacity * 1000) / wltpRange);
+  // Gerçek Yol Menzili Hesaplamaları (data-real-consumption bazlı)
+  const realTotalKm = (capacity / realConsumption) * 100;
+  const realCurrentKm = (realTotalKm * currentSoc) / 100;
+  const realTargetKm = (realTotalKm * targetSoc) / 100;
+  const realAddedKm = (realTotalKm * deltaSoc) / 100;
+
+  // Katalog WLTP Menzili Hesaplamaları (data-wltp bazlı)
+  const wltpAddedKm = wltpRange > 0 ? (wltpRange * deltaSoc) / 100 : realAddedKm;
+  const wltpCurrentKm = wltpRange > 0 ? (wltpRange * currentSoc) / 100 : realCurrentKm;
+  const wltpTargetKm = wltpRange > 0 ? (wltpRange * targetSoc) / 100 : realTargetKm;
+
+  const kmPerHour = (realTotalKm / capacity) * initialBatKw;
 
   // Fatura Maliyeti
   const rate = Number(state.standardRate) || 3.85;
   const totalCost = totalGridKwh * rate;
-  // Şebekeden çekilen kWh bazlı 100 km ve 1 km maliyeti
-  const gridKwhPer100Km = ((capacity / wltpRange) * 100) / efficiency;
+
+  // Gerçek yol tüketimi ve şarj verimi bazlı 100 km ve 1 km maliyeti
+  const gridKwhPer100Km = realConsumption / efficiency;
   const costPer100Km = gridKwhPer100Km * rate;
   const costPerKm = costPer100Km / 100;
 
@@ -167,8 +182,8 @@ export function calculateCharging(state, referenceNow = new Date()) {
     deltaSoc,
     capacity,
     wltpRange,
-    vehicleInfo,
-    consumptionWhPerKm,
+    realConsumption,
+    catalogConsumption,
     amperage: initialAmps,
     voltage,
     efficiency: efficiency * 100,
@@ -180,9 +195,19 @@ export function calculateCharging(state, referenceNow = new Date()) {
     durationHours,
     durationMinutes: durationRemainingMinutes,
     kmPerHour,
-    currentKm,
-    targetKm,
-    addedKm,
+    // Gerçek Yol Menzilleri
+    realTotalKm,
+    realCurrentKm,
+    realTargetKm,
+    realAddedKm,
+    // Katalog WLTP Menzilleri
+    wltpCurrentKm,
+    wltpTargetKm,
+    wltpAddedKm,
+    // Geriye dönük uyumluluk
+    currentKm: realCurrentKm,
+    targetKm: realTargetKm,
+    addedKm: realAddedKm,
     startTime,
     finishTime,
     targetDepartureDate,

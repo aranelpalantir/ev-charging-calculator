@@ -506,6 +506,14 @@ body {
   font-size: 1.05rem;
 }
 
+.km-wltp-sub {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-top: 2px;
+}
+
 /* Parametre Kontrolleri Kartı */
 .controls-card {
   display: flex;

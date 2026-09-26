@@ -92,8 +92,12 @@ const els = {
   selectVehicleModel: document.getElementById('select-vehicle-model'),
   customCapacityGroup: document.getElementById('custom-capacity-group'),
   inputCustomCapacity: document.getElementById('input-custom-capacity'),
+  inputRealConsumption: document.getElementById('input-real-consumption'),
+  realConsumptionDisplay: document.getElementById('real-consumption-display'),
   inputVehicleWltp: document.getElementById('input-vehicle-wltp'),
   wltpDisplay: document.getElementById('wltp-display'),
+  inputUsableBattery: document.getElementById('input-usable-battery'),
+  usableBatteryDisplay: document.getElementById('usable-battery-display'),
   inputEfficiency: document.getElementById('input-efficiency'),
   efficiencyDisplay: document.getElementById('efficiency-display'),
   
@@ -121,6 +125,38 @@ const els = {
   btnInstallPwa: document.getElementById('btn-install-pwa'),
   toastMsg: document.getElementById('toast-msg')
 };
+
+// Seçenekten araç parametrelerini oku
+function extractVehicleDataFromOption(opt) {
+  if (!opt) return null;
+  const battery = parseFloat(opt.dataset.battery) || 0;
+  const usable = parseFloat(opt.dataset.usableBattery) || (battery > 0 ? battery : 60);
+  const wltp = parseFloat(opt.dataset.wltp) || 0;
+  const consumption = parseFloat(opt.dataset.consumption) || 0;
+  const realConsumption = parseFloat(opt.dataset.realConsumption) || 20;
+  const dcMax = parseFloat(opt.dataset.dcMax) || 0;
+  const dc1080 = parseFloat(opt.dataset.dc1080) || 0;
+  const drivetrain = opt.dataset.drivetrain || 'rwd';
+  const batteryType = opt.dataset.batteryType || 'NMC';
+  const generation = opt.dataset.generation || '';
+  const year = opt.dataset.year || '';
+  const name = opt.textContent.trim();
+
+  return {
+    battery,
+    usable,
+    wltp,
+    consumption,
+    realConsumption,
+    dcMax,
+    dc1080,
+    drivetrain,
+    batteryType,
+    generation,
+    year,
+    name
+  };
+}
 
 // Uygulama Başlangıcı
 function initApp() {
@@ -168,11 +204,25 @@ function syncInputsWithState() {
   els.inputCustomCapacity.value = state.customCapacity || 60;
   els.customCapacityGroup.style.display = state.vehicleModel === 'custom' ? 'flex' : 'none';
 
+  if (els.inputRealConsumption) {
+    els.inputRealConsumption.value = state.realConsumption || 20.0;
+  }
+  if (els.realConsumptionDisplay) {
+    els.realConsumptionDisplay.textContent = `${Number(state.realConsumption || 20.0).toFixed(1)} kWh`;
+  }
+
   if (els.inputVehicleWltp) {
-    els.inputVehicleWltp.value = state.vehicleWltp || 455;
+    els.inputVehicleWltp.value = state.vehicleWltp ?? 455;
   }
   if (els.wltpDisplay) {
-    els.wltpDisplay.textContent = `${state.vehicleWltp || 455} km`;
+    els.wltpDisplay.textContent = `${state.vehicleWltp ?? 455} km`;
+  }
+
+  if (els.inputUsableBattery) {
+    els.inputUsableBattery.value = state.usableCapacity || 60.0;
+  }
+  if (els.usableBatteryDisplay) {
+    els.usableBatteryDisplay.textContent = `${Number(state.usableCapacity || 60.0).toFixed(1)} kWh`;
   }
 
   els.inputEfficiency.value = state.efficiency || 88;
@@ -279,22 +329,28 @@ function recalculateAndRender() {
   const result = calculateCharging(state, new Date());
 
   // Üst Başlık Araba Modeli ve Uygulama Adı
-  let modelShort = 'Model Y Standart';
+  let modelShort = 'Model Y RWD';
   let appName = 'Araç Mobil Uygulamasını Açın';
+  const selOpt = els.selectVehicleModel.options[els.selectVehicleModel.selectedIndex];
   
   if (state.vehicleModel === 'custom') {
     modelShort = `Özel (${result.capacity} kWh)`;
     appName = 'Araç Mobil Uygulamasını Açın';
-  } else if (VEHICLE_PRESETS[state.vehicleModel]) {
-    const v = VEHICLE_PRESETS[state.vehicleModel];
-    modelShort = v.shortName;
-    if (v.brand === 'Tesla') appName = 'Tesla Mobil Uygulamasını Açın';
-    else if (v.brand === 'Togg') appName = 'Trumore Uygulamasını Açın';
-    else if (v.brand === 'BYD') appName = 'BYD Uygulamasını veya Araç Ekranını Açın';
-    else if (v.brand === 'Renault') appName = 'My Renault Uygulamasını Açın';
-    else appName = `${v.brand} Uygulamasını Açın`;
+  } else if (selOpt) {
+    modelShort = selOpt.text.split('(')[0].trim();
+    const optGroupLabel = selOpt.closest('optgroup')?.label || '';
+    if (optGroupLabel.includes('Tesla')) appName = 'Tesla Mobil Uygulamasını Açın';
+    else if (optGroupLabel.includes('Togg')) appName = 'Trumore Uygulamasını Açın';
+    else if (optGroupLabel.includes('BYD')) appName = 'BYD Uygulamasını veya Araç Ekranını Açın';
+    else if (optGroupLabel.includes('Renault')) appName = 'My Renault Uygulamasını Açın';
+    else if (optGroupLabel.includes('Hyundai')) appName = 'Bluelink Uygulamasını Açın';
+    else if (optGroupLabel.includes('Kia')) appName = 'Kia Connect Uygulamasını Açın';
+    else if (optGroupLabel.includes('BMW')) appName = 'My BMW Uygulamasını Açın';
+    else if (optGroupLabel.includes('Mercedes')) appName = 'Mercedes me Uygulamasını Açın';
+    else appName = `${optGroupLabel.split('-')[0].trim()} Uygulamasını Açın`;
 
-    if (v.batteryType === 'LFP') {
+    const bType = selOpt.dataset.batteryType || state.batteryType;
+    if (bType === 'LFP') {
       els.target100Sub.textContent = 'LFP / %100 Önerilir';
     } else {
       els.target100Sub.textContent = 'Uzun Yol';
@@ -374,9 +430,27 @@ function recalculateAndRender() {
   els.barTarget.style.width = `${delta}%`;
   els.barTarget.innerHTML = `<span class="bar-tag target-tag">%${tgtSoc}</span>`;
 
-  if (els.valCurrentKm) els.valCurrentKm.textContent = `${Math.round(result.currentKm)} km (WLTP)`;
-  if (els.valTargetKm) els.valTargetKm.textContent = `${Math.round(result.targetKm)} km (WLTP)`;
-  if (els.valAddedKm) els.valAddedKm.textContent = `+${Math.round(result.addedKm)} km`;
+  if (els.valCurrentKm) {
+    if (result.wltpRange > 0) {
+      els.valCurrentKm.innerHTML = `${Math.round(result.realCurrentKm)} km <span class="km-wltp-sub">(${Math.round(result.wltpCurrentKm)} km WLTP)</span>`;
+    } else {
+      els.valCurrentKm.textContent = `${Math.round(result.realCurrentKm)} km`;
+    }
+  }
+  if (els.valTargetKm) {
+    if (result.wltpRange > 0) {
+      els.valTargetKm.innerHTML = `${Math.round(result.realTargetKm)} km <span class="km-wltp-sub">(${Math.round(result.wltpTargetKm)} km WLTP)</span>`;
+    } else {
+      els.valTargetKm.textContent = `${Math.round(result.realTargetKm)} km`;
+    }
+  }
+  if (els.valAddedKm) {
+    if (result.wltpRange > 0) {
+      els.valAddedKm.innerHTML = `+${Math.round(result.realAddedKm)} km <span class="km-wltp-sub">(+${Math.round(result.wltpAddedKm)} km WLTP)</span>`;
+    } else {
+      els.valAddedKm.textContent = `+${Math.round(result.realAddedKm)} km`;
+    }
+  }
 
   // Fatura & Maliyet Değerleri (1 km ve 100 km Birlikte)
   const cost = result.costAnalysis;
@@ -633,26 +707,26 @@ function bindEventListeners() {
     state.vehicleModel = e.target.value;
     const selectedOption = els.selectVehicleModel.options[els.selectVehicleModel.selectedIndex];
     
-    // Dataset üzerinden batarya ve WLTP oku
     if (selectedOption) {
-      const optBattery = parseFloat(selectedOption.dataset.battery);
-      const optWltp = parseInt(selectedOption.dataset.wltp, 10);
-      if (!isNaN(optBattery) && optBattery > 0) {
-        state.customCapacity = optBattery;
-        els.inputCustomCapacity.value = optBattery;
+      const vData = extractVehicleDataFromOption(selectedOption);
+      if (vData) {
+        state.batteryCapacity = vData.battery;
+        state.usableCapacity = vData.usable;
+        state.customCapacity = vData.usable;
+        state.vehicleWltp = vData.wltp;
+        state.catalogConsumption = vData.consumption;
+        state.realConsumption = vData.realConsumption;
+        state.batteryType = vData.batteryType;
+        state.drivetrain = vData.drivetrain;
+
+        if (els.inputCustomCapacity) els.inputCustomCapacity.value = vData.usable;
+        if (els.inputUsableBattery) els.inputUsableBattery.value = vData.usable;
+        if (els.usableBatteryDisplay) els.usableBatteryDisplay.textContent = `${vData.usable.toFixed(1)} kWh`;
+        if (els.inputVehicleWltp) els.inputVehicleWltp.value = vData.wltp;
+        if (els.wltpDisplay) els.wltpDisplay.textContent = `${vData.wltp} km`;
+        if (els.inputRealConsumption) els.inputRealConsumption.value = vData.realConsumption;
+        if (els.realConsumptionDisplay) els.realConsumptionDisplay.textContent = `${vData.realConsumption.toFixed(1)} kWh`;
       }
-      if (!isNaN(optWltp) && optWltp > 0) {
-        state.vehicleWltp = optWltp;
-        if (els.inputVehicleWltp) els.inputVehicleWltp.value = optWltp;
-        if (els.wltpDisplay) els.wltpDisplay.textContent = `${optWltp} km`;
-      }
-    } else if (VEHICLE_PRESETS[state.vehicleModel]) {
-      const v = VEHICLE_PRESETS[state.vehicleModel];
-      state.customCapacity = v.capacity;
-      state.vehicleWltp = v.wltp;
-      els.inputCustomCapacity.value = v.capacity;
-      if (els.inputVehicleWltp) els.inputVehicleWltp.value = v.wltp;
-      if (els.wltpDisplay) els.wltpDisplay.textContent = `${v.wltp} km`;
     }
 
     els.customCapacityGroup.style.display = state.vehicleModel === 'custom' ? 'flex' : 'none';
@@ -660,17 +734,47 @@ function bindEventListeners() {
   });
 
   els.inputCustomCapacity.addEventListener('input', (e) => {
-    state.customCapacity = Number(e.target.value) || 60;
+    const val = Number(e.target.value) || 60;
+    state.customCapacity = val;
+    state.usableCapacity = val;
+    state.batteryCapacity = val;
+    if (els.inputUsableBattery) els.inputUsableBattery.value = val;
+    if (els.usableBatteryDisplay) els.usableBatteryDisplay.textContent = `${val.toFixed(1)} kWh`;
     recalculateAndRender();
   });
 
-  // WLTP Menzil Ayarı Dinleyicisi
+  // Gerçek Tüketim Ayarı Dinleyicisi
+  if (els.inputRealConsumption) {
+    els.inputRealConsumption.addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value);
+      if (!isNaN(val) && val > 0) {
+        state.realConsumption = val;
+        if (els.realConsumptionDisplay) els.realConsumptionDisplay.textContent = `${val.toFixed(1)} kWh`;
+        recalculateAndRender();
+      }
+    });
+  }
+
+  // WLTP Katalog Menzili Dinleyicisi
   if (els.inputVehicleWltp) {
     els.inputVehicleWltp.addEventListener('input', (e) => {
       const wltp = parseInt(e.target.value, 10);
-      if (!isNaN(wltp) && wltp > 0) {
+      if (!isNaN(wltp) && wltp >= 0) {
         state.vehicleWltp = wltp;
         if (els.wltpDisplay) els.wltpDisplay.textContent = `${wltp} km`;
+        recalculateAndRender();
+      }
+    });
+  }
+
+  // Kullanılabilir Batarya Ayarı Dinleyicisi
+  if (els.inputUsableBattery) {
+    els.inputUsableBattery.addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value);
+      if (!isNaN(val) && val > 0) {
+        state.usableCapacity = val;
+        state.customCapacity = val;
+        if (els.usableBatteryDisplay) els.usableBatteryDisplay.textContent = `${val.toFixed(1)} kWh`;
         recalculateAndRender();
       }
     });

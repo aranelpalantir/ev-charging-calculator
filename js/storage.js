@@ -592,7 +592,7 @@ export const VEHICLE_PRESETS = {
   }
 };
 
-const STORAGE_KEY = 'ev_charging_calculator_v7';
+const STORAGE_KEY = 'ev_charging_calculator_v8';
 
 export const DEFAULT_STATE = {
   currentSoc: 30,             // Mevcut batarya %
@@ -600,9 +600,15 @@ export const DEFAULT_STATE = {
   amperage: 13,              // 13A (varsayılan başlama akımı)
   departureTime: '07:30',    // Sabah çıkış saati
   calcMode: 'departure',     // 'departure' (çıkış saatine göre) veya 'now' (şimdi şarja tak)
-  vehicleModel: 'tesla-my-legacy-rwd', // KULLANICININ ARABASI: Tesla Model Y RWD - Eski Kasa (60 kWh LFP - 455 km WLTP)
+  vehicleModel: 'tesla-my-legacy-rwd', // KULLANICININ ARABASI: Tesla Model Y RWD - Eski Kasa
+  batteryCapacity: 60.0,     // Brüt Batarya (kWh)
+  usableCapacity: 60.0,      // Kullanılabilir Net Batarya (kWh)
   customCapacity: 60.0,      // Batarya kapasitesi (kWh)
-  vehicleWltp: 455,          // WLTP Menzili (km)
+  vehicleWltp: 455,          // Katalog WLTP Menzili (km)
+  catalogConsumption: 15.7,  // Katalog Tüketimi (kWh/100km)
+  realConsumption: 20.0,     // Gerçek Yol Tüketimi (kWh/100km)
+  batteryType: 'LFP',
+  drivetrain: 'rwd',
   voltage: 220,              // 220V
   efficiency: 88,            // 10-13A ev şarjında ortalama %88 verim
 
@@ -622,13 +628,22 @@ export function loadSettings() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
-      const oldKeys = ['ev_charging_calculator_v6', 'ev_charging_calculator_v5', 'ev_charging_calculator_v4', 'ev_charging_calculator_v3', 'ev_charging_calculator_v2', 'tesla_charging_calculator_v1'];
+      const oldKeys = ['ev_charging_calculator_v7', 'ev_charging_calculator_v6', 'ev_charging_calculator_v5', 'ev_charging_calculator_v4', 'ev_charging_calculator_v3', 'ev_charging_calculator_v2', 'tesla_charging_calculator_v1'];
       for (const k of oldKeys) {
         const oldRaw = localStorage.getItem(k);
         if (oldRaw) {
           const oldParsed = JSON.parse(oldRaw);
           if (oldParsed.vehicleModel === 'tesla-my-rwd' || !oldParsed.vehicleModel) {
             oldParsed.vehicleModel = 'tesla-my-legacy-rwd';
+          }
+          if (!oldParsed.realConsumption) {
+            oldParsed.realConsumption = 20.0;
+          }
+          if (!oldParsed.usableCapacity) {
+            oldParsed.usableCapacity = oldParsed.customCapacity || 60.0;
+          }
+          if (!oldParsed.batteryCapacity) {
+            oldParsed.batteryCapacity = oldParsed.customCapacity || 60.0;
           }
           if (!oldParsed.vehicleWltp) {
             oldParsed.vehicleWltp = VEHICLE_PRESETS[oldParsed.vehicleModel]?.wltp || 455;
@@ -647,7 +662,16 @@ export function loadSettings() {
     if (parsed.vehicleModel === 'tesla-my-rwd' || !parsed.vehicleModel) {
       parsed.vehicleModel = 'tesla-my-legacy-rwd';
     }
-    if (!parsed.vehicleWltp) {
+    if (!parsed.realConsumption) {
+      parsed.realConsumption = 20.0;
+    }
+    if (!parsed.usableCapacity) {
+      parsed.usableCapacity = parsed.customCapacity || 60.0;
+    }
+    if (!parsed.batteryCapacity) {
+      parsed.batteryCapacity = parsed.customCapacity || 60.0;
+    }
+    if (!parsed.vehicleWltp && parsed.vehicleWltp !== 0) {
       parsed.vehicleWltp = VEHICLE_PRESETS[parsed.vehicleModel]?.wltp || 455;
     }
     if (parsed.billTotalAmount === 1520.30 || parsed.billTotalKwh === 395.68) {

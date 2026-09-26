@@ -374,75 +374,1713 @@
           <!-- Araç Modeli Seçimi -->
           <div class="setting-item">
             <label for="select-vehicle-model">Elektrikli Araç Modeli</label>
+
             <select id="select-vehicle-model" class="custom-select">
-              <optgroup label="Tesla">
-                <option value="tesla-my-legacy-rwd" data-battery="60.0" data-wltp="455" data-drivetrain="rwd" selected>Tesla Model Y RWD - Eski Kasa (60 kWh LFP - 455 km WLTP)</option>
-                <option value="tesla-my-legacy-lr-rwd" data-battery="78.1" data-wltp="600" data-drivetrain="rwd">Tesla Model Y Long Range RWD - Eski Kasa (78.1 kWh NMC - 600 km WLTP)</option>
-                <option value="tesla-my-legacy-lr-awd" data-battery="78.1" data-wltp="533" data-drivetrain="awd">Tesla Model Y Long Range - Eski Kasa (78.1 kWh NMC - 533 km WLTP)</option>
-                <option value="tesla-my-legacy-perf" data-battery="78.1" data-wltp="514" data-drivetrain="awd">Tesla Model Y Performance - Eski Kasa (78.1 kWh NMC - 514 km WLTP)</option>
-                <option value="tesla-my-juniper-rwd" data-battery="60.0" data-wltp="480" data-drivetrain="rwd">Tesla Model Y RWD - Juniper (60 kWh LFP - 480 km WLTP)</option>
-                <option value="tesla-my-juniper-lr-rwd" data-battery="79.0" data-wltp="600" data-drivetrain="rwd">Tesla Model Y Long Range RWD - Juniper (79 kWh NMC - 600 km WLTP)</option>
-                <option value="tesla-my-juniper-lr-awd" data-battery="79.0" data-wltp="560" data-drivetrain="awd">Tesla Model Y Long Range AWD - Juniper (79 kWh NMC - 560 km WLTP)</option>
-                <option value="tesla-m3-legacy-rwd" data-battery="60.0" data-wltp="491" data-drivetrain="rwd">Tesla Model 3 RWD - Eski Kasa (60 kWh LFP - 491 km WLTP)</option>
-                <option value="tesla-m3-highland-rwd" data-battery="60.0" data-wltp="513" data-drivetrain="rwd">Tesla Model 3 RWD - Highland (60 kWh LFP - 513 km WLTP)</option>
-                <option value="tesla-m3-highland-lr-awd" data-battery="78.1" data-wltp="629" data-drivetrain="awd">Tesla Model 3 Long Range AWD - Highland (78.1 kWh NMC - 629 km WLTP)</option>
-                <option value="tesla-m3-highland-perf" data-battery="78.1" data-wltp="528" data-drivetrain="awd">Tesla Model 3 Performance AWD - Highland (78.1 kWh NMC - 528 km WLTP)</option>
+
+              <!-- =========================================================
+                   TESLA MODEL Y - ESKİ KASA
+                   ========================================================= -->
+              <optgroup label="Tesla Model Y - Eski Kasa">
+
+                <option value="tesla-my-legacy-rwd"
+                        data-battery="60"
+                        data-usable-battery=""
+                        data-wltp="455"
+                        data-consumption="15.7"
+                        data-real-consumption="20"
+                        data-dc-max="170"
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="LFP"
+                        data-generation="legacy"
+                        data-year="2020-2024"
+                        selected>
+                  Tesla Model Y RWD - Eski Kasa
+                </option>
+
+                <option value="tesla-my-legacy-lr-rwd"
+                        data-battery="79"
+                        data-usable-battery=""
+                        data-wltp="533"
+                        data-consumption="15.5"
+                        data-real-consumption="20"
+                        data-dc-max="250"
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="legacy"
+                        data-year="2020-2024">
+                  Tesla Model Y Long Range RWD - Eski Kasa
+                </option>
+
+                <option value="tesla-my-legacy-lr-awd"
+                        data-battery="78.1"
+                        data-usable-battery=""
+                        data-wltp="533"
+                        data-consumption="16.9"
+                        data-real-consumption="22"
+                        data-dc-max="250"
+                        data-dc-10-80=""
+                        data-drivetrain="awd"
+                        data-battery-type="NMC"
+                        data-generation="legacy"
+                        data-year="2020-2024">
+                  Tesla Model Y Long Range AWD - Eski Kasa
+                </option>
+
+                <option value="tesla-my-legacy-performance"
+                        data-battery="78.1"
+                        data-usable-battery=""
+                        data-wltp="514"
+                        data-consumption="17.3"
+                        data-real-consumption="23"
+                        data-dc-max="250"
+                        data-dc-10-80=""
+                        data-drivetrain="awd"
+                        data-battery-type="NMC"
+                        data-generation="legacy"
+                        data-year="2020-2024">
+                  Tesla Model Y Performance - Eski Kasa
+                </option>
+
               </optgroup>
+
+
+              <!-- =========================================================
+                   TESLA MODEL Y - JUNIPER
+                   ========================================================= -->
+              <optgroup label="Tesla Model Y - Juniper / Yeni Kasa">
+
+                <option value="tesla-my-juniper-standard"
+                        data-battery="64"
+                        data-usable-battery="60.5"
+                        data-wltp="534"
+                        data-consumption="13.1"
+                        data-real-consumption="18"
+                        data-dc-max="175"
+                        data-dc-10-80="24"
+                        data-drivetrain="rwd"
+                        data-battery-type="LFP"
+                        data-generation="juniper"
+                        data-year="2026">
+                  Tesla Model Y Standard RWD - Juniper (64 kWh LFP - 534 km WLTP)
+                </option>
+
+                <option value="tesla-my-juniper-premium-rwd"
+                        data-battery=""
+                        data-usable-battery=""
+                        data-wltp=""
+                        data-consumption="13.9"
+                        data-real-consumption="18"
+                        data-dc-max=""
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="LFP"
+                        data-generation="juniper"
+                        data-year="2025-2026">
+                  Tesla Model Y Premium RWD - Juniper
+                </option>
+
+                <option value="tesla-my-juniper-lr-rwd"
+                        data-battery="79"
+                        data-usable-battery=""
+                        data-wltp="609"
+                        data-consumption="14.0"
+                        data-real-consumption="18.5"
+                        data-dc-max="250"
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="juniper"
+                        data-year="2025-2026">
+                  Tesla Model Y Premium Long Range RWD - Juniper (609 km WLTP)
+                </option>
+
+                <option value="tesla-my-juniper-lr-awd"
+                        data-battery="79"
+                        data-usable-battery=""
+                        data-wltp="560"
+                        data-consumption="15.1"
+                        data-real-consumption="20"
+                        data-dc-max="250"
+                        data-dc-10-80=""
+                        data-drivetrain="awd"
+                        data-battery-type="NMC"
+                        data-generation="juniper"
+                        data-year="2025-2026">
+                  Tesla Model Y Premium Long Range AWD - Juniper (560 km WLTP)
+                </option>
+
+                <option value="tesla-my-juniper-performance"
+                        data-battery="79"
+                        data-usable-battery=""
+                        data-wltp=""
+                        data-consumption="16.2"
+                        data-real-consumption="22"
+                        data-dc-max="250"
+                        data-dc-10-80=""
+                        data-drivetrain="awd"
+                        data-battery-type="NMC"
+                        data-generation="juniper"
+                        data-year="2026">
+                  Tesla Model Y Performance - Juniper
+                </option>
+
+              </optgroup>
+
+
+              <!-- =========================================================
+                   TESLA MODEL 3 - ESKİ KASA
+                   ========================================================= -->
+              <optgroup label="Tesla Model 3 - Eski Kasa">
+
+                <option value="tesla-m3-legacy-rwd"
+                        data-battery="60"
+                        data-usable-battery=""
+                        data-wltp="491"
+                        data-consumption="14.4"
+                        data-real-consumption="18"
+                        data-dc-max="170"
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="LFP"
+                        data-generation="legacy">
+                  Tesla Model 3 RWD - Eski Kasa
+                </option>
+
+                <option value="tesla-m3-legacy-lr-awd"
+                        data-battery="82"
+                        data-usable-battery=""
+                        data-wltp=""
+                        data-consumption="14.7"
+                        data-real-consumption="19"
+                        data-dc-max="250"
+                        data-dc-10-80=""
+                        data-drivetrain="awd"
+                        data-battery-type="NMC"
+                        data-generation="legacy">
+                  Tesla Model 3 Long Range AWD - Eski Kasa
+                </option>
+
+                <option value="tesla-m3-legacy-performance"
+                        data-battery="82"
+                        data-usable-battery=""
+                        data-wltp=""
+                        data-consumption="16.5"
+                        data-real-consumption="21"
+                        data-dc-max="250"
+                        data-dc-10-80=""
+                        data-drivetrain="awd"
+                        data-battery-type="NMC"
+                        data-generation="legacy">
+                  Tesla Model 3 Performance - Eski Kasa
+                </option>
+
+              </optgroup>
+
+
+              <!-- =========================================================
+                   TESLA MODEL 3 - HIGHLAND
+                   ========================================================= -->
+              <optgroup label="Tesla Model 3 - Highland">
+
+                <option value="tesla-m3-highland-standard"
+                        data-battery="60"
+                        data-usable-battery=""
+                        data-wltp=""
+                        data-consumption="13.8"
+                        data-real-consumption="17"
+                        data-dc-max="170"
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="LFP"
+                        data-generation="highland"
+                        data-year="2024-2026">
+                  Tesla Model 3 RWD / Premium RWD - Highland
+                </option>
+
+                <option value="tesla-m3-highland-lr-rwd"
+                        data-battery="79"
+                        data-usable-battery=""
+                        data-wltp=""
+                        data-consumption="13.6"
+                        data-real-consumption="17.5"
+                        data-dc-max="250"
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="highland">
+                  Tesla Model 3 Premium Long Range RWD - Highland
+                </option>
+
+                <option value="tesla-m3-highland-lr-awd"
+                        data-battery="79"
+                        data-usable-battery=""
+                        data-wltp="629"
+                        data-consumption="14.3"
+                        data-real-consumption="18"
+                        data-dc-max="250"
+                        data-dc-10-80=""
+                        data-drivetrain="awd"
+                        data-battery-type="NMC"
+                        data-generation="highland">
+                  Tesla Model 3 Premium Long Range AWD - Highland
+                </option>
+
+                <option value="tesla-m3-highland-performance"
+                        data-battery="79"
+                        data-usable-battery=""
+                        data-wltp="528"
+                        data-consumption="16.5"
+                        data-real-consumption="21"
+                        data-dc-max="250"
+                        data-dc-10-80=""
+                        data-drivetrain="awd"
+                        data-battery-type="NMC"
+                        data-generation="highland">
+                  Tesla Model 3 Performance - Highland
+                </option>
+
+              </optgroup>
+
+
+              <!-- =========================================================
+                   TOGG
+                   ========================================================= -->
               <optgroup label="Togg">
-                <option value="togg-t10x-v1" data-battery="52.4" data-wltp="314" data-drivetrain="rwd">Togg T10X Standart Menzil (52.4 kWh NMC - 314 km WLTP)</option>
-                <option value="togg-t10x-v2" data-battery="88.5" data-wltp="523" data-drivetrain="rwd">Togg T10X Uzun Menzil (88.5 kWh NMC - 523 km WLTP)</option>
+
+                <option value="togg-t10x-v1"
+                        data-battery="52.4"
+                        data-usable-battery=""
+                        data-wltp="314"
+                        data-consumption=""
+                        data-real-consumption="19"
+                        data-dc-max="180"
+                        data-dc-10-80="28"
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="t10x">
+                  Togg T10X V1 Standart Menzil
+                </option>
+
+                <option value="togg-t10x-v2"
+                        data-battery="88.5"
+                        data-usable-battery=""
+                        data-wltp="523"
+                        data-consumption=""
+                        data-real-consumption="20"
+                        data-dc-max="180"
+                        data-dc-10-80="28"
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="t10x">
+                  Togg T10X V2 Uzun Menzil (523 km WLTP)
+                </option>
+
+                <option value="togg-t10x-4more"
+                        data-battery=""
+                        data-usable-battery=""
+                        data-wltp=""
+                        data-consumption=""
+                        data-real-consumption="23"
+                        data-dc-max="180"
+                        data-dc-10-80=""
+                        data-drivetrain="awd"
+                        data-battery-type="NMC"
+                        data-generation="t10x">
+                  Togg T10X 4More AWD
+                </option>
+
+                <option value="togg-t10f-rwd"
+                        data-battery=""
+                        data-usable-battery=""
+                        data-wltp="623"
+                        data-consumption=""
+                        data-real-consumption="18"
+                        data-dc-max="180"
+                        data-dc-10-80="27"
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="t10f">
+                  Togg T10F RWD Uzun Menzil (623 km WLTP)
+                </option>
+
+                <option value="togg-t10f-awd"
+                        data-battery=""
+                        data-usable-battery=""
+                        data-wltp="523"
+                        data-consumption=""
+                        data-real-consumption="22"
+                        data-dc-max="180"
+                        data-dc-10-80=""
+                        data-drivetrain="awd"
+                        data-battery-type="NMC"
+                        data-generation="t10f">
+                  Togg T10F AWD (523 km WLTP)
+                </option>
+
               </optgroup>
-              <optgroup label="BYD & Chery">
-                <option value="byd-atto3" data-battery="60.5" data-wltp="420" data-drivetrain="fwd">BYD Atto 3 (60.5 kWh LFP - 420 km WLTP)</option>
-                <option value="byd-seal-u" data-battery="71.8" data-wltp="500" data-drivetrain="fwd">BYD Seal U EV (71.8 kWh LFP - 500 km WLTP)</option>
-                <option value="byd-seal-rwd" data-battery="82.5" data-wltp="570" data-drivetrain="rwd">BYD Seal Design RWD (82.5 kWh LFP - 570 km WLTP)</option>
-                <option value="byd-seal-awd" data-battery="82.5" data-wltp="520" data-drivetrain="awd">BYD Seal AWD (82.5 kWh LFP - 520 km WLTP)</option>
-                <option value="byd-dolphin" data-battery="60.4" data-wltp="427" data-drivetrain="fwd">BYD Dolphin (60.4 kWh LFP - 427 km WLTP)</option>
-                <option value="chery-omoda5-ev" data-battery="61.0" data-wltp="430" data-drivetrain="fwd">Omoda 5 EV (61 kWh LFP - 430 km WLTP)</option>
+
+
+              <!-- =========================================================
+                   BYD
+                   ========================================================= -->
+              <optgroup label="BYD">
+
+                <option value="byd-dolphin"
+                        data-battery="60.4"
+                        data-usable-battery=""
+                        data-wltp="427"
+                        data-consumption=""
+                        data-real-consumption="16"
+                        data-dc-max="88"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="LFP"
+                        data-generation="current">
+                  BYD Dolphin
+                </option>
+
+                <option value="byd-atto3"
+                        data-battery="60.5"
+                        data-usable-battery=""
+                        data-wltp="420"
+                        data-consumption=""
+                        data-real-consumption="18"
+                        data-dc-max="88"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="LFP"
+                        data-generation="current">
+                  BYD Atto 3
+                </option>
+
+                <option value="byd-seal-u"
+                        data-battery="71.8"
+                        data-usable-battery=""
+                        data-wltp="500"
+                        data-consumption=""
+                        data-real-consumption="18"
+                        data-dc-max="115"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="LFP"
+                        data-generation="current">
+                  BYD Seal U EV
+                </option>
+
+                <option value="byd-seal"
+                        data-battery="82.5"
+                        data-usable-battery=""
+                        data-wltp=""
+                        data-consumption=""
+                        data-real-consumption="18"
+                        data-dc-max="150"
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="LFP"
+                        data-generation="current">
+                  BYD Seal RWD
+                </option>
+
+                <option value="byd-seal-awd"
+                        data-battery="82.5"
+                        data-usable-battery=""
+                        data-wltp="520"
+                        data-consumption=""
+                        data-real-consumption="21"
+                        data-dc-max="150"
+                        data-dc-10-80=""
+                        data-drivetrain="awd"
+                        data-battery-type="LFP"
+                        data-generation="current">
+                  BYD Seal AWD
+                </option>
+
+                <option value="byd-sealion7"
+                        data-battery="91.3"
+                        data-usable-battery=""
+                        data-wltp="502"
+                        data-consumption=""
+                        data-real-consumption="22"
+                        data-dc-max="230"
+                        data-dc-10-80=""
+                        data-drivetrain="awd"
+                        data-battery-type="LFP"
+                        data-generation="current">
+                  BYD Sealion 7 AWD
+                </option>
+
               </optgroup>
-              <optgroup label="KGM & Skywell">
-                <option value="kgm-torres-evx" data-battery="73.4" data-wltp="462" data-drivetrain="fwd">KGM Torres EVX (73.4 kWh LFP - 462 km WLTP)</option>
-                <option value="skywell-et5" data-battery="86.0" data-wltp="490" data-drivetrain="fwd">Skywell ET5 (86 kWh NMC - 490 km WLTP)</option>
+
+
+              <!-- =========================================================
+                   KGM
+                   ========================================================= -->
+              <optgroup label="KGM">
+
+                <option value="kgm-torres-evx"
+                        data-battery="73.4"
+                        data-usable-battery=""
+                        data-wltp="462"
+                        data-consumption=""
+                        data-real-consumption="20"
+                        data-dc-max="100"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="LFP"
+                        data-generation="current">
+                  KGM Torres EVX
+                </option>
+
+                <option value="kgm-musso-ev"
+                        data-battery=""
+                        data-usable-battery=""
+                        data-wltp=""
+                        data-consumption=""
+                        data-real-consumption="25"
+                        data-dc-max=""
+                        data-dc-10-80=""
+                        data-drivetrain="awd"
+                        data-battery-type="LFP"
+                        data-generation="current">
+                  KGM Musso EV
+                </option>
+
               </optgroup>
-              <optgroup label="Renault & Dacia">
-                <option value="renault-megane" data-battery="60.0" data-wltp="450" data-drivetrain="fwd">Renault Megane E-Tech (60 kWh NMC - 450 km WLTP)</option>
-                <option value="renault-scenic" data-battery="87.0" data-wltp="625" data-drivetrain="fwd">Renault Scenic E-Tech (87 kWh NMC - 625 km WLTP)</option>
-                <option value="renault-zoe" data-battery="52.0" data-wltp="395" data-drivetrain="fwd">Renault Zoe (52 kWh NMC - 395 km WLTP)</option>
-                <option value="dacia-spring" data-battery="26.8" data-wltp="230" data-drivetrain="fwd">Dacia Spring (26.8 kWh LFP - 230 km WLTP)</option>
+
+
+              <!-- =========================================================
+                   SKYWELL
+                   ========================================================= -->
+              <optgroup label="Skywell">
+
+                <option value="skywell-et5"
+                        data-battery="86"
+                        data-usable-battery=""
+                        data-wltp="490"
+                        data-consumption=""
+                        data-real-consumption="22"
+                        data-dc-max="100"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Skywell ET5
+                </option>
+
               </optgroup>
-              <optgroup label="Hyundai & Kia">
-                <option value="hyundai-ioniq5-awd" data-battery="77.4" data-wltp="481" data-drivetrain="awd">Hyundai Ioniq 5 AWD (77.4 kWh NMC - 481 km WLTP)</option>
-                <option value="hyundai-ioniq6-rwd" data-battery="77.4" data-wltp="614" data-drivetrain="rwd">Hyundai Ioniq 6 RWD (77.4 kWh NMC - 614 km WLTP)</option>
-                <option value="hyundai-kona-ev" data-battery="65.4" data-wltp="514" data-drivetrain="fwd">Hyundai Kona Elektrik (65.4 kWh NMC - 514 km WLTP)</option>
-                <option value="kia-ev6-rwd" data-battery="77.4" data-wltp="528" data-drivetrain="rwd">Kia EV6 RWD (77.4 kWh NMC - 528 km WLTP)</option>
-                <option value="kia-ev9-awd" data-battery="99.8" data-wltp="505" data-drivetrain="awd">Kia EV9 AWD (99.8 kWh NMC - 505 km WLTP)</option>
-                <option value="kia-ev3" data-battery="81.4" data-wltp="605" data-drivetrain="fwd">Kia EV3 Long Range (81.4 kWh NMC - 605 km WLTP)</option>
+
+
+              <!-- =========================================================
+                   RENAULT
+                   ========================================================= -->
+              <optgroup label="Renault">
+
+                <option value="renault-zoe"
+                        data-battery="52"
+                        data-usable-battery=""
+                        data-wltp="395"
+                        data-consumption=""
+                        data-real-consumption="17"
+                        data-dc-max="50"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="legacy">
+                  Renault Zoe
+                </option>
+
+                <option value="renault-megane"
+                        data-battery="60"
+                        data-usable-battery=""
+                        data-wltp="450"
+                        data-consumption=""
+                        data-real-consumption="19"
+                        data-dc-max="130"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Renault Megane E-Tech
+                </option>
+
+                <option value="renault-scenic"
+                        data-battery="87"
+                        data-usable-battery=""
+                        data-wltp="625"
+                        data-consumption=""
+                        data-real-consumption="19"
+                        data-dc-max="150"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Renault Scenic E-Tech
+                </option>
+
+                <option value="renault-5"
+                        data-battery="52"
+                        data-usable-battery=""
+                        data-wltp="410"
+                        data-consumption=""
+                        data-real-consumption="17"
+                        data-dc-max="100"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Renault 5 E-Tech
+                </option>
+
               </optgroup>
+
+
+              <!-- =========================================================
+                   DACIA
+                   ========================================================= -->
+              <optgroup label="Dacia">
+
+                <option value="dacia-spring"
+                        data-battery="26.8"
+                        data-usable-battery=""
+                        data-wltp="230"
+                        data-consumption=""
+                        data-real-consumption="15"
+                        data-dc-max="30"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="LFP"
+                        data-generation="current">
+                  Dacia Spring
+                </option>
+
+              </optgroup>
+
+
+              <!-- =========================================================
+                   HYUNDAI
+                   ========================================================= -->
+              <optgroup label="Hyundai">
+
+                <option value="hyundai-inster"
+                        data-battery="49"
+                        data-usable-battery=""
+                        data-wltp="370"
+                        data-consumption=""
+                        data-real-consumption="15"
+                        data-dc-max="85"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Hyundai Inster
+                </option>
+
+                <option value="hyundai-kona-ev"
+                        data-battery="65.4"
+                        data-usable-battery=""
+                        data-wltp="514"
+                        data-consumption=""
+                        data-real-consumption="17"
+                        data-dc-max="100"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Hyundai Kona Electric
+                </option>
+
+                <option value="hyundai-ioniq5-rwd"
+                        data-battery="84"
+                        data-usable-battery=""
+                        data-wltp="570"
+                        data-consumption=""
+                        data-real-consumption="19"
+                        data-dc-max="235"
+                        data-dc-10-80="18"
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Hyundai Ioniq 5 RWD
+                </option>
+
+                <option value="hyundai-ioniq5-awd"
+                        data-battery="84"
+                        data-usable-battery=""
+                        data-wltp="500"
+                        data-consumption=""
+                        data-real-consumption="21"
+                        data-dc-max="235"
+                        data-dc-10-80="18"
+                        data-drivetrain="awd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Hyundai Ioniq 5 AWD
+                </option>
+
+                <option value="hyundai-ioniq6-rwd"
+                        data-battery="77.4"
+                        data-usable-battery=""
+                        data-wltp="614"
+                        data-consumption=""
+                        data-real-consumption="16"
+                        data-dc-max="235"
+                        data-dc-10-80="18"
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Hyundai Ioniq 6 RWD
+                </option>
+
+                <option value="hyundai-ioniq6-awd"
+                        data-battery="77.4"
+                        data-usable-battery=""
+                        data-wltp="583"
+                        data-consumption=""
+                        data-real-consumption="18"
+                        data-dc-max="235"
+                        data-dc-10-80="18"
+                        data-drivetrain="awd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Hyundai Ioniq 6 AWD
+                </option>
+
+              </optgroup>
+
+
+              <!-- =========================================================
+                   KIA
+                   ========================================================= -->
+              <optgroup label="Kia">
+
+                <option value="kia-ev2"
+                        data-battery=""
+                        data-usable-battery=""
+                        data-wltp=""
+                        data-consumption=""
+                        data-real-consumption="16"
+                        data-dc-max=""
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Kia EV2
+                </option>
+
+                <option value="kia-niro-ev"
+                        data-battery="64.8"
+                        data-usable-battery=""
+                        data-wltp="460"
+                        data-consumption=""
+                        data-real-consumption="17"
+                        data-dc-max="85"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Kia Niro EV
+                </option>
+
+                <option value="kia-ev3"
+                        data-battery="81.4"
+                        data-usable-battery=""
+                        data-wltp="605"
+                        data-consumption=""
+                        data-real-consumption="17"
+                        data-dc-max="135"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Kia EV3 Long Range
+                </option>
+
+                <option value="kia-ev6-rwd"
+                        data-battery="84"
+                        data-usable-battery=""
+                        data-wltp="582"
+                        data-consumption=""
+                        data-real-consumption="19"
+                        data-dc-max="240"
+                        data-dc-10-80="18"
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Kia EV6 RWD
+                </option>
+
+                <option value="kia-ev6-awd"
+                        data-battery="84"
+                        data-usable-battery=""
+                        data-wltp="546"
+                        data-consumption=""
+                        data-real-consumption="21"
+                        data-dc-max="240"
+                        data-dc-10-80="18"
+                        data-drivetrain="awd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Kia EV6 AWD
+                </option>
+
+                <option value="kia-ev9-awd"
+                        data-battery="99.8"
+                        data-usable-battery=""
+                        data-wltp="505"
+                        data-consumption=""
+                        data-real-consumption="24"
+                        data-dc-max="210"
+                        data-dc-10-80="24"
+                        data-drivetrain="awd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Kia EV9 AWD
+                </option>
+
+              </optgroup>
+
+
+              <!-- =========================================================
+                   MG
+                   ========================================================= -->
               <optgroup label="MG">
-                <option value="mg-mg4-std" data-battery="51.0" data-wltp="350" data-drivetrain="rwd">MG4 Comfort (51 kWh LFP - 350 km WLTP)</option>
-                <option value="mg-mg4-lux" data-battery="64.0" data-wltp="435" data-drivetrain="rwd">MG4 Luxury (64 kWh NMC - 435 km WLTP)</option>
-                <option value="mg-zs-ev-lr" data-battery="72.6" data-wltp="440" data-drivetrain="fwd">MG ZS EV Long Range (72.6 kWh NMC - 440 km WLTP)</option>
+
+                <option value="mg4-comfort"
+                        data-battery="51"
+                        data-usable-battery=""
+                        data-wltp="350"
+                        data-consumption=""
+                        data-real-consumption="17"
+                        data-dc-max="117"
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="LFP"
+                        data-generation="current">
+                  MG4 Comfort
+                </option>
+
+                <option value="mg4-luxury"
+                        data-battery="64"
+                        data-usable-battery=""
+                        data-wltp="435"
+                        data-consumption=""
+                        data-real-consumption="18"
+                        data-dc-max="135"
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  MG4 Luxury
+                </option>
+
+                <option value="mg-zs-ev-lr"
+                        data-battery="72.6"
+                        data-usable-battery=""
+                        data-wltp="440"
+                        data-consumption=""
+                        data-real-consumption="20"
+                        data-dc-max="94"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  MG ZS EV Long Range
+                </option>
+
               </optgroup>
+
+
+              <!-- =========================================================
+                   VOLVO
+                   ========================================================= -->
               <optgroup label="Volvo">
-                <option value="volvo-ex30-std" data-battery="51.0" data-wltp="344" data-drivetrain="rwd">Volvo EX30 Core (51 kWh LFP - 344 km WLTP)</option>
-                <option value="volvo-ex30-er" data-battery="69.0" data-wltp="476" data-drivetrain="rwd">Volvo EX30 Ultra (69 kWh NMC - 476 km WLTP)</option>
+
+                <option value="volvo-ex30-single"
+                        data-battery="51"
+                        data-usable-battery=""
+                        data-wltp="344"
+                        data-consumption=""
+                        data-real-consumption="17"
+                        data-dc-max="134"
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="LFP"
+                        data-generation="current">
+                  Volvo EX30 Single Motor
+                </option>
+
+                <option value="volvo-ex30-extended"
+                        data-battery="69"
+                        data-usable-battery=""
+                        data-wltp="476"
+                        data-consumption=""
+                        data-real-consumption="18"
+                        data-dc-max="153"
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Volvo EX30 Extended Range
+                </option>
+
+                <option value="volvo-ex40"
+                        data-battery="78"
+                        data-usable-battery=""
+                        data-wltp="540"
+                        data-consumption=""
+                        data-real-consumption="20"
+                        data-dc-max="150"
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Volvo EX40
+                </option>
+
+                <option value="volvo-ec40"
+                        data-battery="78"
+                        data-usable-battery=""
+                        data-wltp="550"
+                        data-consumption=""
+                        data-real-consumption="20"
+                        data-dc-max="150"
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Volvo EC40
+                </option>
+
+                <option value="volvo-ex90"
+                        data-battery="111"
+                        data-usable-battery=""
+                        data-wltp="580"
+                        data-consumption=""
+                        data-real-consumption="23"
+                        data-dc-max="250"
+                        data-dc-10-80=""
+                        data-drivetrain="awd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Volvo EX90
+                </option>
+
               </optgroup>
-              <optgroup label="BMW & Mercedes">
-                <option value="bmw-ix1" data-battery="64.7" data-wltp="475" data-drivetrain="fwd">BMW iX1 eDrive20 (64.7 kWh NMC - 475 km WLTP)</option>
-                <option value="bmw-i4" data-battery="80.7" data-wltp="590" data-drivetrain="rwd">BMW i4 eDrive40 (80.7 kWh NMC - 590 km WLTP)</option>
-                <option value="mercedes-eqa" data-battery="70.5" data-wltp="528" data-drivetrain="fwd">Mercedes EQA 250+ (70.5 kWh NMC - 528 km WLTP)</option>
-                <option value="mercedes-eqb" data-battery="70.5" data-wltp="507" data-drivetrain="fwd">Mercedes EQB 250+ (70.5 kWh NMC - 507 km WLTP)</option>
+
+
+              <!-- =========================================================
+                   BMW
+                   ========================================================= -->
+              <optgroup label="BMW">
+
+                <option value="bmw-ix1-edrive20"
+                        data-battery="64.7"
+                        data-usable-battery=""
+                        data-wltp="475"
+                        data-consumption=""
+                        data-real-consumption="19"
+                        data-dc-max="130"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  BMW iX1 eDrive20
+                </option>
+
+                <option value="bmw-ix1-xdrive30"
+                        data-battery="64.7"
+                        data-usable-battery=""
+                        data-wltp="439"
+                        data-consumption=""
+                        data-real-consumption="21"
+                        data-dc-max="130"
+                        data-dc-10-80=""
+                        data-drivetrain="awd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  BMW iX1 xDrive30
+                </option>
+
+                <option value="bmw-ix2-edrive20"
+                        data-battery="64.8"
+                        data-usable-battery=""
+                        data-wltp="478"
+                        data-consumption=""
+                        data-real-consumption="19"
+                        data-dc-max="130"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  BMW iX2 eDrive20
+                </option>
+
+                <option value="bmw-i4-edrive40"
+                        data-battery="80.7"
+                        data-usable-battery=""
+                        data-wltp="590"
+                        data-consumption=""
+                        data-real-consumption="19"
+                        data-dc-max="205"
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  BMW i4 eDrive40
+                </option>
+
+                <option value="bmw-i5-edrive40"
+                        data-battery="81.2"
+                        data-usable-battery=""
+                        data-wltp="582"
+                        data-consumption=""
+                        data-real-consumption="20"
+                        data-dc-max="205"
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  BMW i5 eDrive40
+                </option>
+
+                <option value="bmw-ix-xdrive"
+                        data-battery="109.4"
+                        data-usable-battery=""
+                        data-wltp="630"
+                        data-consumption=""
+                        data-real-consumption="22"
+                        data-dc-max="195"
+                        data-dc-10-80=""
+                        data-drivetrain="awd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  BMW iX xDrive
+                </option>
+
               </optgroup>
-              <optgroup label="Stellantis">
-                <option value="peugeot-e2008" data-battery="54.0" data-wltp="406" data-drivetrain="fwd">Peugeot E-2008 (54 kWh NMC - 406 km WLTP)</option>
-                <option value="peugeot-e3008" data-battery="73.0" data-wltp="527" data-drivetrain="fwd">Peugeot E-3008 (73 kWh NMC - 527 km WLTP)</option>
-                <option value="opel-astra-e" data-battery="54.0" data-wltp="418" data-drivetrain="fwd">Opel Astra Elektrik (54 kWh NMC - 418 km WLTP)</option>
-                <option value="opel-mokka-e" data-battery="54.0" data-wltp="406" data-drivetrain="fwd">Opel Mokka Elektrik (54 kWh NMC - 406 km WLTP)</option>
-                <option value="citroen-e-c4" data-battery="54.0" data-wltp="420" data-drivetrain="fwd">Citroën ë-C4 (54 kWh NMC - 420 km WLTP)</option>
+
+
+              <!-- =========================================================
+                   MERCEDES
+                   ========================================================= -->
+              <optgroup label="Mercedes-Benz">
+
+                <option value="mercedes-eqa-250"
+                        data-battery="70.5"
+                        data-usable-battery=""
+                        data-wltp="528"
+                        data-consumption=""
+                        data-real-consumption="18"
+                        data-dc-max="100"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Mercedes-Benz EQA 250+
+                </option>
+
+                <option value="mercedes-eqb"
+                        data-battery="70.5"
+                        data-usable-battery=""
+                        data-wltp="500"
+                        data-consumption=""
+                        data-real-consumption="20"
+                        data-dc-max="100"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Mercedes-Benz EQB
+                </option>
+
+                <option value="mercedes-cla-ev"
+                        data-battery="85"
+                        data-usable-battery=""
+                        data-wltp="750"
+                        data-consumption=""
+                        data-real-consumption="17"
+                        data-dc-max="320"
+                        data-dc-10-80="22"
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Mercedes-Benz CLA Electric
+                </option>
+
+                <option value="mercedes-eqe"
+                        data-battery="90.6"
+                        data-usable-battery=""
+                        data-wltp="600"
+                        data-consumption=""
+                        data-real-consumption="20"
+                        data-dc-max="170"
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Mercedes-Benz EQE
+                </option>
+
+                <option value="mercedes-eqs"
+                        data-battery="118"
+                        data-usable-battery=""
+                        data-wltp="700"
+                        data-consumption=""
+                        data-real-consumption="22"
+                        data-dc-max="200"
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Mercedes-Benz EQS
+                </option>
+
               </optgroup>
+
+
+              <!-- =========================================================
+                   MINI
+                   ========================================================= -->
+              <optgroup label="MINI">
+
+                <option value="mini-cooper-e"
+                        data-battery="40.7"
+                        data-usable-battery=""
+                        data-wltp="305"
+                        data-consumption=""
+                        data-real-consumption="16"
+                        data-dc-max="75"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  MINI Cooper Electric
+                </option>
+
+                <option value="mini-cooper-se"
+                        data-battery="54.2"
+                        data-usable-battery=""
+                        data-wltp="402"
+                        data-consumption=""
+                        data-real-consumption="17"
+                        data-dc-max="95"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  MINI Cooper SE Electric
+                </option>
+
+                <option value="mini-countryman-e"
+                        data-battery="66.45"
+                        data-usable-battery=""
+                        data-wltp="462"
+                        data-consumption=""
+                        data-real-consumption="19"
+                        data-dc-max="130"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  MINI Countryman E
+                </option>
+
+                <option value="mini-countryman-se"
+                        data-battery="66.45"
+                        data-usable-battery=""
+                        data-wltp="432"
+                        data-consumption=""
+                        data-real-consumption="21"
+                        data-dc-max="130"
+                        data-dc-10-80=""
+                        data-drivetrain="awd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  MINI Countryman SE ALL4
+                </option>
+
+              </optgroup>
+
+
+              <!-- =========================================================
+                   PEUGEOT
+                   ========================================================= -->
+              <optgroup label="Peugeot">
+
+                <option value="peugeot-e208"
+                        data-battery="54"
+                        data-usable-battery=""
+                        data-wltp="410"
+                        data-consumption=""
+                        data-real-consumption="17"
+                        data-dc-max="100"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Peugeot E-208
+                </option>
+
+                <option value="peugeot-e2008"
+                        data-battery="54"
+                        data-usable-battery=""
+                        data-wltp="406"
+                        data-consumption=""
+                        data-real-consumption="19"
+                        data-dc-max="100"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Peugeot E-2008
+                </option>
+
+                <option value="peugeot-e308"
+                        data-battery="54"
+                        data-usable-battery=""
+                        data-wltp="418"
+                        data-consumption=""
+                        data-real-consumption="17"
+                        data-dc-max="100"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Peugeot E-308
+                </option>
+
+                <option value="peugeot-e3008"
+                        data-battery="73"
+                        data-usable-battery=""
+                        data-wltp="510"
+                        data-consumption=""
+                        data-real-consumption="20"
+                        data-dc-max="160"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Peugeot E-3008
+                </option>
+
+                <option value="peugeot-e5008"
+                        data-battery="73"
+                        data-usable-battery=""
+                        data-wltp="500"
+                        data-consumption=""
+                        data-real-consumption="21"
+                        data-dc-max="160"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Peugeot E-5008
+                </option>
+
+              </optgroup>
+
+
+              <!-- =========================================================
+                   OPEL
+                   ========================================================= -->
+              <optgroup label="Opel">
+
+                <option value="opel-corsa-e"
+                        data-battery="54"
+                        data-usable-battery=""
+                        data-wltp="405"
+                        data-consumption=""
+                        data-real-consumption="17"
+                        data-dc-max="100"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Opel Corsa Elektrik
+                </option>
+
+                <option value="opel-mokka-e"
+                        data-battery="54"
+                        data-usable-battery=""
+                        data-wltp="406"
+                        data-consumption=""
+                        data-real-consumption="19"
+                        data-dc-max="100"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Opel Mokka Elektrik
+                </option>
+
+                <option value="opel-astra-e"
+                        data-battery="54"
+                        data-usable-battery=""
+                        data-wltp="418"
+                        data-consumption=""
+                        data-real-consumption="18"
+                        data-dc-max="100"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Opel Astra Elektrik
+                </option>
+
+                <option value="opel-frontera-e"
+                        data-battery="54"
+                        data-usable-battery=""
+                        data-wltp=""
+                        data-consumption=""
+                        data-real-consumption="18"
+                        data-dc-max="100"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Opel Frontera Electric
+                </option>
+
+                <option value="opel-grandland-e"
+                        data-battery="73"
+                        data-usable-battery=""
+                        data-wltp="510"
+                        data-consumption=""
+                        data-real-consumption="20"
+                        data-dc-max="160"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Opel Grandland Electric
+                </option>
+
+              </optgroup>
+
+
+              <!-- =========================================================
+                   CITROEN
+                   ========================================================= -->
+              <optgroup label="Citroën">
+
+                <option value="citroen-e-c3"
+                        data-battery="44"
+                        data-usable-battery=""
+                        data-wltp="320"
+                        data-consumption=""
+                        data-real-consumption="16"
+                        data-dc-max="100"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="LFP"
+                        data-generation="current">
+                  Citroën ë-C3
+                </option>
+
+                <option value="citroen-e-c4"
+                        data-battery="54"
+                        data-usable-battery=""
+                        data-wltp="420"
+                        data-consumption=""
+                        data-real-consumption="17"
+                        data-dc-max="100"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Citroën ë-C4
+                </option>
+
+                <option value="citroen-e-c4x"
+                        data-battery="54"
+                        data-usable-battery=""
+                        data-wltp="420"
+                        data-consumption=""
+                        data-real-consumption="18"
+                        data-dc-max="100"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Citroën ë-C4 X
+                </option>
+
+                <option value="citroen-e-c3-aircross"
+                        data-battery="54"
+                        data-usable-battery=""
+                        data-wltp=""
+                        data-consumption=""
+                        data-real-consumption="19"
+                        data-dc-max="100"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Citroën ë-C3 Aircross
+                </option>
+
+                <option value="citroen-e-c5-aircross"
+                        data-battery="73"
+                        data-usable-battery=""
+                        data-wltp="520"
+                        data-consumption=""
+                        data-real-consumption="20"
+                        data-dc-max="160"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Citroën ë-C5 Aircross
+                </option>
+
+              </optgroup>
+
+
+              <!-- =========================================================
+                   FIAT
+                   ========================================================= -->
+              <optgroup label="Fiat">
+
+                <option value="fiat-500e"
+                        data-battery="42"
+                        data-usable-battery=""
+                        data-wltp="320"
+                        data-consumption=""
+                        data-real-consumption="16"
+                        data-dc-max="85"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Fiat 500e
+                </option>
+
+                <option value="fiat-600e"
+                        data-battery="54"
+                        data-usable-battery=""
+                        data-wltp="406"
+                        data-consumption=""
+                        data-real-consumption="18"
+                        data-dc-max="100"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Fiat 600e
+                </option>
+
+                <option value="fiat-grande-panda"
+                        data-battery="44"
+                        data-usable-battery=""
+                        data-wltp="320"
+                        data-consumption=""
+                        data-real-consumption="16"
+                        data-dc-max="100"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="LFP"
+                        data-generation="current">
+                  Fiat Grande Panda Electric
+                </option>
+
+              </optgroup>
+
+
+              <!-- =========================================================
+                   JEEP
+                   ========================================================= -->
+              <optgroup label="Jeep">
+
+                <option value="jeep-avenger"
+                        data-battery="54"
+                        data-usable-battery=""
+                        data-wltp="404"
+                        data-consumption=""
+                        data-real-consumption="18"
+                        data-dc-max="100"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Jeep Avenger Electric
+                </option>
+
+              </optgroup>
+
+
+              <!-- =========================================================
+                   ALFA ROMEO
+                   ========================================================= -->
+              <optgroup label="Alfa Romeo">
+
+                <option value="alfa-junior-elettrica"
+                        data-battery="54"
+                        data-usable-battery=""
+                        data-wltp="410"
+                        data-consumption=""
+                        data-real-consumption="18"
+                        data-dc-max="100"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Alfa Romeo Junior Elettrica
+                </option>
+
+              </optgroup>
+
+
+              <!-- =========================================================
+                   VOLKSWAGEN
+                   ========================================================= -->
+              <optgroup label="Volkswagen">
+
+                <option value="vw-id4"
+                        data-battery="77"
+                        data-usable-battery=""
+                        data-wltp="520"
+                        data-consumption=""
+                        data-real-consumption="20"
+                        data-dc-max="135"
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Volkswagen ID.4
+                </option>
+
+                <option value="vw-id7"
+                        data-battery="77"
+                        data-usable-battery=""
+                        data-wltp="620"
+                        data-consumption=""
+                        data-real-consumption="19"
+                        data-dc-max="175"
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Volkswagen ID.7
+                </option>
+
+                <option value="vw-idbuzz"
+                        data-battery="79"
+                        data-usable-battery=""
+                        data-wltp="460"
+                        data-consumption=""
+                        data-real-consumption="23"
+                        data-dc-max="185"
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Volkswagen ID.Buzz
+                </option>
+
+              </optgroup>
+
+
+              <!-- =========================================================
+                   SKODA
+                   ========================================================= -->
+              <optgroup label="Škoda">
+
+                <option value="skoda-elroq"
+                        data-battery="63"
+                        data-usable-battery=""
+                        data-wltp="453"
+                        data-consumption=""
+                        data-real-consumption="18"
+                        data-dc-max="165"
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Škoda Elroq
+                </option>
+
+                <option value="skoda-enyaq"
+                        data-battery="77"
+                        data-usable-battery=""
+                        data-wltp="573"
+                        data-consumption=""
+                        data-real-consumption="20"
+                        data-dc-max="135"
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Škoda Enyaq
+                </option>
+
+                <option value="skoda-enyaq-coupe"
+                        data-battery="77"
+                        data-usable-battery=""
+                        data-wltp="570"
+                        data-consumption=""
+                        data-real-consumption="19"
+                        data-dc-max="135"
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Škoda Enyaq Coupé
+                </option>
+
+              </optgroup>
+
+
+              <!-- =========================================================
+                   AUDI
+                   ========================================================= -->
+              <optgroup label="Audi">
+
+                <option value="audi-q4-etron"
+                        data-battery="77"
+                        data-usable-battery=""
+                        data-wltp="520"
+                        data-consumption=""
+                        data-real-consumption="20"
+                        data-dc-max="135"
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Audi Q4 e-tron
+                </option>
+
+                <option value="audi-q4-sportback-etron"
+                        data-battery="77"
+                        data-usable-battery=""
+                        data-wltp="535"
+                        data-consumption=""
+                        data-real-consumption="20"
+                        data-dc-max="135"
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Audi Q4 Sportback e-tron
+                </option>
+
+                <option value="audi-q6-etron"
+                        data-battery="94.9"
+                        data-usable-battery=""
+                        data-wltp="625"
+                        data-consumption=""
+                        data-real-consumption="21"
+                        data-dc-max="270"
+                        data-dc-10-80="21"
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Audi Q6 e-tron
+                </option>
+
+                <option value="audi-q8-etron"
+                        data-battery="114"
+                        data-usable-battery=""
+                        data-wltp="582"
+                        data-consumption=""
+                        data-real-consumption="24"
+                        data-dc-max="170"
+                        data-dc-10-80=""
+                        data-drivetrain="awd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Audi Q8 e-tron
+                </option>
+
+                <option value="audi-etron-gt"
+                        data-battery="97"
+                        data-usable-battery=""
+                        data-wltp="600"
+                        data-consumption=""
+                        data-real-consumption="22"
+                        data-dc-max="320"
+                        data-dc-10-80="18"
+                        data-drivetrain="awd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Audi e-tron GT
+                </option>
+
+              </optgroup>
+
+
+              <!-- =========================================================
+                   FORD
+                   ========================================================= -->
+              <optgroup label="Ford">
+
+                <option value="ford-puma-gen-e"
+                        data-battery="54"
+                        data-usable-battery=""
+                        data-wltp="376"
+                        data-consumption=""
+                        data-real-consumption="17"
+                        data-dc-max="100"
+                        data-dc-10-80=""
+                        data-drivetrain="fwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Ford Puma Gen-E
+                </option>
+
+                <option value="ford-explorer-ev"
+                        data-battery="77"
+                        data-usable-battery=""
+                        data-wltp="572"
+                        data-consumption=""
+                        data-real-consumption="20"
+                        data-dc-max="185"
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Ford Explorer Electric
+                </option>
+
+                <option value="ford-capri-ev"
+                        data-battery="77"
+                        data-usable-battery=""
+                        data-wltp="592"
+                        data-consumption=""
+                        data-real-consumption="20"
+                        data-dc-max="185"
+                        data-dc-10-80=""
+                        data-drivetrain="rwd"
+                        data-battery-type="NMC"
+                        data-generation="current">
+                  Ford Capri Electric
+                </option>
+
+              </optgroup>
+
+
+              <!-- =========================================================
+                   ÖZEL ARAÇ
+                   ========================================================= -->
               <optgroup label="Özel">
-                <option value="custom" data-battery="60.0" data-wltp="400" data-drivetrain="custom">Özel Araç (Manuel Batarya Girişi)</option>
+
+                <option value="custom"
+                        data-battery="0"
+                        data-usable-battery=""
+                        data-wltp="0"
+                        data-consumption=""
+                        data-real-consumption="20"
+                        data-dc-max=""
+                        data-dc-10-80=""
+                        data-drivetrain="custom"
+                        data-battery-type="custom"
+                        data-generation="custom">
+                  Özel Araç (Manuel Veri Girişi)
+                </option>
+
               </optgroup>
+
             </select>
           </div>
 
@@ -452,14 +2090,34 @@
             <input type="number" id="input-custom-capacity" class="custom-input" min="10" max="150" step="0.5" value="60">
           </div>
 
-          <!-- WLTP Fabrika Menzili Ayarı -->
+          <!-- Gerçek Yol Tüketimi Ayarı (data-real-consumption) -->
+          <div class="setting-item" id="real-consumption-group">
+            <div class="setting-label-row">
+              <label for="input-real-consumption">Gerçek Tüketim Ayarı (kWh / 100 km)</label>
+              <span class="setting-hint" id="real-consumption-display">20.0 kWh</span>
+            </div>
+            <input type="number" id="input-real-consumption" class="custom-input" min="8" max="45" step="0.5" value="20.0">
+            <span class="sub-hint">Menzil ve km maliyeti belirlediğiniz bu gerçek sürüş tüketimi üzerinden hesaplanır.</span>
+          </div>
+
+          <!-- WLTP Katalog Menzili (data-wltp) -->
           <div class="setting-item" id="wltp-range-group">
             <div class="setting-label-row">
-              <label for="input-vehicle-wltp">WLTP Resmi Menzili (km)</label>
+              <label for="input-vehicle-wltp">Katalog WLTP Menzili (km)</label>
               <span class="setting-hint" id="wltp-display">455 km</span>
             </div>
-            <input type="number" id="input-vehicle-wltp" class="custom-input" min="100" max="1000" step="1" value="455">
-            <span class="sub-hint">Menzil ve tüketim hesaplamaları resmi WLTP test verisi üzerinden yapılır.</span>
+            <input type="number" id="input-vehicle-wltp" class="custom-input" min="0" max="1200" step="1" value="455">
+            <span class="sub-hint">Araç resmi katalog test verisidir.</span>
+          </div>
+
+          <!-- Kullanılabilir Net Batarya Enerjisi (data-usable-battery) -->
+          <div class="setting-item" id="usable-battery-group">
+            <div class="setting-label-row">
+              <label for="input-usable-battery">Kullanılabilir Batarya (kWh)</label>
+              <span class="setting-hint" id="usable-battery-display">60.0 kWh</span>
+            </div>
+            <input type="number" id="input-usable-battery" class="custom-input" min="10" max="160" step="0.1" value="60.0">
+            <span class="sub-hint">Şarj edilen gerçek net batarya kapasitesidir.</span>
           </div>
 
           <!-- AC Şarj Verimliliği -->
